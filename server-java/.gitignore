@@ -1,0 +1,19 @@
+# Gradle
+.gradle/
+build/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Uploads hoặc file runtime (nếu chỉ dùng để lưu tạm)
+uploads/
+

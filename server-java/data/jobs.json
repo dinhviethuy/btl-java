@@ -1,0 +1,487 @@
+[{
+  "_id": {
+    "$oid": "6487e52ae263fe0b853d752a"
+  },
+  "name": "Manual Tester - Khối CNTT",
+  "skills": [
+    "REACT.JS",
+    "TYPESCRIPT"
+  ],
+  "company": {
+    "_id": "64871701c7573fac797f83ea",
+    "name": "Amazon.com, Inc",
+    "logo": "amzon-1686574798358.jpg"
+  },
+  "location": "HANOI",
+  "salary": 15000000,
+  "quantity": 10,
+  "level": "FRESHER",
+  "description": "<h2>3 Lý Do Để Gia Nhập Công Ty</h2><ul><li>Mức lương cạnh tranh, hấp dẫn</li><li>Môi trường làm việc chuyên nghiệp, thân thiện</li><li>Được làm việc với các hệ thống hiện đại, tiên tiến</li></ul><p><br></p><h2>Mô Tả Công Việc</h2><ul><li>&nbsp;Tiếp nhận các yêu cầu kiểm thử các sản phẩm, dịch vụ CNTT</li><li>Thực hiện tìm hiểu, phân tích và làm rõ yêu cầu. Xây dựng chiến lược kiểm thử cho yêu cầu sản phẩm, dịch vụ CNTT</li><li>Xây dựng kế hoạch kiểm thử, viết kịch bản, tạo báo cáo kiểm thử, báo cáo lỗi kiểm thử. Xây dựng tài liệu cho các yêu cầu sau khi đã thực hiện</li><li>Điều phối công việc trong nhóm từ 4-10 nhân sự</li><li>Thực hiện kiểm thử, đánh giá chất lượng sản phẩm&nbsp;</li><li>Phân tích /đánh giá nguyên nhân lỗi sau golive</li></ul><p><br></p><h2>Yêu Cầu Công Việc</h2><ul><li>Tốt nghiệp hệ chính quy các Trường Đại học trong nước hoặc nước ngoài</li><li>Chuyên ngành đào tạo: Công nghệ thông tin, Toán tin, Điện tử Viễn thông, Kế Toán, Tài chính Ngân hàng...</li><li>Có trên 3&nbsp;năm kinh nghiệm trong công tác kiểm thử trong ngân hàng, Tổ chức Tài chính, Công ty về CNTT</li><li>Có kinh nghiệm làm việc với Agile/Scrum</li><li>Có kiến thức tổng quan về ngân hàng và am hiểu nghiệp vụ ngân hàng</li><li>Có hiểu biết sâu, rộng về hoạt động kiểm thử phần mềm</li><li>Có kinh nghiệm kiểm thử phần mềm với Android và IOS</li><li>Có chứng chỉ&nbsp;đào tạo về kiểm thử là 1 lợi thế</li><li>Có kinh nghiệm trong công tác kiểm thử tự động là 1 lợi thế</li><li>Có kinh nghiệm quản lý nhóm</li><li>Kỹ năng phân tích tài liệu, yêu cầu, báo cáo, viết tài liệu tốt</li><li>Kỹ năng tư duy/logic tốt, giao tiếp, thuyết trình, thuyết phục</li><li>Tiếng Anh tốt, có thể làm việc trực tiếp với các đối tác nước ngoài là một lợi thế</li></ul><p><br></p><h2>Tại Sao Bạn Sẽ Yêu Thích Làm Việc Tại Đây</h2><ul><li>Mức lương cạnh tranh, hấp dẫn (Thưởng xếp loại thực hiện công việc 6 tháng/lần, thưởng sinh nhật ngân hàng, thưởng các ngày lễ tết trong năm…).</li><li>Chế độ phúc lợi cạnh tranh: Du lịch hàng năm, Khám sức khỏe định kì hàng năm; Gói bảo hiểm sức khỏe; Các hoạt động tri ân, chăm lo đời sống tinh thần CBNV và Thân nhân...</li><li>Môi trường làm việc chuyên nghiệp, thân thiện, cởi mở.</li><li>Được làm việc với các hệ thống hiện đại, tiên tiến nhất thị trường, áp dụng các công nghệ hàng đầu về an ninh bảo mật để đảm bảo an toàn cho người sử dụng.</li><li>Cơ hội học hỏi nghiệp vụ ngân hàng.</li></ul>",
+  "startDate": {
+    "$date": {
+      "$numberLong": "1685206800000"
+    }
+  },
+  "endDate": {
+    "$date": {
+      "$numberLong": "1688749200000"
+    }
+  },
+  "isActive": true,
+  "createdBy": {
+    "_id": "647b5108a8a243e8191855b5",
+    "email": "hoidanit@gmail.com"
+  },
+  "isDeleted": false,
+  "deletedAt": null,
+  "createdAt": {
+    "$date": {
+      "$numberLong": "1686627626724"
+    }
+  },
+  "updatedAt": {
+    "$date": {
+      "$numberLong": "1686627650295"
+    }
+  },
+  "__v": 0,
+  "updatedBy": {
+    "_id": "647b5108a8a243e8191855b5",
+    "email": "hoidanit@gmail.com"
+  }
+},{
+  "_id": {
+    "$oid": "6487e58de263fe0b853d753e"
+  },
+  "name": "eCommerce Project Manager/Tester (Magento)",
+  "skills": [
+    "NEST.JS",
+    "BACKEND",
+    "FULLSTACK"
+  ],
+  "company": {
+    "_id": "64871777c7573fac797f83f6",
+    "name": "Apple Inc.",
+    "logo": "apple-1686574900663.jpg"
+  },
+  "location": "HOCHIMINH",
+  "salary": 25000000,
+  "quantity": 10,
+  "level": "MIDDLE",
+  "description": "<h2>Mô Tả Công Việc</h2><p><br></p><p><strong>About Digital Outlook</strong></p><ul><li>Digital Outlook is a strategy, user experience and development agency with a focus on creating engaging brand experiences that convert.</li><li>We work as partners with local and global brands based in Australia spanning services such as eCommerce, B2B, retail and consumer industries to deliver products, services, platforms and solutions that people love to use across multi channels.</li><li>With our head office based in Melbourne (Australia), our Hanoi office is a critical part of the business, with a highly experienced and dedicated team responsible for the technical scoping, delivery and maintenance of all of our projects.</li><li>Digital Outlook is set-up as a registered office in Vietnam, with all staff paid via payroll and local taxes, insurances allocated each quarter and a summer holiday for all employees.</li></ul><p><br></p><p><strong>The Position</strong></p><ul><li>A unique opportunity for an experienced Magento Project Manager/Tester to join the Digital Outlook team and work directly with a large Australian customer, as a dedicated member of their team.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</li><li>Based in our Hanoi office, you will act as a remote resource and report directly to the Melbourne Head Office of the retailer, while being supported by the development team at the Hanoi Digital Outlook office.</li><li>The role will assist in the successful delivery of all eCommerce projects both B2B and B2C, as well as any ongoing website maintenance across at least three Adobe Commerce websites. You will be the first point of contact for the retail group and facilitate and manage the various website requirements through the Digital Outlook team.</li><li>The position requires a clear understanding of the Adobe Commerce platform and eCommerce operations. The role will assist in general problem solving, raising Jira tickets and be an overall systems expert when it comes to the Adobe Commerce platform.</li><li>You will have strong written communication and organisational skills and will be responsible for maintaining, closing and the escalation of Jira tickets to the Digital Outlook development team.</li><li>The position requires a clear understanding of our clients businesses, goals and problems and of the technologies that their websites are built on.</li></ul><p><br></p><h2>Yêu Cầu Công Việc</h2><p><br></p><p><strong>Project Management/Testing Requirements</strong></p><ul><li>You’ll be the main point of contact between the retailer and the development team at Digital Outlook, taking briefs and managing all development work on the Adobe Commerce platforms</li><li>Day-to-day management of the websites, assisting the retailer with common tasks such as product and content updates, setting up campaigns and promotions and general configurations</li><li>Ensure projects are carried out in accordance with our development methodology</li><li>Ensure the appropriate people are resourced on your projects</li><li>As the primary tester, effectively troubleshoot issues, determining the cause and managing the resolution process with the client and internal team (if required)&nbsp;</li><li>Writing training documentation and facilitating client training sessions</li><li>Accounting for your time and accurately completing your timesheets</li><li>Demonstrate an interest in current technology and future trends</li></ul><p><br></p><p><strong>Your Skills</strong></p><ul><li>A minimum of three years of experience with Magento 2/Adobe Commerce in a Project Management and Testing capacity</li><li>Ability to juggle multiple projects and clients</li><li>Ability to accurately estimate, manage and measure projects</li><li>Ability to work well under pressure, solve problems, manage workflows and meet deadlines</li><li>Demonstrated high level written and verbal communication skills in English</li><li>A positive and honest attitude</li></ul><p><br></p><h2>Tại Sao Bạn Sẽ Yêu Thích Làm Việc Tại Đây</h2><p><strong>Why You'll Love Working Here</strong></p><ul><li>Extremely Attractive Salary</li><li>No overtime</li><li>Join a young, passionate, energetic team with friendly colleagues</li><li>Opportunities to improve English within an international team</li><li>High health insurance package&nbsp;</li><li>Offer training &amp; English courses</li><li>Vacation, team building events, bonus</li></ul><p><br></p>",
+  "startDate": {
+    "$date": {
+      "$numberLong": "1685811600000"
+    }
+  },
+  "endDate": {
+    "$date": {
+      "$numberLong": "1688749200000"
+    }
+  },
+  "isActive": true,
+  "createdBy": {
+    "_id": "647b5108a8a243e8191855b5",
+    "email": "hoidanit@gmail.com"
+  },
+  "isDeleted": false,
+  "deletedAt": null,
+  "createdAt": {
+    "$date": {
+      "$numberLong": "1686627725546"
+    }
+  },
+  "updatedAt": {
+    "$date": {
+      "$numberLong": "1686627725546"
+    }
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6487e626e263fe0b853d7554"
+  },
+  "name": "Technical Project Manager - Salary Up to $2500",
+  "skills": [
+    "NEST.JS",
+    "REACT NATIVE",
+    "TYPESCRIPT",
+    "FULLSTACK"
+  ],
+  "company": {
+    "_id": "648717bdc7573fac797f83fa",
+    "name": "Google LLC",
+    "logo": "google-1686574998397.png"
+  },
+  "location": "DANANG",
+  "salary": 35000000,
+  "quantity": 5,
+  "level": "SENIOR",
+  "description": "<h2>3 Lý Do Để Gia Nhập Công Ty</h2><ul><li>Global Exposure</li><li>Fast Track Career</li><li>Diversified Jobs &amp; Technologies</li></ul><p><br></p><h2>Mô Tả Công Việc</h2><ul><li>Work closely with stakeholders, architect for product development features and manage SDLC</li><li>Follow standard agile scrum practices for software development</li><li>Co-ordinate customer interactions and team interactions</li><li>To focus on Sprint Planning, Capacity Planning and translate to metrics of squad deliverables</li><li>Work with product owners to handle backlogs and new requests</li><li>Develop product roadmap and prioritize user stories along with Product Owner</li><li>Provide mentorship to team members in Agile frameworks</li><li>Manage each project’s scope and timeline</li><li>Coordinate sprints, retrospective meetings and daily stand-ups</li><li>Facilitate internal communication and effective collaboration</li><li>Be the point of contact for external communications (e.g. from customers or stakeholders)</li><li>Resolve conflicts and remove obstacles that occur</li><li>Help teams implement changes effectively</li><li>Ensure deliverables are up to quality standards at the end of each sprint</li><li>Guide development teams to higher scrum maturity</li><li>Help build a productive environment where team members ‘own’ the product and enjoy working on it</li></ul><p><br></p><h2>Yêu Cầu Công Việc</h2><ul><li>8+ years of experience Scrum Master or Managing the squad of software development team and .Net Framework developing experience is mandatory.</li><li>Familiarity with software development</li><li>Excellent knowledge of Scrum techniques and artifacts (such as definition of done, user stories, automated testing, backlog refinement)</li><li>Good knowledge of other Agile frameworks</li><li>Problem-solving and conflict-resolution ability</li><li>Experience in leading team of Engineers, full stack developers, allocate tasks and mentor the</li><li>team members to perform to their full potential</li><li>Experience in working with distributed agile development teams and product owner to design and implement product features</li><li>Excellent communication, servant leadership skills and teamwork skills</li><li>Scrum Master or SAFe Certified agilest certification would be huge plus</li></ul><p><br></p><h2>Tại Sao Bạn Sẽ Yêu Thích Làm Việc Tại Đây</h2><ul><li>Competitive salary. Performance based award.</li><li>Young and dynamic working environment.</li><li>Continuous development of hard and soft skills through work and professional trainings.</li><li>Opportunity to approach newest technology trends</li><li>Exciting leisure: sport and art events (football club, family day…)</li><li>Company’s labor policy completely pursuant to Vietnamese labor legislation plus other benefits offered by the company (Company trip, Holiday, etc.)</li></ul><p><br></p>",
+  "startDate": {
+    "$date": {
+      "$numberLong": "1685811600000"
+    }
+  },
+  "endDate": {
+    "$date": {
+      "$numberLong": "1688058000000"
+    }
+  },
+  "isActive": true,
+  "createdBy": {
+    "_id": "647b5108a8a243e8191855b5",
+    "email": "hoidanit@gmail.com"
+  },
+  "isDeleted": false,
+  "deletedAt": null,
+  "createdAt": {
+    "$date": {
+      "$numberLong": "1686627878708"
+    }
+  },
+  "updatedAt": {
+    "$date": {
+      "$numberLong": "1686627878708"
+    }
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6487e661e263fe0b853d755a"
+  },
+  "name": "BrSE - Bridge Engineer (Project Manager) ~ $2000",
+  "skills": [
+    "ANGULAR",
+    "NEST.JS"
+  ],
+  "company": {
+    "_id": "648717fac7573fac797f83fe",
+    "name": "Lazada Việt Nam",
+    "logo": "lazada-1686575062887.png"
+  },
+  "location": "OTHER",
+  "salary": 50000000,
+  "quantity": 5,
+  "level": "SENIOR",
+  "description": "<h2>3 Lý Do Để Gia Nhập Công Ty</h2><ul><li>Môi trường phát triển tiềm năng;</li><li>Có cơ hội trở thành \"Key Member\" của công ty.</li><li>Hưởng đầy đủ các chế độ đãi ngộ theo quy định</li></ul><p><br></p><h2>Mô Tả Công Việc</h2><ul><li>Là cầu nối giữa khách hàng Nhật Bản và đội dự án Offshore ở Việt Nam;</li><li>Làm việc trực tiếp với khách hàng Nhật Bản: Giao tiếp, thương lượng, nhận, phân tích các yêu cầu của dự án phần mềm, và truyền đạt cho đội dự án phần mềm ở Việt Nam;</li><li>Quản lý tình hình triển khai dự án và phối hợp với khách hàng trong việc quản lý dự án.</li></ul><p><br></p><h2>Yêu Cầu Công Việc</h2><p><strong>Must have:</strong></p><ul><li>Có tiếng Nhật từ N2 trở lên, và đã từng làm việc tại môi trường Nhật Bản;</li><li>Có từ 3 năm kinh nghiệm làm việc trong lĩnh vực Phát triển phần mềm và tối thiểu 2 năm trong vai trò PM.</li><li>Có kinh nghiệm lập trình, database;</li><li>Có kỹ năng làm việc nhóm tốt, phối hợp, gắn kết, lắng nghe và chia sẻ với cả thành viên trong dự án và đối tác; Đồng thời có khả năng làm việc độc lập</li><li>Có khả năng quản lý team, quản lý dự án;&nbsp;</li><li>Có khả năng lập kế hoạch và quản lý rủi ro; Chủ động, linh hoạt trong công việc</li></ul><p><br></p><p><strong>Nice to have:</strong></p><ul><li>Có thể sẵn sàng làm việc tại Nhật Bản trong tương lai</li><li>Nắm được ngôn ngữ lập trình phần mềm và kỹ năng phân tích kinh doanh là một lợi thế.&nbsp;</li><li>Có kiến thức về triển khai các app lên cloud như Azure;</li></ul><p><br></p><h2>Tại Sao Bạn Sẽ Yêu Thích Làm Việc Tại Đây</h2><ul><li>Văn phòng mới, cơ sở vật chất hiện đại, được cấp máy tính riêng cấu hình cao&nbsp;&nbsp;</li><li>Mức lương khởi điểm hấp dẫn, xét tăng lương hàng năm<strong>&nbsp;(Mức lương upto 2000 USD);</strong></li><li>Có cơ hội trở thành&nbsp;<strong>“Key member”</strong>&nbsp;của công ty;</li><li>Thu nhập: Được hưởng tháng lương thứ 13/năm + Thưởng Tết và các dịp lễ khác,...</li><li>Nghỉ thứ 7, chủ nhật + nghỉ phép theo quy định của Pháp luật hiện hành;</li><li>Được tham gia vào bảo hiểm xã hội, bảo hiểm y tế theo quy định của Pháp luật hiện hành và quy định của Công ty.</li><li>Khám sức khỏe định kỳ 1 năm/ lần tại bệnh viện Quốc Tế Thu Cúc.&nbsp;</li><li>Được tham gia các hoạt động tập thể sôi nổi của công ty: Happy time mỗi thứ 6, Du lịch hàng năm, Teambuilding hàng quý, Gala cuối năm.&nbsp;</li><li>Làm việc 5 ngày / tuần&nbsp;&nbsp;(thứ 2- thứ 6, 8h30-17h30 không phải OT)</li></ul><p><br></p>",
+  "startDate": {
+    "$date": {
+      "$numberLong": "1685811600000"
+    }
+  },
+  "endDate": {
+    "$date": {
+      "$numberLong": "1688749200000"
+    }
+  },
+  "isActive": true,
+  "createdBy": {
+    "_id": "647b5108a8a243e8191855b5",
+    "email": "hoidanit@gmail.com"
+  },
+  "isDeleted": false,
+  "deletedAt": null,
+  "createdAt": {
+    "$date": {
+      "$numberLong": "1686627937400"
+    }
+  },
+  "updatedAt": {
+    "$date": {
+      "$numberLong": "1686627937400"
+    }
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6487e6f6e263fe0b853d7566"
+  },
+  "name": "[Hybrid-HN] Bridge Software Engineer (BrSE)-Up to $3000",
+  "skills": [
+    "TYPESCRIPT",
+    "JAVA",
+    "FULLSTACK"
+  ],
+  "company": {
+    "_id": "64871834c7573fac797f8402",
+    "name": "Netflix Inc",
+    "logo": "lazada-1686575062887.png"
+  },
+  "location": "HANOI",
+  "salary": 50000000,
+  "quantity": 2,
+  "level": "SENIOR",
+  "description": "<h2>3 Lý Do Để Gia Nhập Công Ty</h2><ul><li>Hybrid working</li><li>Great Benefit</li><li>Friendly Colleague</li></ul><p><br></p><h2>Mô Tả Công Việc</h2><ul><li>Gathering specific system domain knowledge and convey to the project working team in Vietnam;</li><li>Study requirements together with the development team and finalize requirements, design with clients.</li><li>Support PM or acting as PM to plan and monitor projects.</li><li>Become another quality gate for each deliverable.</li><li>Bridging in communication with Japanese customers on all project-related matters&nbsp;</li><li>Connecting business chances between Japan site and Vietnam site.</li></ul><p><br></p><h2>Yêu Cầu Công Việc</h2><ul><li>From 1- 3 years experience working as BrSE, N2 Japanese level.&nbsp;</li><li>Firm knowledge of software engineering disciplines, especially, requirement gathering &amp; analyzing, basic design, detail design.&nbsp;</li><li>Hand-on experiences &amp; knowledge in Web, Mobile, AI.&nbsp;</li><li>Excellent communication &amp; interpersonal skills with Japanese style business manner.&nbsp;</li><li>Highly responsible, loyal &amp; long-term commitment, High quality &amp; customer oriented mindset.&nbsp;</li><li>Strong analytical skills, problem-solving skills and the ability to pay careful attention to detail.</li></ul><p><br></p><h2>Tại Sao Bạn Sẽ Yêu Thích Làm Việc Tại Đây</h2><ul><li>Attractive salary and bonus based on performance.</li><li>Salary review 2 times/year</li><li><strong>Hybrid working (2/5 days in office), flexible time</strong></li><li>Full benefits according to the Vietnam Labor Laws: social and health insurance</li><li>An international, professional, young but innovative and dynamic environment working closely with international experts and joining conferences and workshops on exciting new technologies.</li><li>Holidays based on Vietnamese labor law + paid vacations, Company trips, Team Building</li><li>Opportunity to be onsite in the Japan</li></ul><p><br></p>",
+  "startDate": {
+    "$date": {
+      "$numberLong": "1687626000000"
+    }
+  },
+  "endDate": {
+    "$date": {
+      "$numberLong": "1690390800000"
+    }
+  },
+  "isActive": true,
+  "createdBy": {
+    "_id": "647b5108a8a243e8191855b5",
+    "email": "hoidanit@gmail.com"
+  },
+  "isDeleted": false,
+  "deletedAt": null,
+  "createdAt": {
+    "$date": {
+      "$numberLong": "1686628086562"
+    }
+  },
+  "updatedAt": {
+    "$date": {
+      "$numberLong": "1686628086562"
+    }
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6487e75be263fe0b853d7572"
+  },
+  "name": "IT communicator/ BridgeSE (English/Japanese N2/Chinese)",
+  "skills": [
+    "FRONTEND",
+    "TYPESCRIPT"
+  ],
+  "company": {
+    "_id": "64871862c7573fac797f8406",
+    "name": "Adobe Photoshop",
+    "logo": "photoshop-1686575180007.png"
+  },
+  "location": "HOCHIMINH",
+  "salary": 30000000,
+  "quantity": 3,
+  "level": "MIDDLE",
+  "description": "<h2>3 Lý Do Để Gia Nhập Công Ty</h2><ul><li>Enjoyable Team Environment</li><li>Engaging and Innovative Work</li><li>13th month Salary and Bonus</li></ul><p><br></p><h2>Mô Tả Công Việc</h2><ul><li>Understand the functional requirements and progress of the project, and follow up and coordinate with the Japanese manager, global team (China) and our Vietnamese team to see if there are any differences in perception between them, while providing interpretation.</li><li>Support communication between the global office team and the Vietnam office staff</li><li>プロジェクトの機能要件及び進捗状況を把握し、日本人マネージャーとグローバルチーム(主に中国)、ベトナム人チームとの間で相互の認識違いが出ていないかフォローアップし調整する.</li><li>グローバルオフィスチームとのベトナムオフィススタッフとのコミュニケーションをサポートする。</li></ul><p><br></p><h2>Yêu Cầu Công Việc</h2><ul><li>Excellent Japanese speaking, writing and reading skills (N2 level or higher with good communication skills)</li><li>Ability to understand system specifications and business written in Japanese and communicate them to the development team.</li><li>Experienced in the task of coordinating communication between Japanese customers and Japanese staff and Vietnamese staff in a software company.</li><li>A general understanding of the software development process.</li><li>Experience in testing Japanese language products and systems is appreciated.</li><li>Read and write English well (Some degree of communication with global teams required).</li><li>Chinese language ability is a big plus.</li><li>日本語のスピーキング、ライティング、リーディングに優れていること(N2レベル以上でコミュニケーション能力が高いこと)</li><li>日本語で書かれたシステム仕様書や業務を理解し、それを開発チームに伝える能力があること</li><li>ソフトウェア企業での日本人顧客及び日本人スタッフとベトナム人スタッフ間とのコミュニケーションを取り持つタスクに従事した経験を持つ方</li><li>ソフトウェア開発プロセスの大まかな理解&nbsp;</li><li>日本語のプロダクトやシステムをテストした経験があれば評価する</li><li>読み書き出来る程度の英語力 (グローバルチームとのコミュニケーションである程度必要)</li><li>中国語が出来れば尚良い</li></ul><p><br></p><h2>Tại Sao Bạn Sẽ Yêu Thích Làm Việc Tại Đây</h2><p>WHY GRAPECITY? - TOP 10<strong> REASONS&nbsp;</strong></p><p><br></p><p>&nbsp;</p><ol><li>GrapeCity is a global, privately held corporation of 1,200 employees who share a single culture based on strong ethical principles. We have a 30 year history of consistent growth, success, and profitability.</li><li>Only the “A” team. You get only A-level players assigned to your project because we hire only the best. Our clients tell us that we communicate exceptionally well, and that our teams are talented, fast, and can be counted on to meet or exceed their expectations.</li><li>Focused on your needs. We are focused on serving the needs of the software product development market. We establish lasting relationships based on helping our clients succeed with their products and services.</li><li>Proven product development skills. Because of our experience developing our own industry-leading products and development tools, we understand what it takes to help others create successful, innovative software solutions and to bring them to market on schedule and within budget. With our experienced resources, we can also help you increase your available bandwidth.</li><li>Proven global delivery model. We were among the first to implement this model and have a deep understanding of how to apply it successfully. We have both American and Asian footprints and are only a phone call away.</li><li>Local success stories. We have referencible customers in every region of the world where our offices are and therefore you will always have someone local who you can connect with to find out how we helped them successfully achieve their business objectives.</li><li>Trusted by global brands. Our customer base also includes such well-known global corporations as Microsoft, Sony, Procter &amp; Gamble, Intel, Mitsubishi, AT&amp;T, Thomson, Syngenta, and Infosys.</li><li>Broad industry recognition. The successful, industry-leading solutions we have developed for our customers and ourselves have received many awards from Microsoft and others.</li><li>Maximum leverage of Microsoft technology. We are a Microsoft Gold Certified Partner and one of the few companies invited to sit on the Microsoft Office Advisory Board. We’ve been part of the Microsoft Early Adopter Partnership since the early 1980s. Our close relationship with Microsoft gives us the insight and experience to fully leverage the Microsoft .NET and Office frameworks in creating optimal solutions for our customers.</li><li>Our results speak for themselves. We can help you get the job done with outstanding results - and often in less time, at a lower cost, and with less risk than if you had to build your own “A” team and do it yourself.</li></ol><p><br></p><p>WHY GRAPECITY? – WE OF<strong>ER:</strong></p><p><br></p><ul><li>Flexible work hours in the morning between 8:00 AM - 9:00 AM</li><li>13th month salary before Tet holiday</li><li>Performance bonus on July based on the company profit result and staff performance results</li><li>Annual Health check-up by famous hospitals</li><li>Monthly lunch allowance: 850,000 VND</li><li>Annual summer vacation</li><li>Monthly team building budget</li><li>Comfortable and relaxing office setting with West Lake view</li><li>Free tea &amp; coffee corner</li><li>A variety of corporate events: sports competitions, monthly birthday parties, team building parties, Family Day party, Year End party.</li><li>12 paid annual leave days</li><li>Christmas Holiday on December 25</li><li>Occasional English classes with native instructors or GrapeSEED English trainner</li></ul>",
+  "startDate": {
+    "$date": {
+      "$numberLong": "1687107600000"
+    }
+  },
+  "endDate": {
+    "$date": {
+      "$numberLong": "1688749200000"
+    }
+  },
+  "isActive": true,
+  "createdBy": {
+    "_id": "647b5108a8a243e8191855b5",
+    "email": "hoidanit@gmail.com"
+  },
+  "isDeleted": false,
+  "deletedAt": null,
+  "createdAt": {
+    "$date": {
+      "$numberLong": "1686628187445"
+    }
+  },
+  "updatedAt": {
+    "$date": {
+      "$numberLong": "1686628187445"
+    }
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6487e7aae263fe0b853d757e"
+  },
+  "name": "Remote Sr Front-End Dev (TypeScript, ReactJS, English)",
+  "skills": [
+    "REACT.JS",
+    "REACT NATIVE",
+    "FULLSTACK",
+    "BACKEND"
+  ],
+  "company": {
+    "_id": "64871896c7573fac797f840a",
+    "name": "Tập đoàn Adobe ",
+    "logo": "pr-1686575233601.jpg"
+  },
+  "location": "DANANG",
+  "salary": 30000009,
+  "quantity": 3,
+  "level": "MIDDLE",
+  "description": "<h2>3 Lý Do Để Gia Nhập Công Ty</h2><ul><li>Exciting and Diverse Projects</li><li>Collaborative and Supportive Team Environment</li><li>Personal and Professional Growth</li></ul><p><br></p><h2>Mô Tả Công Việc</h2><p>At Avalon Innovations, we are the creative minds behind cutting-edge web applications and digital products that serve a diverse range of industries, including e-commerce, insurance, travel, education, and healthcare. Based in Australia, we have a global reach, with our team members working remotely across various continents.</p><p>We are now on the lookout for seasoned Front-End Developers who are excited about the prospect of leveraging their skills on a diverse portfolio of global projects.</p><p><br></p><p>● Collaborate in the development, planning, and evaluation of technical tasks.</p><p>● Engage closely with our dynamic team and global clients.</p><p>● Develop and maintain client projects employing technologies such as React, Next.js, Shopify, TypeScript, and Node.js.</p><p>● Design and implement components aligning with the best industry practices and accessibility principles.</p><p>● Serve as a mentor and support for junior and intermediate developers.</p><p>● Contribute to our rigorous code review processes, helping to maintain high standards of code quality.</p><p><br></p><h2>Yêu Cầu Công Việc</h2><p><strong>What We Need from You:</strong></p><p>● Proficiency in spoken and written English (B2+).</p><p>● A minimum of 3 years of experience in front-end development, including a senior role.</p><p>● An ability to write clean, maintainable code comprehensible to other developers.</p><p>● In-depth understanding of TypeScript, React (Redux), and Next.js.</p><p>● Experience working with REST and GraphQL API protocols.</p><p>● Proficiency with Git and practical experience with CI / CD setups.</p><p>● Familiarity with Agile methodologies, with proficiency in Jira.</p><p>● Proven expertise in creating pixel-perfect layouts using SCSS and CSS-in-JS (emotion or styled-components).</p><p>● Experience in testing React components using Jest and Cypress.</p><p>● Knowledge of and experience implementing accessibility standards in development.</p><p>● Experience in developing services with Node.js, Express.js / Nest.js.</p><p>● Comfortability working with Linux systems and experience with Docker containers.</p><p><br></p><p><strong>Nice-to-have:</strong></p><p>● Experience with AWS services (S3, Lambda, ECS...).</p><p>● Proficiency with design systems and tools such as Figma / Adobe XD / Sketch.</p><p>● Experience with Shopify or similar e-commerce systems.</p><p>● Familiarity with Contentful / Sanity or similar headless content-management systems.</p><p><br></p><h2>Tại Sao Bạn Sẽ Yêu Thích Làm Việc Tại Đây</h2><p><strong>Why Choose Avalon Innovations?</strong></p><p><br></p><p>● Work remotely in a distributed team - join us from anywhere in the world.</p><p>● Enjoy flexible scheduling for an optimal work-life balance.</p><p>● Practice and improve your English language skills in an international team.</p><p>● Benefit from paid professional training in modern front-end technologies.</p><p>● Enjoy 20 paid vacation days per year.</p><p>● Gain experience working with renowned international companies such as Toyota, Atlassian, Flight Centre, and Accenture.</p><p>● Get paid twice a month in USD, with salary reviews every 6 months.</p>",
+  "startDate": {
+    "$date": {
+      "$numberLong": "1685206800000"
+    }
+  },
+  "endDate": {
+    "$date": {
+      "$numberLong": "1688058000000"
+    }
+  },
+  "isActive": true,
+  "createdBy": {
+    "_id": "647b5108a8a243e8191855b5",
+    "email": "hoidanit@gmail.com"
+  },
+  "isDeleted": false,
+  "deletedAt": null,
+  "createdAt": {
+    "$date": {
+      "$numberLong": "1686628266495"
+    }
+  },
+  "updatedAt": {
+    "$date": {
+      "$numberLong": "1686628266495"
+    }
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6487e7f1e263fe0b853d7586"
+  },
+  "name": "Mid/Sr Frontend Developer (ReactJS, TypeScript)",
+  "skills": [
+    "REACT.JS",
+    "REACT NATIVE",
+    "FRONTEND",
+    "TYPESCRIPT"
+  ],
+  "company": {
+    "_id": "648718ccc7573fac797f840e",
+    "name": "Shopee ",
+    "logo": "shopee-1686575294231.png"
+  },
+  "location": "HANOI",
+  "salary": 25000000,
+  "quantity": 5,
+  "level": "MIDDLE",
+  "description": "<h2>3 Lý Do Để Gia Nhập Công Ty</h2><ul><li>Có nhiều cơ hội làm việc onsite ở Nhật Bản.</li><li>Được xét tăng lương 2 lần/năm</li><li>Lương tháng 13, thưởng lễ tết, thưởng dự án</li></ul><p><br></p><h2>Mô Tả Công Việc</h2><ul><li>Tham gia phân tích yêu cầu hệ thống&nbsp;</li><li>Thiết kế, phát triển và kiểm thử web application&nbsp;</li><li>Phối hợp với Project Manager và Bridge SE để giải quyết các vấn đề.&nbsp;</li><li>Mô tả tài liệu kỹ thuật&nbsp;</li><li>Đảm nhận code chính và review code cho thành viên khác&nbsp;</li><li>Hỗ trợ thành viên khác giải quyết vấn đề kỹ thuật&nbsp;</li><li>Hướng dẫn, định hướng cho freshers</li></ul><p><br></p><h2>Yêu Cầu Công Việc</h2><ul><li>Hơn 3 năm kinh nghiệm phát triển frontend, sử dụng React.js (React DOM, React Native).&nbsp;</li><li>Hơn 1 năm kinh nghiệm phát triển frontend, sử dụng TypeScript.&nbsp;</li><li>Có kinh nghiệm phát triển responsive websites, sử dụng thư viện UI (Ant Design, Material UI, Chakra UI) và CSS Preprocessor (SCSS, LESS)&nbsp;</li><li>Có kinh nghiệm viết unit tests và integration tests, sở hữu tư duy kiểm thử + kỹ thuật kiểm thử tốt (Jest, testing-library, Cypress, Detox).&nbsp;</li><li>Có kiến thức cứng về RESTful/GraphQL APIs.&nbsp;</li><li>Thành thạo các thư viện về quản lý chất lượng code (ESLint, Prettier).&nbsp;</li><li>Chú trọng vào tiểu tiết khi bố cục thành phần trên web.&nbsp;</li><li>Có khả năng chuyển hóa thiết kế wireframes (Figma) thành semantic HTML.&nbsp;</li><li>Có kinh nghiệm sử dụng Agile/Scrum, hiểu rõ nguyên lý về Agile.&nbsp;</li><li>Nhiệt tình, thân thiện, cộng tác với các team khác như BA/BE/QC.&nbsp;</li><li>Có khả năng đa nhiệm, làm việc độc lập, hỗ trợ thành viên khác thực hiện code reviews.&nbsp;</li></ul><p><br></p><p><strong>Khuyến khích có:&nbsp;</strong></p><ul><li>Có kinh nghiệm với các framework React: Next.js, Expo (native apps).&nbsp;</li><li>Có kinh nghiệm phát triển Backend (Firebase, Amplify, Java)&nbsp;</li><li>Có kinh nghiệm sử dụng CI/CD pipeline (Jenkins, Docker)&nbsp;</li><li>Có kiến thức vềdịch vụcloud (GCP, AWS)</li></ul><p><br></p><h2>Tại Sao Bạn Sẽ Yêu Thích Làm Việc Tại Đây</h2><ul><li>Thời gian làm việc: Từ 08:00 đến 17:30 (Thứ 2 đến Thứ 6)&nbsp;</li><li>Thưởng các dịp lễ lớn của quốc gia, thưởng thành tích làm việc xuất sắc,..&nbsp;</li><li>Chính sách bảo hiểm xã hội, bảo hiểm y tế theo quy định của Nhà nước.&nbsp;</li><li>Môi trường làm việc trẻ trung, năng động, thân thiện.&nbsp;</li><li>Các hoạt động teambuilding quý, các sự kiện chung của công ty.&nbsp;</li><li>Cơ hội làm việc onsite tại Nhật Bản.&nbsp;</li><li>Thường xuyên tổ chức các seminar do chính nhân viên công ty thực hiện, tạo điều kiện nghiên cứu, trao đổi, phát triển.&nbsp;</li><li>Được hướng dẫn tận tình, tạo nhiều cơ hội phát triển, thăng tiến trong công việc.</li><li>Hỗ trợ tiền nhà ở trong bán kính 2km.&nbsp;</li><li>Hỗ trợ chi phí gửi xe và các tiện ích khác.</li></ul><p><br></p>",
+  "startDate": {
+    "$date": {
+      "$numberLong": "1685206800000"
+    }
+  },
+  "endDate": {
+    "$date": {
+      "$numberLong": "1688749200000"
+    }
+  },
+  "isActive": true,
+  "createdBy": {
+    "_id": "647b5108a8a243e8191855b5",
+    "email": "hoidanit@gmail.com"
+  },
+  "isDeleted": false,
+  "deletedAt": null,
+  "createdAt": {
+    "$date": {
+      "$numberLong": "1686628337091"
+    }
+  },
+  "updatedAt": {
+    "$date": {
+      "$numberLong": "1686628337091"
+    }
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6487e82ee263fe0b853d758e"
+  },
+  "name": "Front-end coder",
+  "skills": [
+    "ANGULAR",
+    "VUE.JS",
+    "REACT.JS",
+    "TYPESCRIPT"
+  ],
+  "company": {
+    "_id": "6487197ec7573fac797f8414",
+    "name": "Tiki",
+    "logo": "tiki-1686575455267.jpg"
+  },
+  "location": "HOCHIMINH",
+  "salary": 15000000,
+  "quantity": 5,
+  "level": "FRESHER",
+  "description": "<h2>3 Lý Do Để Gia Nhập Công Ty</h2><ul><li>Great opportunity for career development</li><li>Young and international work environment</li><li>Flexible working hours</li></ul><p><br></p><h2>Mô Tả Công Việc</h2><p><strong>As a Front-end coder, you will:</strong></p><p>·&nbsp;Cooperate directly with the Head of Product Development</p><p>·&nbsp;Develop and maintain our web applications using ReactJS, JavaScript and TypeScript</p><p>·&nbsp;Collaborate with the design team to implement user-friendly interfaces</p><p>·&nbsp;Write clean, efficient, and well-documented code</p><p>·&nbsp;Participate in code reviews and maintain coding standards</p><p>·&nbsp;Optimize applications for maximum speed and scalability</p><p>·&nbsp;Stay up-to-date with emerging trends and technologies in frontend development</p><p>·&nbsp;Startup mind-set and strong responsibility, proactive.</p><p><br></p><h2>Yêu Cầu Công Việc</h2><p>·Bachelor's degree in Computer Science, Engineering or equivalent</p><p>·&nbsp;At least 2 years of experience in frontend development Proficient in ReactJS, JavaScript, and TypeScript</p><p>·&nbsp;Experience with responsive web design and cross-browser compatibility</p><p>·&nbsp;Familiarity with CSS frameworks such as Ant Design, Bootstrap or Material UI</p><p>·&nbsp;Experience in React Native or NodeJS is a plus.</p><p>·&nbsp;Knowledge of RESTful APIs and asynchronous programming</p><p>·&nbsp;Strong problem-solving skills and attention to detail</p><p>&nbsp;Excellent communication and teamwork skills&nbsp;</p><p><br></p><h2>Tại Sao Bạn Sẽ Yêu Thích Làm Việc Tại Đây</h2><p>• You will be working in a professional and dynamic environment&nbsp;</p><p>• You will receive an attractive salary evaluated on skills and experience&nbsp;</p><p>• You will get great opportunities for career development&nbsp;</p><p>• You will work in a beautiful office in the heart of the city, in a great social environment&nbsp;</p><p>• You will get more annual leave and holidays than required by law&nbsp;</p><p>• Monthly happy lunch and daily afternoon tea with the company&nbsp;</p><p>• Annual team building company trip&nbsp;</p><p>• Flexible working hours and fair payment&nbsp;</p><p>• Being part of one of the most revolutionary and innovative projects for tomorrow’s world</p>",
+  "startDate": {
+    "$date": {
+      "$numberLong": "1685206800000"
+    }
+  },
+  "endDate": {
+    "$date": {
+      "$numberLong": "1688749200000"
+    }
+  },
+  "isActive": true,
+  "createdBy": {
+    "_id": "647b5108a8a243e8191855b5",
+    "email": "hoidanit@gmail.com"
+  },
+  "isDeleted": false,
+  "deletedAt": null,
+  "createdAt": {
+    "$date": {
+      "$numberLong": "1686628398279"
+    }
+  },
+  "updatedAt": {
+    "$date": {
+      "$numberLong": "1686628398279"
+    }
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6487e873e263fe0b853d7594"
+  },
+  "name": "Junior Frontend ReactJS Dev (JavaScript, HTML, CSS)",
+  "skills": [
+    "FRONTEND",
+    "TYPESCRIPT",
+    "REACT.JS",
+    "REACT NATIVE"
+  ],
+  "company": {
+    "_id": "648719bdc7573fac797f8418",
+    "name": "Tiktok",
+    "logo": "tiktok-1686575523674.jpg"
+  },
+  "location": "HANOI",
+  "salary": 17000000,
+  "quantity": 5,
+  "level": "JUNIOR",
+  "description": "<h2>Mô Tả Công Việc</h2><p><strong>Xây dựng phân hệ front-end (giao diện người dùng) các tính năng được yêu cầu từ team phát triển sản phẩm cũng như từ người dùng, cụ thể:</strong></p><ul><li>Tham gia vào việc phát triển sản phẩm của công ty, lập trình front-end, chuyển các file thiết kế (PSD, Figma, Sketch, Invision,..) sang HTML, CSS, iOS, Android.</li><li>Bảo trì, nâng cấp cho front-end sản phẩm của công ty.</li><li>Nghiên cứu và áp dụng các công nghệ mới để tối đa hóa hiệu quả phát triển sản phẩm.</li><li>&nbsp;Phối hợp và hỗ trợ với team back-end một cách chủ động và chặt chẽ để nâng cao trải nghiệm người dùng trên từng điểm tiếp xúc.</li></ul><p><br></p><h2>Yêu Cầu Công Việc</h2><ul><li>Kinh nghiệm làm việc: tối thiểu 1 năm kinh nghiệm</li><li>Tốt nghiệp các trường Đại học, chuyên ngành CNTT, Điện tử, Viễn thông,...</li><li>Có hiểu biết về lập trình hướng đối tượng.</li><li>Hiểu biết về HTML / CSS / Javascript.</li><li>Thành thạo ReactJS</li><li>Có khả năng đọc hiểu tài liệu tiếng Anh.</li><li>Có khả năng làm việc độc lập và theo nhóm.</li><li>Cẩn thận, kiên nhẫn và ham học hỏi.</li><li>Sử dụng laptop cá nhân</li></ul><p><br></p><h2>Tại Sao Bạn Sẽ Yêu Thích Làm Việc Tại Đây</h2><ul><li>Chế độ lương - thưởng: Mức lương cạnh tranh &amp; hấp dẫn, Lương tháng 13.</li><li>Đánh giá năng lực, xem xét điều chỉnh lương 1 lần 1 năm.</li><li>Thời gian làm việc: Từ thứ Hai đến thứ Sáu: 09h00 - 18h00.</li><li>Company trip, Team Building, Year end party, Party team hàng tháng đi ăn nhậu với nhau (được công ty hỗ trợ.)</li><li>Mỗi tháng có meeting tổng kết kinh doanh, ăn uống, giao lưu với nhân viên mới.</li><li>Tham gia các nhóm thể thao của công ty: Đá banh, cầu lông.</li><li>Môi trường làm việc mở, sẵn sàng đón nhận ý kiến từ tất cả nhân viên, thân thiện, năng động, đa dạng và thăng tiến.</li></ul><p><br></p>",
+  "startDate": {
+    "$date": {
+      "$numberLong": "1685206800000"
+    }
+  },
+  "endDate": {
+    "$date": {
+      "$numberLong": "1688749200000"
+    }
+  },
+  "isActive": true,
+  "createdBy": {
+    "_id": "647b5108a8a243e8191855b5",
+    "email": "hoidanit@gmail.com"
+  },
+  "isDeleted": false,
+  "deletedAt": null,
+  "createdAt": {
+    "$date": {
+      "$numberLong": "1686628467240"
+    }
+  },
+  "updatedAt": {
+    "$date": {
+      "$numberLong": "1686628467240"
+    }
+  },
+  "__v": 0
+}]

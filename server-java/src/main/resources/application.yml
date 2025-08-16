@@ -1,0 +1,55 @@
+server:
+  port: 8000
+  servlet:
+    context-path: /api
+spring:
+  datasource:
+    url: your_url_db_mysql
+    username: root
+    password: 123456
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: your_email
+    password: your_password
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+  jackson:
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 40MB
+app:
+  jwt:
+    issuer: from server
+    access-token-expiration-ms: 900000
+    refresh-token-expiration-ms: 2592000000
+    secret: your_secret_key
+  cors:
+    allowed-origins: http://localhost:3000
+  cron:
+    mail:
+      enabled: true
+      # Cron 6 trường: giây phút giờ ngày-tháng tháng thứ
+      # Mặc định: 30 giây/lần
+      expression: 0/30 * * * * *
+      # Số job gửi tối đa trong email
+      top-jobs-limit: 5
+  web:
+    # Base URL FE để dựng link chi tiết job
+    base-url: http://localhost:3000
+    # Mẫu path chi tiết job, {id} sẽ được thay bằng job id
+    job-detail-path: /job/{id}
