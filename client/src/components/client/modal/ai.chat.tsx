@@ -1,5 +1,6 @@
 import { callAiChat, callAiSuggestJobs, callGetSubscriberSkills } from '@/config/api';
 import { LOCATION_LIST, SKILLS_LIST, getLocationName } from '@/config/utils';
+import { useAppSelector } from '@/redux/hooks';
 import { IJob } from '@/types/backend';
 import { MessageOutlined, SendOutlined } from '@ant-design/icons';
 import { Button, Card, FloatButton, Input, List, Space, Tag, Typography, message } from 'antd';
@@ -17,6 +18,7 @@ const AiChatWidget = () => {
   ]);
   const listRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const isAuthenticated = useAppSelector(state => state.account.isAuthenticated);
 
   useEffect(() => {
     if (listRef.current) {
@@ -146,7 +148,9 @@ const AiChatWidget = () => {
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8 }}>
               <Space wrap>
                 <Button size='small' onClick={() => suggestFromText()} loading={loading}>Gợi ý jobs</Button>
-                <Button size='small' onClick={suggestFromMySkills} loading={loading}>Theo kỹ năng của tôi</Button>
+                {isAuthenticated && (
+                  <Button size='small' onClick={suggestFromMySkills} loading={loading}>Theo kỹ năng của tôi</Button>
+                )}
                 <Button size='small' onClick={clearChat} disabled={loading}>Xóa chat</Button>
               </Space>
             </div>
