@@ -18,6 +18,8 @@ public class PaginationDtos {
         private String status;
         private String email;
         private String scope; // "public" or "admin" (optional)
+        private List<String> skills;
+        private List<String> locations; // multiple locations for filtering
 
         public Integer getCurrent() { return current; }
         public void setCurrent(Integer current) { this.current = current; }
@@ -44,6 +46,10 @@ public class PaginationDtos {
         public void setEmail(String email) { this.email = email; }
         public String getScope() { return scope; }
         public void setScope(String scope) { this.scope = scope; }
+        public List<String> getSkills() { return skills; }
+        public void setSkills(List<String> skills) { this.skills = skills; }
+        public List<String> getLocations() { return locations; }
+        public void setLocations(List<String> locations) { this.locations = locations; }
     }
 
     public static class MetaDTO {

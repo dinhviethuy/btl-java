@@ -13,10 +13,11 @@ dayjs.extend(relativeTime)
 
 interface IProps {
     showPagination?: boolean;
+    filter?: string;
 }
 
 const JobCard = (props: IProps) => {
-    const { showPagination = false } = props;
+    const { showPagination = false, filter: externalFilter } = props;
 
     const [displayJob, setDisplayJob] = useState<IJob[] | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -27,6 +28,11 @@ const JobCard = (props: IProps) => {
     const [filter, setFilter] = useState("");
     const [sortQuery, setSortQuery] = useState("sort=-updatedAt");
     const navigate = useNavigate();
+
+    useEffect(() => {
+        setFilter(externalFilter || "");
+        setCurrent(1);
+    }, [externalFilter]);
 
     useEffect(() => {
         fetchJob();

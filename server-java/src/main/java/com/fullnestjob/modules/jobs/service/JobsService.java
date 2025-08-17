@@ -40,6 +40,16 @@ public class JobsService {
         String nameFilter = query.getName();
         String locationFilter = query.getLocation();
         String scope = query.getScope();
+        java.util.List<String> skillsFilter = query.getSkills();
+        java.util.List<String> locationsFilter = query.getLocations();
+        boolean hasSkills = skillsFilter != null && !skillsFilter.isEmpty();
+        boolean hasLocations = locationsFilter != null && !locationsFilter.isEmpty();
+        if (hasSkills) {
+            skillsFilter = skillsFilter.stream().map(x -> x.toLowerCase()).collect(java.util.stream.Collectors.toList());
+        }
+        if (hasLocations) {
+            locationsFilter = locationsFilter.stream().map(x -> x.toLowerCase()).collect(java.util.stream.Collectors.toList());
+        }
         boolean forcePublic = scope != null && scope.equalsIgnoreCase("public");
         if (nameFilter != null) nameFilter = nameFilter.replaceAll("^/+|/i$", "");
         if (locationFilter != null) locationFilter = locationFilter.replaceAll("^/+|/i$", "");
@@ -47,12 +57,28 @@ public class JobsService {
         String currentRole = com.fullnestjob.security.SecurityUtils.getCurrentRole();
         boolean isAdmin = currentRole != null && (currentRole.equalsIgnoreCase("ADMIN") || currentRole.equalsIgnoreCase("SUPER_ADMIN"));
         if (forcePublic) {
-            page = jobRepository.findPublicJobs(nameFilter, locationFilter, pageable);
+            if (hasSkills && hasLocations) {
+                page = jobRepository.findPublicJobsBySkillsAndLocations(nameFilter, skillsFilter, locationsFilter, pageable);
+            } else if (hasSkills) {
+                page = jobRepository.findPublicJobsBySkills(nameFilter, locationFilter, skillsFilter, pageable);
+            } else if (hasLocations) {
+                page = jobRepository.findPublicJobsByLocations(nameFilter, locationsFilter, pageable);
+            } else {
+                page = jobRepository.findPublicJobs(nameFilter, locationFilter, pageable);
+            }
         } else if (!isAdmin) {
             String currentUserId = com.fullnestjob.security.SecurityUtils.getCurrentUserId();
             if (currentUserId == null) {
                 // Public (chưa đăng nhập) => trả job PUBLIC + active + trong khoảng start..end
-                page = jobRepository.findPublicJobs(nameFilter, locationFilter, pageable);
+                if (hasSkills && hasLocations) {
+                    page = jobRepository.findPublicJobsBySkillsAndLocations(nameFilter, skillsFilter, locationsFilter, pageable);
+                } else if (hasSkills) {
+                    page = jobRepository.findPublicJobsBySkills(nameFilter, locationFilter, skillsFilter, pageable);
+                } else if (hasLocations) {
+                    page = jobRepository.findPublicJobsByLocations(nameFilter, locationsFilter, pageable);
+                } else {
+                    page = jobRepository.findPublicJobs(nameFilter, locationFilter, pageable);
+                }
             } else {
                 var me = userRepository.findById(currentUserId).orElse(null);
                 String companyId = me != null && me.getCompany() != null ? me.getCompany().get_id() : null;

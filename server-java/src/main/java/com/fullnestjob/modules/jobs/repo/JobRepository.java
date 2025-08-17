@@ -30,8 +30,17 @@ public interface JobRepository extends JpaRepository<Job, String> {
     @Query("select j from Job j where j.company._id = :companyId and lower(j.name) like lower(concat('%', :name, '%')) and lower(j.location) like lower(concat('%', :location, '%'))")
     Page<Job> findByCompanyIdAndNameLikeAndLocationLike(@Param("companyId") String companyId, @Param("name") String name, @Param("location") String location, Pageable pageable);
 
-    @Query("select j from Job j where j.isActive = true and (j.startDate is null or j.startDate <= CURRENT_TIMESTAMP) and (j.endDate is null or j.endDate >= CURRENT_TIMESTAMP) and (:name is null or lower(j.name) like lower(concat('%', :name, '%'))) and (:location is null or lower(j.location) like lower(concat('%', :location, '%')))")
+    @Query("select j from Job j where j.isActive = true and (j.startDate is null or j.startDate <= CURRENT_TIMESTAMP) and (j.endDate is null or j.endDate >= CURRENT_TIMESTAMP) and (:name is null or lower(j.name) like lower(concat('%', :name, '%'))) and ((:location is null) or lower(j.location) like lower(concat('%', :location, '%')))")
     Page<Job> findPublicJobs(@Param("name") String name, @Param("location") String location, Pageable pageable);
+
+    @Query("select distinct j from Job j join j.skills s where j.isActive = true and (j.startDate is null or j.startDate <= CURRENT_TIMESTAMP) and (j.endDate is null or j.endDate >= CURRENT_TIMESTAMP) and (:name is null or lower(j.name) like lower(concat('%', :name, '%'))) and ((:location is null) or lower(j.location) like lower(concat('%', :location, '%'))) and lower(s) in :skills")
+    Page<Job> findPublicJobsBySkills(@Param("name") String name, @Param("location") String location, @Param("skills") List<String> skills, Pageable pageable);
+
+    @Query("select distinct j from Job j where j.isActive = true and (j.startDate is null or j.startDate <= CURRENT_TIMESTAMP) and (j.endDate is null or j.endDate >= CURRENT_TIMESTAMP) and (:name is null or lower(j.name) like lower(concat('%', :name, '%'))) and (:locations is null or lower(j.location) in :locations)")
+    Page<Job> findPublicJobsByLocations(@Param("name") String name, @Param("locations") List<String> locations, Pageable pageable);
+
+    @Query("select distinct j from Job j join j.skills s where j.isActive = true and (j.startDate is null or j.startDate <= CURRENT_TIMESTAMP) and (j.endDate is null or j.endDate >= CURRENT_TIMESTAMP) and (:name is null or lower(j.name) like lower(concat('%', :name, '%'))) and (:locations is null or lower(j.location) in :locations) and lower(s) in :skills")
+    Page<Job> findPublicJobsBySkillsAndLocations(@Param("name") String name, @Param("skills") List<String> skills, @Param("locations") List<String> locations, Pageable pageable);
 }
 
 
