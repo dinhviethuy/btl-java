@@ -23,10 +23,12 @@ import java.util.stream.Collectors;
 public class JobsService {
     private final JobRepository jobRepository;
     private final CompanyRepository companyRepository;
+    private final com.fullnestjob.modules.users.repo.UserRepository userRepository;
 
-    public JobsService(JobRepository jobRepository, CompanyRepository companyRepository) {
+    public JobsService(JobRepository jobRepository, CompanyRepository companyRepository, com.fullnestjob.modules.users.repo.UserRepository userRepository) {
         this.jobRepository = jobRepository;
         this.companyRepository = companyRepository;
+        this.userRepository = userRepository;
     }
 
     public PageResultDTO<JobDetailDTO> find(PaginationQueryDTO query) {
@@ -37,16 +39,47 @@ public class JobsService {
         Page<Job> page;
         String nameFilter = query.getName();
         String locationFilter = query.getLocation();
+        String scope = query.getScope();
+        boolean forcePublic = scope != null && scope.equalsIgnoreCase("public");
         if (nameFilter != null) nameFilter = nameFilter.replaceAll("^/+|/i$", "");
         if (locationFilter != null) locationFilter = locationFilter.replaceAll("^/+|/i$", "");
-        if (nameFilter != null && locationFilter != null) {
-            page = jobRepository.findByNameContainingIgnoreCaseAndLocationContainingIgnoreCase(nameFilter, locationFilter, pageable);
-        } else if (nameFilter != null) {
-            page = jobRepository.findByNameContainingIgnoreCase(nameFilter, pageable);
-        } else if (locationFilter != null) {
-            page = jobRepository.findByLocationContainingIgnoreCase(locationFilter, pageable);
+
+        String currentRole = com.fullnestjob.security.SecurityUtils.getCurrentRole();
+        boolean isAdmin = currentRole != null && (currentRole.equalsIgnoreCase("ADMIN") || currentRole.equalsIgnoreCase("SUPER_ADMIN"));
+        if (forcePublic) {
+            page = jobRepository.findPublicJobs(nameFilter, locationFilter, pageable);
+        } else if (!isAdmin) {
+            String currentUserId = com.fullnestjob.security.SecurityUtils.getCurrentUserId();
+            if (currentUserId == null) {
+                // Public (chưa đăng nhập) => trả job PUBLIC + active + trong khoảng start..end
+                page = jobRepository.findPublicJobs(nameFilter, locationFilter, pageable);
+            } else {
+                var me = userRepository.findById(currentUserId).orElse(null);
+                String companyId = me != null && me.getCompany() != null ? me.getCompany().get_id() : null;
+                if (companyId != null) {
+                    if (nameFilter != null && locationFilter != null) {
+                        page = jobRepository.findByCompanyIdAndNameLikeAndLocationLike(companyId, nameFilter, locationFilter, pageable);
+                    } else if (nameFilter != null) {
+                        page = jobRepository.findByCompanyIdAndNameLike(companyId, nameFilter, pageable);
+                    } else if (locationFilter != null) {
+                        page = jobRepository.findByCompanyIdAndLocationLike(companyId, locationFilter, pageable);
+                    } else {
+                        page = jobRepository.findByCompanyId(companyId, pageable);
+                    }
+                } else {
+                    page = Page.empty(pageable);
+                }
+            }
         } else {
-            page = jobRepository.findAll(pageable);
+            if (nameFilter != null && locationFilter != null) {
+                page = jobRepository.findByNameContainingIgnoreCaseAndLocationContainingIgnoreCase(nameFilter, locationFilter, pageable);
+            } else if (nameFilter != null) {
+                page = jobRepository.findByNameContainingIgnoreCase(nameFilter, pageable);
+            } else if (locationFilter != null) {
+                page = jobRepository.findByLocationContainingIgnoreCase(locationFilter, pageable);
+            } else {
+                page = jobRepository.findAll(pageable);
+            }
         }
         PageResultDTO<JobDetailDTO> res = new PageResultDTO<>();
         res.result = page.getContent().stream().map(this::toDetail).collect(Collectors.toList());

@@ -1,7 +1,6 @@
-import { Navigate } from "react-router-dom";
 import { useAppSelector } from "@/redux/hooks";
-import NotPermitted from "./not-permitted";
 import Loading from "../loading";
+import NotAuthenticated from "./not-authenticated";
 
 const RoleBaseRoute = (props: any) => {
     const user = useAppSelector(state => state.account.user);
@@ -27,7 +26,7 @@ const ProtectedRoute = (props: any) => {
                             </RoleBaseRoute>
                         </>
                         :
-                        <Navigate to='/login' replace />
+                        <NotAuthenticated />
                     }
                 </>
             }

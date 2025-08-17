@@ -17,6 +17,7 @@ public class PaginationDtos {
         private String module;
         private String status;
         private String email;
+        private String scope; // "public" or "admin" (optional)
 
         public Integer getCurrent() { return current; }
         public void setCurrent(Integer current) { this.current = current; }
@@ -41,6 +42,8 @@ public class PaginationDtos {
         public void setStatus(String status) { this.status = status; }
         public String getEmail() { return email; }
         public void setEmail(String email) { this.email = email; }
+        public String getScope() { return scope; }
+        public void setScope(String scope) { this.scope = scope; }
     }
 
     public static class MetaDTO {

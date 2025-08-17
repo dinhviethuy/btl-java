@@ -1,13 +1,13 @@
+import { callCreateResume, callUploadSingleFile } from "@/config/api";
 import { useAppSelector } from "@/redux/hooks";
 import { IJob } from "@/types/backend";
-import { ProForm, ProFormText } from "@ant-design/pro-components";
-import { Button, Col, ConfigProvider, Divider, Modal, Row, Upload, message, notification } from "antd";
-import { useNavigate } from "react-router-dom";
-import enUS from 'antd/lib/locale/en_US';
 import { UploadOutlined } from '@ant-design/icons';
+import { ProForm, ProFormText } from "@ant-design/pro-components";
 import type { UploadProps } from 'antd';
-import { callCreateResume, callUploadSingleFile } from "@/config/api";
+import { Button, Col, ConfigProvider, Divider, Modal, Row, Upload, message, notification } from "antd";
+import enUS from 'antd/lib/locale/en_US';
 import { useState } from 'react';
+import { useNavigate } from "react-router-dom";
 
 interface IProps {
     isModalOpen: boolean;
@@ -53,9 +53,8 @@ const ApplyModal = (props: IProps) => {
     const propsUpload: UploadProps = {
         maxCount: 1,
         multiple: false,
-        // accept: "application/pdf,application/msword, .doc, .docx, .pdf",
-        // png, jpg, jpeg
-        accept: '.jpg, .jpeg, .png',
+        // Chấp nhận PDF/DOC/DOCX (ưu tiên theo yêu cầu); có thể mở rộng thêm hình ảnh nếu cần
+        accept: 'application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.pdf,.doc,.docx',
         async customRequest({ file, onSuccess, onError }: any) {
             const res = await callUploadSingleFile(file, "resume");
             if (res && res.data) {
@@ -129,7 +128,7 @@ const ApplyModal = (props: IProps) => {
                                         >
 
                                             <Upload {...propsUpload}>
-                                                <Button icon={<UploadOutlined />}>Tải lên CV của bạn ( Hỗ trợ *.png, *.jpg, *.jpeg and &lt; 5MB )</Button>
+                                                <Button icon={<UploadOutlined />}>Tải lên CV của bạn (Hỗ trợ *.pdf, *.doc, *.docx)</Button>
                                             </Upload>
                                         </ProForm.Item>
                                     </Col>

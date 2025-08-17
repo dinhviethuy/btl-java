@@ -4,6 +4,7 @@ import Footer from 'components/client/footer.client';
 import Header from 'components/client/header.client';
 import NotFound from 'components/share/not.found';
 import ProtectedRoute from 'components/share/protected-route.ts';
+import PublicOnlyRoute from 'components/share/public-only-route';
 import LoginPage from 'pages/auth/login';
 import RegisterPage from 'pages/auth/register';
 import HomePage from 'pages/home';
@@ -29,7 +30,7 @@ import ClientCompanyPage from './pages/company';
 import ClientCompanyDetailPage from './pages/company/detail';
 import ClientJobPage from './pages/job';
 import ClientJobDetailPage from './pages/job/detail';
-import { fetchAccount } from './redux/slice/accountSlide';
+import { fetchAccount, setGuest } from './redux/slice/accountSlide';
 
 const LayoutClient = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -60,12 +61,12 @@ export default function App() {
 
 
   useEffect(() => {
-    if (
-      window.location.pathname === '/login'
-      || window.location.pathname === '/register'
-    )
-      return;
-    dispatch(fetchAccount())
+    const token = window.localStorage?.getItem('access_token');
+    if (token) {
+      dispatch(fetchAccount());
+    } else {
+      dispatch(setGuest());
+    }
   }, [])
 
   const router = createBrowserRouter([
@@ -83,7 +84,7 @@ export default function App() {
     },
     {
       path: "/admin",
-      element: (<LayoutApp><LayoutAdmin /> </LayoutApp>),
+      element: (<ProtectedRoute><LayoutApp><LayoutAdmin /> </LayoutApp></ProtectedRoute>),
       errorElement: <NotFound />,
       children: [
         {
@@ -152,12 +153,12 @@ export default function App() {
 
     {
       path: "/login",
-      element: <LoginPage />,
+      element: <PublicOnlyRoute><LoginPage /></PublicOnlyRoute>,
     },
 
     {
       path: "/register",
-      element: <RegisterPage />,
+      element: <PublicOnlyRoute><RegisterPage /></PublicOnlyRoute>,
     },
   ]);
 

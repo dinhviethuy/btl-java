@@ -20,6 +20,12 @@ public interface ResumeRepository extends JpaRepository<Resume, String> {
 
     @Query("select r from Resume r where upper(r.status) in :statuses")
     Page<Resume> findByStatusInIgnoreCase(@Param("statuses") List<String> statuses, Pageable pageable);
+
+    @Query("select r from Resume r where r.companyId._id = :companyId")
+    Page<Resume> findByCompanyId(@Param("companyId") String companyId, Pageable pageable);
+
+    @Query("select r from Resume r where r.companyId._id = :companyId and lower(r.status) like lower(concat('%', :status, '%'))")
+    Page<Resume> findByCompanyIdAndStatusLike(@Param("companyId") String companyId, @Param("status") String status, Pageable pageable);
 }
 
 

@@ -1,15 +1,13 @@
-import { useState, useEffect } from 'react';
-import { CodeOutlined, ContactsOutlined, DashOutlined, LogoutOutlined, MenuFoldOutlined, RiseOutlined, TwitterOutlined } from '@ant-design/icons';
-import { Avatar, Drawer, Dropdown, MenuProps, Space, message } from 'antd';
-import { Menu, ConfigProvider } from 'antd';
+import { callLogout } from '@/config/api';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { setLogoutAction } from '@/redux/slice/accountSlide';
 import styles from '@/styles/client.module.scss';
+import { CodeOutlined, ContactsOutlined, DashOutlined, LogoutOutlined, MenuFoldOutlined, RiseOutlined, TwitterOutlined } from '@ant-design/icons';
+import { Avatar, ConfigProvider, Drawer, Dropdown, Menu, MenuProps, Space, message } from 'antd';
+import { useEffect, useState } from 'react';
 import { isMobile } from 'react-device-detect';
 import { FaReact } from 'react-icons/fa';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { callLogout } from '@/config/api';
-import { setLogoutAction } from '@/redux/slice/accountSlide';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import ManageAccount from './modal/manage.account';
 
 const Header = (props: any) => {
@@ -62,6 +60,7 @@ const Header = (props: any) => {
         }
     }
 
+    const canSeeAdmin = isAuthenticated && user?.permissions && user.permissions.length > 0;
     const itemsDropdown = [
         {
             label: <label
@@ -71,13 +70,11 @@ const Header = (props: any) => {
             key: 'manage-account',
             icon: <ContactsOutlined />
         },
-        {
-            label: <Link
-                to={"/admin"}
-            >Trang Quản Trị</Link>,
+        ...(canSeeAdmin ? [{
+            label: <Link to={"/admin"}>Trang Quản Trị</Link>,
             key: 'admin',
             icon: <DashOutlined />
-        },
+        }] : []),
         {
             label: <label
                 style={{ cursor: 'pointer' }}

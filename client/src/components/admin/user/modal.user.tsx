@@ -1,9 +1,9 @@
-import { ModalForm, ProForm, ProFormDigit, ProFormSelect, ProFormText } from "@ant-design/pro-components";
-import { Col, Form, Row, message, notification } from "antd";
-import { isMobile } from 'react-device-detect';
-import { useState, useEffect } from "react";
 import { callCreateUser, callFetchCompany, callFetchRole, callUpdateUser } from "@/config/api";
 import { IUser } from "@/types/backend";
+import { ModalForm, ProForm, ProFormDigit, ProFormSelect, ProFormText } from "@ant-design/pro-components";
+import { Col, Form, Row, message, notification } from "antd";
+import { useEffect, useState } from "react";
+import { isMobile } from 'react-device-detect';
 import { DebounceSelect } from "./debouce.select";
 
 interface IProps {
@@ -22,28 +22,26 @@ export interface ICompanySelect {
 
 const ModalUser = (props: IProps) => {
     const { openModal, setOpenModal, reloadTable, dataInit, setDataInit } = props;
-    const [companies, setCompanies] = useState<ICompanySelect[]>([]);
-    const [roles, setRoles] = useState<ICompanySelect[]>([]);
+    const [company, setCompany] = useState<ICompanySelect | null>(null);
+    const [role, setRole] = useState<ICompanySelect | null>(null);
 
     const [form] = Form.useForm();
 
     useEffect(() => {
         if (dataInit?._id) {
             if (dataInit.company) {
-                setCompanies([{
+                setCompany({
                     label: dataInit.company.name,
                     value: dataInit.company._id,
                     key: dataInit.company._id,
-                }])
+                })
             }
             if (dataInit.role) {
-                setRoles([
-                    {
-                        label: dataInit.role?.name,
-                        value: dataInit.role?._id,
-                        key: dataInit.role?._id,
-                    }
-                ])
+                setRole({
+                    label: dataInit.role?.name,
+                    value: dataInit.role?._id,
+                    key: dataInit.role?._id,
+                })
             }
         }
     }, [dataInit]);
@@ -109,14 +107,15 @@ const ModalUser = (props: IProps) => {
     const handleReset = async () => {
         form.resetFields();
         setDataInit(null);
-        setCompanies([]);
-        setRoles([]);
+        setCompany(null);
+        setRole(null);
         setOpenModal(false);
     }
 
     // Usage of DebounceSelect
     async function fetchCompanyList(name: string): Promise<ICompanySelect[]> {
-        const res = await callFetchCompany(`current=1&pageSize=100&name=/${name}/i`);
+        const search = name && name.trim().length > 0 ? `&name=/${name}/i` : "";
+        const res = await callFetchCompany(`current=1&pageSize=100${search}`);
         if (res && res.data) {
             const list = res.data.result;
             const temp = list.map(item => {
@@ -130,7 +129,8 @@ const ModalUser = (props: IProps) => {
     }
 
     async function fetchRoleList(name: string): Promise<ICompanySelect[]> {
-        const res = await callFetchRole(`current=1&pageSize=100&name=/${name}/i`);
+        const search = name && name.trim().length > 0 ? `&name=/${name}/i` : "";
+        const res = await callFetchRole(`current=1&pageSize=100${search}`);
         if (res && res.data) {
             const list = res.data.result;
             const temp = list.map(item => {
@@ -224,14 +224,12 @@ const ModalUser = (props: IProps) => {
                             <DebounceSelect
                                 allowClear
                                 showSearch
-                                defaultValue={roles}
-                                value={roles}
-                                placeholder="Chọn công vai trò"
+                                defaultValue={role ?? undefined}
+                                value={role ?? undefined}
+                                placeholder="Chọn vai trò"
                                 fetchOptions={fetchRoleList}
                                 onChange={(newValue: any) => {
-                                    if (newValue?.length === 0 || newValue?.length === 1) {
-                                        setRoles(newValue as ICompanySelect[]);
-                                    }
+                                    setRole(Array.isArray(newValue) ? (newValue[0] as ICompanySelect) : (newValue as ICompanySelect));
                                 }}
                                 style={{ width: '100%' }}
                             />
@@ -247,14 +245,12 @@ const ModalUser = (props: IProps) => {
                             <DebounceSelect
                                 allowClear
                                 showSearch
-                                defaultValue={companies}
-                                value={companies}
+                                defaultValue={company ?? undefined}
+                                value={company ?? undefined}
                                 placeholder="Chọn công ty"
                                 fetchOptions={fetchCompanyList}
                                 onChange={(newValue: any) => {
-                                    if (newValue?.length === 0 || newValue?.length === 1) {
-                                        setCompanies(newValue as ICompanySelect[]);
-                                    }
+                                    setCompany(Array.isArray(newValue) ? (newValue[0] as ICompanySelect) : (newValue as ICompanySelect));
                                 }}
                                 style={{ width: '100%' }}
                             />

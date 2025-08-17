@@ -98,6 +98,10 @@ public class RolesService {
 
     @Transactional
     public void delete(String id) {
+        Role r = roleRepository.findById(id).orElseThrow();
+        if (r.getName() != null && r.getName().equalsIgnoreCase("SUPER_ADMIN")) {
+            throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.FORBIDDEN, "Cannot delete SUPER_ADMIN role");
+        }
         roleRepository.deleteById(id);
     }
 

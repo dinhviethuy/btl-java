@@ -28,8 +28,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private String secret;
 
     private SecretKey getSigningKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(secret);
-        return Keys.hmacShaKeyFor(keyBytes); // Keys.hmacShaKeyFor(...) trả về SecretKey
+        byte[] keyBytes;
+        try {
+            keyBytes = Decoders.BASE64.decode(secret);
+        } catch (IllegalArgumentException e1) {
+            try {
+                keyBytes = Decoders.BASE64URL.decode(secret);
+            } catch (IllegalArgumentException e2) {
+                keyBytes = secret.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+            }
+        }
+        if (keyBytes.length < 32) {
+            throw new IllegalStateException("JWT secret must be at least 256 bits (32 bytes). Current: " + (keyBytes.length * 8) + " bits");
+        }
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 
     @Override

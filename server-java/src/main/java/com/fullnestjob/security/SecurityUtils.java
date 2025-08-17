@@ -25,6 +25,23 @@ public final class SecurityUtils {
         }
         return null;
     }
+
+    public static String getCurrentRole() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null) return null;
+        Object principal = auth.getPrincipal();
+        if (principal instanceof AuthPrincipal ap) {
+            return ap.getRole();
+        }
+        return null;
+    }
+
+    public static boolean isAdmin() {
+        String role = getCurrentRole();
+        if (role == null) return false;
+        String r = role.toUpperCase();
+        return "ADMIN".equals(r) || "SUPER_ADMIN".equals(r);
+    }
 }
 
 

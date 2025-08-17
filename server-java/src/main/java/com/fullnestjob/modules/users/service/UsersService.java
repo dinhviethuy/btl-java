@@ -49,14 +49,36 @@ public class UsersService {
 		if (email != null) email = email.replaceAll("^/+|/i$", "");
 
 		Page<User> page;
-		if (name != null && email != null) {
-			page = userRepository.findByNameContainingIgnoreCaseAndEmailContainingIgnoreCase(name, email, pageable);
-		} else if (name != null) {
-			page = userRepository.findByNameContainingIgnoreCase(name, pageable);
-		} else if (email != null) {
-			page = userRepository.findByEmailContainingIgnoreCase(email, pageable);
+		// Scope by company if current user is not admin
+		String currentRole = com.fullnestjob.security.SecurityUtils.getCurrentRole();
+		boolean isAdmin = currentRole != null && (currentRole.equalsIgnoreCase("ADMIN") || currentRole.equalsIgnoreCase("SUPER_ADMIN"));
+		if (!isAdmin) {
+			String currentUserId = com.fullnestjob.security.SecurityUtils.getCurrentUserId();
+			User me = currentUserId != null ? userRepository.findById(currentUserId).orElse(null) : null;
+			String companyId = me != null && me.getCompany() != null ? me.getCompany().get_id() : null;
+			if (companyId != null) {
+				if (name != null && email != null) {
+					page = userRepository.findByCompanyIdAndNameLikeAndEmailLike(companyId, name, email, pageable);
+				} else if (name != null) {
+					page = userRepository.findByCompanyIdAndNameLike(companyId, name, pageable);
+				} else if (email != null) {
+					page = userRepository.findByCompanyIdAndEmailLike(companyId, email, pageable);
+				} else {
+					page = userRepository.findByCompanyId(companyId, pageable);
+				}
+			} else {
+				page = Page.empty(pageable);
+			}
 		} else {
-			page = userRepository.findAll(pageable);
+			if (name != null && email != null) {
+				page = userRepository.findByNameContainingIgnoreCaseAndEmailContainingIgnoreCase(name, email, pageable);
+			} else if (name != null) {
+				page = userRepository.findByNameContainingIgnoreCase(name, pageable);
+			} else if (email != null) {
+				page = userRepository.findByEmailContainingIgnoreCase(email, pageable);
+			} else {
+				page = userRepository.findAll(pageable);
+			}
 		}
 
 		PageResultDTO<UserDetailDTO> res = new PageResultDTO<>();
@@ -83,9 +105,21 @@ public class UsersService {
 		u.setAge(body.age);
 		u.setGender(body.gender);
 		u.setAddress(body.address);
-		if (body.company != null && body.company._id != null) {
-			Company c = companyRepository.findById(body.company._id).orElse(null);
-			u.setCompany(c);
+		// Only SUPER_ADMIN can create for arbitrary company; others default to their company
+		String currentRole = com.fullnestjob.security.SecurityUtils.getCurrentRole();
+		boolean isSuperAdmin = currentRole != null && currentRole.equalsIgnoreCase("SUPER_ADMIN");
+		if (isSuperAdmin) {
+			if (body.company != null && body.company._id != null) {
+				Company c = companyRepository.findById(body.company._id).orElse(null);
+				u.setCompany(c);
+			}
+		} else {
+			String currentUserId = com.fullnestjob.security.SecurityUtils.getCurrentUserId();
+			User me = currentUserId != null ? userRepository.findById(currentUserId).orElse(null) : null;
+			if (me == null || me.getCompany() == null) {
+				throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.FORBIDDEN, "Insufficient permission to create user without company context");
+			}
+			u.setCompany(me.getCompany());
 		}
 		if (body.role != null) {
 			Role role = roleRepository.findById(body.role).orElse(null);
@@ -97,18 +131,49 @@ public class UsersService {
 
 	@Transactional
 	public UserDetailDTO update(String id, UpdateUserBodyDTO body) {
+		String currentUserId = com.fullnestjob.security.SecurityUtils.getCurrentUserId();
+		if (currentUserId != null && currentUserId.equals(id)) {
+			throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.FORBIDDEN, "Cannot update yourself");
+		}
 		User u = userRepository.findById(id).orElseThrow();
+		String currentRole = com.fullnestjob.security.SecurityUtils.getCurrentRole();
+		boolean isSuperAdmin = currentRole != null && currentRole.equalsIgnoreCase("SUPER_ADMIN");
+		if (!isSuperAdmin) {
+			// Non-super-admin can only manage users within their company
+			User me = currentUserId != null ? userRepository.findById(currentUserId).orElse(null) : null;
+			String myCompanyId = me != null && me.getCompany() != null ? me.getCompany().get_id() : null;
+			String targetCompanyId = u.getCompany() != null ? u.getCompany().get_id() : null;
+			if (myCompanyId == null || targetCompanyId == null || !myCompanyId.equals(targetCompanyId)) {
+				throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.FORBIDDEN, "Cannot manage user outside your company");
+			}
+		}
 		if (body.email != null) u.setEmail(body.email);
 		if (body.name != null) u.setName(body.name);
 		if (body.age != null) u.setAge(body.age);
 		if (body.gender != null) u.setGender(body.gender);
 		if (body.address != null) u.setAddress(body.address);
 		if (body.company != null && body.company._id != null) {
+			if (!isSuperAdmin) {
+				User me = currentUserId != null ? userRepository.findById(currentUserId).orElse(null) : null;
+				String myCompanyId = me != null && me.getCompany() != null ? me.getCompany().get_id() : null;
+				if (myCompanyId == null || !myCompanyId.equals(body.company._id)) {
+					throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.FORBIDDEN, "Cannot change user's company outside your company");
+				}
+			}
 			Company c = companyRepository.findById(body.company._id).orElse(null);
 			u.setCompany(c);
 		}
 		if (body.role != null) {
 			Role role = roleRepository.findById(body.role).orElse(null);
+			if (!isSuperAdmin) {
+				String targetCurrentRoleName = u.getRole() != null ? u.getRole().getName() : null;
+				if (targetCurrentRoleName != null && (targetCurrentRoleName.equalsIgnoreCase("ADMIN") || targetCurrentRoleName.equalsIgnoreCase("SUPER_ADMIN"))) {
+					throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.FORBIDDEN, "Insufficient permission to change admin role");
+				}
+				if (role != null && (role.getName().equalsIgnoreCase("ADMIN") || role.getName().equalsIgnoreCase("SUPER_ADMIN"))) {
+					throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.FORBIDDEN, "Insufficient permission to assign admin role");
+				}
+			}
 			u.setRole(role);
 		}
 		return toDetail(userRepository.save(u));
@@ -116,6 +181,21 @@ public class UsersService {
 
 	@Transactional
 	public void delete(String id) {
+		String currentUserId = com.fullnestjob.security.SecurityUtils.getCurrentUserId();
+		if (currentUserId != null && currentUserId.equals(id)) {
+			throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.FORBIDDEN, "Cannot delete yourself");
+		}
+		String currentRole = com.fullnestjob.security.SecurityUtils.getCurrentRole();
+		boolean isSuperAdmin = currentRole != null && currentRole.equalsIgnoreCase("SUPER_ADMIN");
+		if (!isSuperAdmin) {
+			User target = userRepository.findById(id).orElseThrow();
+			User me = currentUserId != null ? userRepository.findById(currentUserId).orElse(null) : null;
+			String myCompanyId = me != null && me.getCompany() != null ? me.getCompany().get_id() : null;
+			String targetCompanyId = target.getCompany() != null ? target.getCompany().get_id() : null;
+			if (myCompanyId == null || targetCompanyId == null || !myCompanyId.equals(targetCompanyId)) {
+				throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.FORBIDDEN, "Cannot delete user outside your company");
+			}
+		}
 		userRepository.deleteById(id);
 	}
 

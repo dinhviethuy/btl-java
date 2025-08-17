@@ -91,6 +91,14 @@ public class FilesController {
             return ResponseEntity.badRequest().build();
         }
         String contentType = Files.probeContentType(file);
+        if (contentType == null || contentType.equals(MediaType.APPLICATION_OCTET_STREAM_VALUE)) {
+            String name = file.getFileName().toString().toLowerCase();
+            if (name.endsWith(".pdf")) contentType = MediaType.APPLICATION_PDF_VALUE;
+            else if (name.endsWith(".doc")) contentType = "application/msword";
+            else if (name.endsWith(".docx")) contentType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+            else if (name.endsWith(".png")) contentType = MediaType.IMAGE_PNG_VALUE;
+            else if (name.endsWith(".jpg") || name.endsWith(".jpeg")) contentType = MediaType.IMAGE_JPEG_VALUE;
+        }
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + file.getFileName().toString() + "\"")
                 .contentType(contentType != null ? MediaType.parseMediaType(contentType) : MediaType.APPLICATION_OCTET_STREAM)

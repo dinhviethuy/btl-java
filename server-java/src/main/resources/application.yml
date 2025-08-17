@@ -4,14 +4,14 @@ server:
     context-path: /api
 spring:
   datasource:
-    url: your_url_db_mysql
+    url: jdbc:mysql://localhost:3306/job_finder?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
     username: root
     password: 123456
   mail:
     host: smtp.gmail.com
     port: 587
-    username: your_email
-    password: your_password
+    username: nguyenlinh.devv@gmail.com
+    password: rjzk tvjl yxzd ueoq
     properties:
       mail:
         smtp:
@@ -37,7 +37,7 @@ app:
     issuer: from server
     access-token-expiration-ms: 900000
     refresh-token-expiration-ms: 2592000000
-    secret: your_secret_key
+    secret: ${JWT_SECRET:Vt1yQZ4mK8rN2sP6xD9fA3cH7jL0wT5yU8iR2oE6bG9nC3vM7pQ1sL4dF8hJ2kR}
   cors:
     allowed-origins: http://localhost:3000
   cron:
@@ -53,3 +53,5 @@ app:
     base-url: http://localhost:3000
     # Mẫu path chi tiết job, {id} sẽ được thay bằng job id
     job-detail-path: /job/{id}
+  seed:
+    enabled: false

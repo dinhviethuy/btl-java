@@ -8,6 +8,7 @@ import com.fullnestjob.modules.companies.repo.CompanyRepository;
 import com.fullnestjob.modules.jobs.entity.Job;
 import com.fullnestjob.modules.jobs.repo.JobRepository;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +20,7 @@ import java.nio.file.Paths;
 import java.util.*;
 
 @Component
+@ConditionalOnProperty(prefix = "app.seed", name = "enabled", havingValue = "true")
 public class SeedRunner implements CommandLineRunner {
     private final CompanyRepository companyRepository;
     private final JobRepository jobRepository;

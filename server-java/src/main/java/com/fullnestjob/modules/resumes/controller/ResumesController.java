@@ -59,9 +59,10 @@ public class ResumesController {
 
     @DeleteMapping("/{id}")
     @Message("Resume deleted successfully")
-    public ResponseEntity<Object> delete(@PathVariable("id") String id) {
+    public ResponseEntity<ResumeDetailDTO> delete(@PathVariable("id") String id) {
+        ResumeDetailDTO dto = resumesService.findById(id);
         resumesService.delete(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(dto);
     }
 }
 

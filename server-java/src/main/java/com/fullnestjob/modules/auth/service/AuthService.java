@@ -77,12 +77,16 @@ public class AuthService {
             throw new RuntimeException("Missing token");
         }
         String token = authHeader.substring(7);
-        // For simplicity, reissue a new access token using the same user info resolved from the token claims
-        // In a real-world scenario, you would verify a refresh token stored in DB and issue new access token
-        io.jsonwebtoken.Jws<io.jsonwebtoken.Claims> claims = io.jsonwebtoken.Jwts.parser()
-                .verifyWith(jwtService.getSigningKeyForVerify())
-                .build().parseSignedClaims(token);
-        String userId = claims.getPayload().get("_id", String.class);
+        // Parse claims from expired token as well
+        String userId;
+        try {
+            io.jsonwebtoken.Jws<io.jsonwebtoken.Claims> claims = io.jsonwebtoken.Jwts.parser()
+                    .verifyWith(jwtService.getSigningKeyForVerify())
+                    .build().parseSignedClaims(token);
+            userId = claims.getPayload().get("_id", String.class);
+        } catch (io.jsonwebtoken.ExpiredJwtException eje) {
+            userId = eje.getClaims().get("_id", String.class);
+        }
         User u = userRepository.findById(userId).orElseThrow();
 
         Map<String, Object> newClaims = new HashMap<>();

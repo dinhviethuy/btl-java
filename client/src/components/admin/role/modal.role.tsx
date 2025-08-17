@@ -1,14 +1,14 @@
-import { FooterToolbar, ModalForm, ProCard, ProFormSwitch, ProFormText, ProFormTextArea } from "@ant-design/pro-components";
-import { Col, Form, Row, message, notification } from "antd";
-import { isMobile } from 'react-device-detect';
 import { callCreateRole, callFetchPermission, callUpdateRole } from "@/config/api";
-import { IPermission } from "@/types/backend";
-import { CheckSquareOutlined } from "@ant-design/icons";
-import ModuleApi from "./module.api";
-import { useState, useEffect } from 'react';
-import _ from 'lodash';
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { resetSingleRole } from "@/redux/slice/roleSlide";
+import { IPermission } from "@/types/backend";
+import { CheckSquareOutlined } from "@ant-design/icons";
+import { FooterToolbar, ModalForm, ProCard, ProFormSwitch, ProFormText, ProFormTextArea } from "@ant-design/pro-components";
+import { Col, Form, Row, message, notification } from "antd";
+import _ from 'lodash';
+import { useEffect, useState } from 'react';
+import { isMobile } from 'react-device-detect';
+import ModuleApi from "./module.api";
 
 interface IProps {
     openModal: boolean;
@@ -79,12 +79,29 @@ const ModalRole = (props: IProps) => {
 
     const submitRole = async (valuesForm: any) => {
         const { description, isActive, name, permissions } = valuesForm;
-        const checkedPermissions = [];
+        const checkedPermissions: string[] = [];
 
         if (permissions) {
+            // Build a set of valid permission IDs from the current permission list (robust against module-level switches)
+            const validIds = new Set(
+                (listPermissions || [])
+                    .flatMap(group => (group.permissions || []).map(p => p._id))
+                    .filter((id): id is string => Boolean(id))
+            );
+
+            const isMongoId = /^[0-9a-fA-F]{24}$/;
+            const isUUID = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+
             for (const key in permissions) {
-                if (key.match(/^[0-9a-fA-F]{24}$/) && permissions[key] === true) {
-                    checkedPermissions.push(key);
+                if (permissions[key] === true) {
+                    if (validIds.size > 0) {
+                        if (validIds.has(key)) checkedPermissions.push(key);
+                    } else {
+                        // Fallback: accept common ID formats (Mongo ObjectId or UUID)
+                        if (isMongoId.test(key) || isUUID.test(key)) {
+                            checkedPermissions.push(key);
+                        }
+                    }
                 }
             }
         }

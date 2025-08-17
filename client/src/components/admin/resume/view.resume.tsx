@@ -1,8 +1,8 @@
 import { callUpdateResumeStatus } from "@/config/api";
 import { IResume } from "@/types/backend";
-import { Badge, Button, Descriptions, Drawer, Form, Select, message, notification } from "antd";
+import { Button, Descriptions, Drawer, Form, Select, message, notification } from "antd";
 import dayjs from 'dayjs';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 const { Option } = Select;
 
 interface IProps {
@@ -64,6 +64,12 @@ const ViewDetailResume = (props: IProps) => {
             >
                 <Descriptions title="" bordered column={2} layout="vertical">
                     <Descriptions.Item label="Email">{dataInit?.email}</Descriptions.Item>
+                    <Descriptions.Item label="CV">
+                        <a
+                            href={`${dataInit?.url}`}
+                            target="_blank"
+                        >Chi tiết</a>
+                    </Descriptions.Item>
                     <Descriptions.Item label="Trạng thái">
                         <Form
                             form={form}
@@ -83,7 +89,6 @@ const ViewDetailResume = (props: IProps) => {
                                 </Select>
                             </Form.Item>
                         </Form>
-
                     </Descriptions.Item>
                     <Descriptions.Item label="Tên Job">
                         {dataInit?.jobId?.name}

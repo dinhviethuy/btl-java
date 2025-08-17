@@ -44,17 +44,43 @@ public class CompaniesService {
         Page<Company> page;
         String nameFilter = query.getName();
         String addressFilter = query.getAddress();
+        String scope = query.getScope();
+        boolean forcePublic = scope != null && scope.equalsIgnoreCase("public");
         if (nameFilter != null) nameFilter = nameFilter.replaceAll("^/+|/i$", "");
         if (addressFilter != null) addressFilter = addressFilter.replaceAll("^/+|/i$", "");
 
-        if (nameFilter != null && addressFilter != null) {
-            page = companyRepository.findByNameContainingIgnoreCaseAndAddressContainingIgnoreCase(nameFilter, addressFilter, pageable);
-        } else if (nameFilter != null) {
-            page = companyRepository.findByNameContainingIgnoreCase(nameFilter, pageable);
-        } else if (addressFilter != null) {
-            page = companyRepository.findByAddressContainingIgnoreCase(addressFilter, pageable);
+        String currentRole = com.fullnestjob.security.SecurityUtils.getCurrentRole();
+        boolean isAdmin = currentRole != null && (currentRole.equalsIgnoreCase("ADMIN") || currentRole.equalsIgnoreCase("SUPER_ADMIN"));
+        if (forcePublic) {
+            page = companyRepository.findPublicCompanies(nameFilter, addressFilter, pageable);
+        } else if (!isAdmin) {
+            String currentUserId = com.fullnestjob.security.SecurityUtils.getCurrentUserId();
+            if (currentUserId == null) {
+                // Public (chưa đăng nhập) => chỉ company chưa xóa
+                page = companyRepository.findPublicCompanies(nameFilter, addressFilter, pageable);
+            } else {
+                // Non-admin logged-in: chỉ xem công ty của mình
+                var me = this.userRepository.findById(currentUserId).orElse(null);
+                String companyId = me != null && me.getCompany() != null ? me.getCompany().get_id() : null;
+                if (companyId != null) {
+                    java.util.Optional<com.fullnestjob.modules.companies.entity.Company> c = companyRepository.findById(companyId);
+                    java.util.List<Company> list = c.map(java.util.List::of).orElse(java.util.List.of());
+                    org.springframework.data.domain.PageImpl<Company> p = new org.springframework.data.domain.PageImpl<>(list, pageable, list.size());
+                    page = p;
+                } else {
+                    page = new org.springframework.data.domain.PageImpl<>(java.util.List.of(), pageable, 0);
+                }
+            }
         } else {
-            page = companyRepository.findAll(pageable);
+            if (nameFilter != null && addressFilter != null) {
+                page = companyRepository.findByNameContainingIgnoreCaseAndAddressContainingIgnoreCase(nameFilter, addressFilter, pageable);
+            } else if (nameFilter != null) {
+                page = companyRepository.findByNameContainingIgnoreCase(nameFilter, pageable);
+            } else if (addressFilter != null) {
+                page = companyRepository.findByAddressContainingIgnoreCase(addressFilter, pageable);
+            } else {
+                page = companyRepository.findAll(pageable);
+            }
         }
 
         PageResultDTO<CompanyDetailDTO> res = new PageResultDTO<>();

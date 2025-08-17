@@ -2,7 +2,7 @@ import { callFetchCompany } from '@/config/api';
 import { convertSlug } from '@/config/utils';
 import { ICompany } from '@/types/backend';
 import { Card, Col, Divider, Empty, Pagination, Row, Spin } from 'antd';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { isMobile } from 'react-device-detect';
 import { Link, useNavigate } from 'react-router-dom';
 import styles from 'styles/client.module.scss';
@@ -30,7 +30,7 @@ const CompanyCard = (props: IProps) => {
 
     const fetchCompany = async () => {
         setIsLoading(true)
-        let query = `current=${current}&pageSize=${pageSize}`;
+        let query = `current=${current}&pageSize=${pageSize}&scope=public`;
         if (filter) {
             query += `&${filter}`;
         }

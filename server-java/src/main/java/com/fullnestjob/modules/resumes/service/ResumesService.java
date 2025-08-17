@@ -26,11 +26,13 @@ public class ResumesService {
     private final ResumeRepository resumeRepository;
     private final CompanyRepository companyRepository;
     private final JobRepository jobRepository;
+    private final com.fullnestjob.modules.users.repo.UserRepository userRepository;
 
-    public ResumesService(ResumeRepository resumeRepository, CompanyRepository companyRepository, JobRepository jobRepository) {
+    public ResumesService(ResumeRepository resumeRepository, CompanyRepository companyRepository, JobRepository jobRepository, com.fullnestjob.modules.users.repo.UserRepository userRepository) {
         this.resumeRepository = resumeRepository;
         this.companyRepository = companyRepository;
         this.jobRepository = jobRepository;
+        this.userRepository = userRepository;
     }
 
     public PageResultDTO<ResumeDetailDTO> find(PaginationQueryDTO query) {
@@ -39,23 +41,42 @@ public class ResumesService {
         var pageable = PageRequest.of(current - 1, pageSize);
         String status = query.getStatus();
         Page<Resume> page;
-        if (status != null && !status.isBlank()) {
-            // support multiple comma-separated values; normalize to upper-case
-            String decoded = java.net.URLDecoder.decode(status, java.nio.charset.StandardCharsets.UTF_8);
-            String[] parts = decoded.split(",");
-            java.util.List<String> ups = new java.util.ArrayList<>();
-            for (String p : parts) {
-                if (p == null || p.isBlank()) continue;
-                String s = p.replaceAll("^/+|/i$", "").toUpperCase();
-                ups.add(s);
+        String currentRole = com.fullnestjob.security.SecurityUtils.getCurrentRole();
+        boolean isAdmin = currentRole != null && (currentRole.equalsIgnoreCase("ADMIN") || currentRole.equalsIgnoreCase("SUPER_ADMIN"));
+        if (!isAdmin) {
+            String currentUserId = com.fullnestjob.security.SecurityUtils.getCurrentUserId();
+            var userRepo = this.userRepository; // injected below
+            com.fullnestjob.modules.users.entity.User me = currentUserId != null ? userRepo.findById(currentUserId).orElse(null) : null;
+            String companyId = me != null && me.getCompany() != null ? me.getCompany().get_id() : null;
+            if (companyId != null) {
+                if (status != null && !status.isBlank()) {
+                    String s = status.replaceAll("^/+|/i$", "");
+                    page = resumeRepository.findByCompanyIdAndStatusLike(companyId, s, pageable);
+                } else {
+                    page = resumeRepository.findByCompanyId(companyId, pageable);
+                }
+            } else {
+                page = new org.springframework.data.domain.PageImpl<>(java.util.List.of(), pageable, 0);
             }
-            if (!ups.isEmpty()) {
-                page = resumeRepository.findByStatusInIgnoreCase(ups, pageable);
+        } else {
+            if (status != null && !status.isBlank()) {
+                // support multiple comma-separated values; normalize to upper-case
+                String decoded = java.net.URLDecoder.decode(status, java.nio.charset.StandardCharsets.UTF_8);
+                String[] parts = decoded.split(",");
+                java.util.List<String> ups = new java.util.ArrayList<>();
+                for (String p : parts) {
+                    if (p == null || p.isBlank()) continue;
+                    String s = p.replaceAll("^/+|/i$", "").toUpperCase();
+                    ups.add(s);
+                }
+                if (!ups.isEmpty()) {
+                    page = resumeRepository.findByStatusInIgnoreCase(ups, pageable);
+                } else {
+                    page = resumeRepository.findAll(pageable);
+                }
             } else {
                 page = resumeRepository.findAll(pageable);
             }
-        } else {
-            page = resumeRepository.findAll(pageable);
         }
         PageResultDTO<ResumeDetailDTO> res = new PageResultDTO<>();
         res.result = page.getContent().stream().map(this::toDetail).collect(Collectors.toList());
