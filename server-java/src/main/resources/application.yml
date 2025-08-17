@@ -35,15 +35,16 @@ spring:
 app:
   jwt:
     issuer: from server
-    access-token-expiration-ms: 900000
-    refresh-token-expiration-ms: 2592000000
+    # Hỗ trợ định dạng ISO-8601 duration: PT15M (15 phút), P30D (30 ngày)
+    access-token-expiration: PT15S
+    refresh-token-expiration: P30D
     secret: ${JWT_SECRET:Vt1yQZ4mK8rN2sP6xD9fA3cH7jL0wT5yU8iR2oE6bG9nC3vM7pQ1sL4dF8hJ2kR}
   cors:
     allowed-origins: http://localhost:3000
   cron:
     mail:
       enabled: true
-      # Cron 6 trường: giây phút giờ ngày-tháng tháng thứ
+      # Cron 6 trường: giây phút giờ ngày-tháng tháng thứ. Có thể thay bằng biểu thức chuẩn, ví dụ: "0 0 9 * * *" (9h mỗi ngày)
       # Mặc định: 30 giây/lần
       expression: 0/30 * * * * *
       # Số job gửi tối đa trong email

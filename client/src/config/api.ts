@@ -35,6 +35,48 @@ export const callRegister = (
   });
 };
 
+export const callRegisterSendOtp = (
+  name: string,
+  email: string,
+  password: string,
+  confirmPassword: string,
+  age: number,
+  gender: string,
+  address: string
+) => {
+  return axios.post<IBackendRes<any>>("/api/v1/auth/register/send-otp", {
+    name,
+    email,
+    password,
+    confirmPassword,
+    age,
+    gender,
+    address,
+  });
+};
+
+export const callRegisterVerify = (
+  name: string,
+  email: string,
+  password: string,
+  confirmPassword: string,
+  age: number,
+  gender: string,
+  address: string,
+  otp: string
+) => {
+  return axios.post<IBackendRes<IUser>>("/api/v1/auth/register/verify", {
+    name,
+    email,
+    password,
+    confirmPassword,
+    age,
+    gender,
+    address,
+    otp,
+  });
+};
+
 export const callLogin = (username: string, password: string) => {
   return axios.post<IBackendRes<IAccount>>("/api/v1/auth/login", {
     username,

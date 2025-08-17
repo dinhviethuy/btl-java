@@ -29,6 +29,8 @@ public class User extends BaseAuditEntity {
 	@JoinColumn(name = "role_id", referencedColumnName = "id")
 	private Role role;
 
+	@Lob
+	@Column(columnDefinition = "TEXT")
 	private String refreshToken;
 
 	// OTP for forgot-password flow

@@ -38,7 +38,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/v1/auth/login", "/v1/auth/register", "/v1/auth/refresh").permitAll()
+                        .requestMatchers("/v1/auth/login", "/v1/auth/register", "/v1/auth/register/send-otp", "/v1/auth/register/verify", "/v1/auth/refresh", "/v1/auth/logout").permitAll()
                         .requestMatchers("/v1/auth/forgot/send-otp", "/v1/auth/forgot/reset").permitAll()
                         .requestMatchers(HttpMethod.GET, "/v1/companies/**", "/v1/jobs/**", "/v1/files/**").permitAll()
                         .anyRequest().authenticated()
@@ -64,25 +64,20 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowCredentials(true);
         // Allow FE origins via property app.cors.allowed-origins (comma-separated)
+        java.util.List<String> originPatterns = new java.util.ArrayList<>();
         if (allowedOriginsProp != null && !allowedOriginsProp.isBlank()) {
-            List<String> origins = java.util.Arrays.stream(allowedOriginsProp.split(","))
+            java.util.Arrays.stream(allowedOriginsProp.split(","))
                     .map(String::trim)
                     .filter(s -> !s.isEmpty())
-                    .toList();
-            configuration.setAllowedOrigins(origins);
-        } else {
-            configuration.setAllowedOrigins(List.of(
-                    "http://localhost:3000",
-                    "http://127.0.0.1:3000",
-                    "http://localhost:5173",
-                    "http://127.0.0.1:5173"
-            ));
+                    .forEach(originPatterns::add);
         }
+        // Use allowedOriginPatterns to support wildcard like http://localhost:* if needed
+        configuration.setAllowedOriginPatterns(originPatterns);
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         // Allow all request headers, including custom ones like 'folder_type'
         configuration.setAllowedHeaders(List.of("*"));
         // Expose headers commonly needed by clients
-        configuration.setExposedHeaders(List.of("Authorization", "Content-Disposition"));
+        configuration.setExposedHeaders(List.of("Authorization", "Content-Disposition", "Set-Cookie"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

@@ -89,7 +89,7 @@ CREATE TABLE `users` (
   `name` varchar(255) DEFAULT NULL,
   `age` int DEFAULT NULL,
   `gender` varchar(50) DEFAULT NULL,
-  `refresh_token` varchar(255) DEFAULT NULL,
+  `refresh_token` TEXT DEFAULT NULL,
   `company_id` varchar(36) DEFAULT NULL,
   `role_id` varchar(36) DEFAULT NULL,
   `created_at` datetime(6) DEFAULT NULL,

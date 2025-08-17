@@ -1,7 +1,7 @@
-import { Button, Divider, Form, Input, Row, Select, message, notification } from 'antd';
+import { Button, Divider, Form, Input, Row, Select, Steps, message, notification } from 'antd';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { callRegister } from 'config/api';
+import { callRegisterSendOtp, callRegisterVerify } from 'config/api';
 import styles from 'styles/auth.module.scss';
 import { IUser } from '@/types/backend';
 const { Option } = Select;
@@ -10,24 +10,49 @@ const { Option } = Select;
 const RegisterPage = () => {
     const navigate = useNavigate();
     const [isSubmit, setIsSubmit] = useState(false);
+    const [step, setStep] = useState<number>(0);
+    const [cached, setCached] = useState<any>({});
 
-    const onFinish = async (values: IUser) => {
-        const { name, email, password, age, gender, address } = values;
+    const onSendOtp = async (values: any) => {
+        const { name, email, password, confirmPassword, age, gender, address } = values;
+        if (password !== confirmPassword) {
+            notification.error({ message: 'Mật khẩu xác nhận không khớp' });
+            return;
+        }
         setIsSubmit(true);
-        const res = await callRegister(name, email, password as string, +age, gender, address);
+        const res = await callRegisterSendOtp(name, email, password as string, confirmPassword as string, +age, gender, address);
         setIsSubmit(false);
-        if (res?.data?._id) {
+        const isSuccess = res && String(res.statusCode || '').startsWith('2');
+        if (isSuccess) {
+            setCached({ name, email, password, confirmPassword, age, gender, address });
+            message.success('Đã gửi OTP tới email, vui lòng kiểm tra.');
+            setStep(1);
+        } else {
+            notification.error({
+                message: "Có lỗi xảy ra",
+                description: res.message && Array.isArray(res.message) ? res.message[0] : res.message,
+                duration: 5
+            })
+        }
+    };
+
+    const onVerify = async (values: any) => {
+        const { otp } = values;
+        setIsSubmit(true);
+        const res = await callRegisterVerify(cached.name, cached.email, cached.password, cached.confirmPassword, +cached.age, cached.gender, cached.address, otp);
+        setIsSubmit(false);
+        const ok = res && String(res.statusCode || '').startsWith('2');
+        if (ok && res?.data?._id) {
             message.success('Đăng ký tài khoản thành công!');
             navigate('/login')
         } else {
             notification.error({
                 message: "Có lỗi xảy ra",
-                description:
-                    res.message && Array.isArray(res.message) ? res.message[0] : res.message,
+                description: res.message && Array.isArray(res.message) ? res.message[0] : res.message,
                 duration: 5
             })
         }
-    };
+    }
 
 
     return (
@@ -40,10 +65,12 @@ const RegisterPage = () => {
                             <h2 className={`${styles.text} ${styles["text-large"]}`}> Đăng Ký Tài Khoản </h2>
                             < Divider />
                         </div>
+                        <Steps current={step} items={[{ title: 'Nhập thông tin' }, { title: 'Nhập OTP' }]} style={{ marginBottom: 24 }} />
+                        {step === 0 && (
                         < Form<IUser>
                             name="basic"
                             // style={{ maxWidth: 600, margin: '0 auto' }}
-                            onFinish={onFinish}
+                            onFinish={onSendOtp}
                             autoComplete="off"
                         >
                             <Form.Item
@@ -71,6 +98,14 @@ const RegisterPage = () => {
                                 label="Mật khẩu"
                                 name="password"
                                 rules={[{ required: true, message: 'Mật khẩu không được để trống!' }]}
+                            >
+                                <Input.Password />
+                            </Form.Item>
+                            <Form.Item
+                                labelCol={{ span: 24 }} //whole column
+                                label="Xác nhận mật khẩu"
+                                name="confirmPassword"
+                                rules={[{ required: true, message: 'Xác nhận mật khẩu không được để trống!' }]}
                             >
                                 <Input.Password />
                             </Form.Item>
@@ -115,7 +150,7 @@ const RegisterPage = () => {
                             // wrapperCol={{ offset: 6, span: 16 }}
                             >
                                 <Button type="primary" htmlType="submit" loading={isSubmit} >
-                                    Đăng ký
+                                    Gửi OTP
                                 </Button>
                             </Form.Item>
                             <Divider> Or </Divider>
@@ -125,6 +160,17 @@ const RegisterPage = () => {
                                 </span>
                             </p>
                         </Form>
+                        )}
+                        {step === 1 && (
+                            <Form onFinish={onVerify}>
+                                <Form.Item labelCol={{ span: 24 }} label="OTP" name="otp" rules={[{ required: true, message: 'OTP không được để trống!' }]}>
+                                    <Input />
+                                </Form.Item>
+                                <Form.Item>
+                                    <Button type="primary" htmlType="submit" loading={isSubmit}>Xác thực & Tạo tài khoản</Button>
+                                </Form.Item>
+                            </Form>
+                        )}
                     </section>
                 </div>
             </main>
