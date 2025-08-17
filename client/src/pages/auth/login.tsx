@@ -94,6 +94,11 @@ const LoginPage = () => {
                                     <Link to='/register' > Đăng Ký </Link>
                                 </span>
                             </p>
+                            <p className="text text-normal">Quên mật khẩu?
+                                <span>
+                                    <Link to='/forgot-password' > Lấy lại mật khẩu </Link>
+                                </span>
+                            </p>
                         </Form>
                     </section>
                 </div>

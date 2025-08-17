@@ -31,6 +31,11 @@ public class User extends BaseAuditEntity {
 
 	private String refreshToken;
 
+	// OTP for forgot-password flow
+	private String otpCode;
+	@Temporal(TemporalType.TIMESTAMP)
+	private java.util.Date otpExpiredAt;
+
 	@Embedded
 	@AttributeOverrides({
 		@AttributeOverride(name = "_id", column = @Column(name = "created_by_id")),
@@ -72,6 +77,10 @@ public class User extends BaseAuditEntity {
 	public void setRole(Role role) { this.role = role; }
 	public String getRefreshToken() { return refreshToken; }
 	public void setRefreshToken(String refreshToken) { this.refreshToken = refreshToken; }
+	public String getOtpCode() { return otpCode; }
+	public void setOtpCode(String otpCode) { this.otpCode = otpCode; }
+	public java.util.Date getOtpExpiredAt() { return otpExpiredAt; }
+	public void setOtpExpiredAt(java.util.Date otpExpiredAt) { this.otpExpiredAt = otpExpiredAt; }
 	public Actor getCreatedBy() { return createdBy; }
 	public void setCreatedBy(Actor createdBy) { this.createdBy = createdBy; }
 	public Actor getUpdatedBy() { return updatedBy; }

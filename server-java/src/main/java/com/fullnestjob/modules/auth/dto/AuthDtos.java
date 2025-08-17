@@ -24,6 +24,8 @@ public class AuthDtos {
         @Email
         public String email;
         public String name;
+        public Integer age;
+        public String address;
         public Object role; // can be string or object
         public List<UserNestedPermissionDto> permissions;
     }
@@ -54,6 +56,39 @@ public class AuthDtos {
     public static class LoginResponseDTO {
         public String access_token;
         public UserNestedDto user;
+    }
+
+    public static class UpdateProfileDTO {
+        public String name;
+        public Integer age;
+        public String address;
+    }
+
+    public static class ChangePasswordDTO {
+        @NotBlank
+        public String pass;
+        @NotBlank
+        @Size(min = 6)
+        public String newPass;
+        @NotBlank
+        public String confirmNewPass;
+    }
+
+    public static class ForgotSendOtpDTO {
+        @NotBlank
+        @Email
+        public String email;
+    }
+
+    public static class ForgotResetDTO {
+        @NotBlank
+        @Email
+        public String email;
+        @NotBlank
+        public String otp;
+        @NotBlank
+        @Size(min = 6)
+        public String newPassword;
     }
 }
 

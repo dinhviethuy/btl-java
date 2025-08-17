@@ -1,14 +1,16 @@
-import { Button, Col, Form, Modal, Row, Select, Table, Tabs, message, notification } from "antd";
-import { isMobile } from "react-device-detect";
-import type { TabsProps } from 'antd';
-import { IResume } from "@/types/backend";
-import { useState, useEffect } from 'react';
-import { callFetchResumeByUser, callGetSubscriberSkills, callUpdateSubscriber } from "@/config/api";
-import type { ColumnsType } from 'antd/es/table';
-import dayjs from 'dayjs';
-import { MonitorOutlined } from "@ant-design/icons";
+import { callChangePassword, callFetchResumeByUser, callGetSubscriberSkills, callUpdateProfile, callUpdateSubscriber } from "@/config/api";
 import { SKILLS_LIST } from "@/config/utils";
 import { useAppSelector } from "@/redux/hooks";
+import { setUserLoginInfo } from '@/redux/slice/accountSlide';
+import { IResume } from "@/types/backend";
+import { MonitorOutlined } from "@ant-design/icons";
+import type { TabsProps } from 'antd';
+import { Button, Col, Form, Input, InputNumber, Modal, Row, Select, Table, Tabs, message, notification } from "antd";
+import type { ColumnsType } from 'antd/es/table';
+import dayjs from 'dayjs';
+import { useEffect, useState } from 'react';
+import { isMobile } from "react-device-detect";
+import { useDispatch } from 'react-redux';
 
 interface IProps {
     open: boolean;
@@ -94,10 +96,52 @@ const UserResume = (props: any) => {
 }
 
 const UserUpdateInfo = (props: any) => {
+    const [form] = Form.useForm();
+    const dispatch = useDispatch();
+    const user = useAppSelector(state => state.account.user);
+
+    useEffect(() => {
+        form.setFieldsValue({
+            name: user?.name,
+            age: user?.age,
+            address: user?.address
+        })
+    }, [user])
+
+    const onFinish = async (values: any) => {
+        const { name, age, address } = values;
+        const res = await callUpdateProfile({ name, age: age !== undefined && age !== null ? Number(age) : undefined, address });
+        if (res && res.data) {
+            message.success("Cập nhật thông tin thành công");
+            dispatch(setUserLoginInfo(res.data));
+        } else {
+            notification.error({ message: 'Có lỗi xảy ra', description: res?.message });
+        }
+    }
+
     return (
-        <div>
-            //todo
-        </div>
+        <Form form={form} onFinish={onFinish} layout="vertical">
+            <Row gutter={[20, 20]}>
+                <Col span={24}>
+                    <Form.Item label={"Tên hiển thị"} name={"name"} rules={[{ required: true, message: 'Tên không được để trống!' }]}>
+                        <Input />
+                    </Form.Item>
+                </Col>
+                <Col span={12}>
+                    <Form.Item label={"Tuổi"} name={"age"}>
+                        <InputNumber style={{ width: '100%' }} />
+                    </Form.Item>
+                </Col>
+                <Col span={12}>
+                    <Form.Item label={"Địa chỉ"} name={"address"}>
+                        <Input />
+                    </Form.Item>
+                </Col>
+                <Col span={24}>
+                    <Button type="primary" onClick={() => form.submit()}>Cập nhật</Button>
+                </Col>
+            </Row>
+        </Form>
     )
 }
 
@@ -203,6 +247,53 @@ const JobByEmail = (props: any) => {
     )
 }
 
+const UserChangePassword = () => {
+    const [form] = Form.useForm();
+    const [isSubmit, setIsSubmit] = useState<boolean>(false);
+
+    const onFinish = async (values: any) => {
+        const { pass, newPass, confirmNewPass } = values;
+        if (newPass !== confirmNewPass) {
+            notification.error({ message: 'Mật khẩu xác nhận không khớp' });
+            return;
+        }
+        setIsSubmit(true);
+        const res = await callChangePassword(pass, newPass, confirmNewPass);
+        setIsSubmit(false);
+        if (res && res.data !== undefined) {
+            message.success('Đổi mật khẩu thành công');
+            form.resetFields();
+        } else {
+            notification.error({ message: 'Có lỗi xảy ra', description: res?.message });
+        }
+    }
+
+    return (
+        <Form form={form} onFinish={onFinish} layout="vertical">
+            <Row gutter={[20, 20]}>
+                <Col span={24}>
+                    <Form.Item label={"Mật khẩu hiện tại"} name={"pass"} rules={[{ required: true, message: 'Không được để trống' }]}>
+                        <Input.Password />
+                    </Form.Item>
+                </Col>
+                <Col span={12}>
+                    <Form.Item label={"Mật khẩu mới"} name={"newPass"} rules={[{ required: true, message: 'Không được để trống' }, { min: 6, message: 'Tối thiểu 6 ký tự' }]}>
+                        <Input.Password />
+                    </Form.Item>
+                </Col>
+                <Col span={12}>
+                    <Form.Item label={"Xác nhận mật khẩu mới"} name={"confirmNewPass"} rules={[{ required: true, message: 'Không được để trống' }]}>
+                        <Input.Password />
+                    </Form.Item>
+                </Col>
+                <Col span={24}>
+                    <Button type="primary" loading={isSubmit} onClick={() => form.submit()}>Đổi mật khẩu</Button>
+                </Col>
+            </Row>
+        </Form>
+    )
+}
+
 const ManageAccount = (props: IProps) => {
     const { open, onClose } = props;
 
@@ -229,7 +320,7 @@ const ManageAccount = (props: IProps) => {
         {
             key: 'user-password',
             label: `Thay đổi mật khẩu`,
-            children: `//todo`,
+            children: <UserChangePassword />,
         },
     ];
 

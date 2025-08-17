@@ -54,6 +54,46 @@ export const callLogout = () => {
   return axios.post<IBackendRes<string>>("/api/v1/auth/logout");
 };
 
+export const callSendOtp = (email: string) => {
+  return axios.post<IBackendRes<any>>("/api/v1/auth/forgot/send-otp", {
+    email,
+  });
+};
+
+export const callResetPasswordByOtp = (
+  email: string,
+  otp: string,
+  newPassword: string
+) => {
+  return axios.post<IBackendRes<any>>("/api/v1/auth/forgot/reset", {
+    email,
+    otp,
+    newPassword,
+  });
+};
+
+export const callUpdateProfile = (payload: {
+  name?: string;
+  age?: number;
+  address?: string;
+}) => {
+  return axios.patch<IBackendRes<IGetAccount["user"]>>("/api/v1/auth/profile", {
+    ...payload,
+  });
+};
+
+export const callChangePassword = (
+  pass: string,
+  newPass: string,
+  confirmNewPass: string
+) => {
+  return axios.post<IBackendRes<any>>("/api/v1/auth/change-password", {
+    pass,
+    newPass,
+    confirmNewPass,
+  });
+};
+
 /**
  * Upload single file
  */

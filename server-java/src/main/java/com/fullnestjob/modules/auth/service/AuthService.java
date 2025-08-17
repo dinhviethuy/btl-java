@@ -4,6 +4,10 @@ import com.fullnestjob.modules.auth.dto.AuthDtos.LoginBodyDTO;
 import com.fullnestjob.modules.auth.dto.AuthDtos.LoginResponseDTO;
 import com.fullnestjob.modules.auth.dto.AuthDtos.RegisterBodyDTO;
 import com.fullnestjob.modules.auth.dto.AuthDtos.UserNestedDto;
+import com.fullnestjob.modules.auth.dto.AuthDtos.UpdateProfileDTO;
+import com.fullnestjob.modules.auth.dto.AuthDtos.ChangePasswordDTO;
+import com.fullnestjob.modules.auth.dto.AuthDtos.ForgotSendOtpDTO;
+import com.fullnestjob.modules.auth.dto.AuthDtos.ForgotResetDTO;
 import com.fullnestjob.modules.auth.dto.AuthDtos.UserNestedPermissionDto;
 import com.fullnestjob.modules.auth.dto.AuthDtos.UserNestedRoleDto;
 import com.fullnestjob.modules.permissions.entity.Permission;
@@ -14,6 +18,8 @@ import com.fullnestjob.security.JwtService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,11 +31,15 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final JavaMailSender mailSender;
+    @org.springframework.beans.factory.annotation.Value("${spring.mail.username:}")
+    private String fromEmail;
 
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService, JavaMailSender mailSender) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
+        this.mailSender = mailSender;
     }
 
     @Transactional
@@ -113,6 +123,8 @@ public class AuthService {
         dto._id = u.get_id();
         dto.email = u.getEmail();
         dto.name = u.getName();
+        dto.age = u.getAge();
+        dto.address = u.getAddress();
         if (u.getRole() != null) {
             UserNestedRoleDto r = new UserNestedRoleDto();
             r._id = u.getRole().get_id();
@@ -133,6 +145,89 @@ public class AuthService {
         d.method = p.getMethod();
         d.module = p.getModule();
         return d;
+    }
+
+    @Transactional
+    public void sendForgotOtp(ForgotSendOtpDTO body) {
+        if (body == null || body.email == null || body.email.isBlank()) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.BAD_REQUEST, "Email is required");
+        }
+        User u = userRepository.findByEmail(body.email)
+                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
+                        org.springframework.http.HttpStatus.NOT_FOUND, "Email not found"));
+
+        String otp = String.valueOf(100000 + new java.util.Random().nextInt(900000));
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        cal.add(java.util.Calendar.MINUTE, 10);
+        u.setOtpCode(otp);
+        u.setOtpExpiredAt(cal.getTime());
+        userRepository.save(u);
+
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom(fromEmail);
+            message.setTo(u.getEmail());
+            message.setSubject("Your OTP Code");
+            message.setText("Your OTP code is: " + otp + "\nIt will expire in 10 minutes.");
+            mailSender.send(message);
+        } catch (Exception e) {
+            // If mail fails, still allow client to proceed, but log
+            System.err.println("Failed to send OTP mail: " + e.getMessage());
+        }
+    }
+
+    @Transactional
+    public void resetForgotPassword(ForgotResetDTO body) {
+        if (body == null || body.email == null || body.otp == null || body.newPassword == null) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.BAD_REQUEST, "Invalid payload");
+        }
+        User u = userRepository.findByEmail(body.email)
+                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
+                        org.springframework.http.HttpStatus.NOT_FOUND, "Email not found"));
+        if (u.getOtpCode() == null || u.getOtpExpiredAt() == null) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.BAD_REQUEST, "OTP not requested");
+        }
+        java.util.Date now = new java.util.Date();
+        if (!body.otp.equals(u.getOtpCode()) || now.after(u.getOtpExpiredAt())) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.BAD_REQUEST, "Invalid or expired OTP");
+        }
+        u.setPassword(passwordEncoder.encode(body.newPassword));
+        u.setOtpCode(null);
+        u.setOtpExpiredAt(null);
+        userRepository.save(u);
+    }
+
+    @Transactional
+    public UserNestedDto updateProfile(String userId, UpdateProfileDTO body) {
+        User u = userRepository.findById(userId).orElseThrow();
+        if (body.name != null && !body.name.isBlank()) u.setName(body.name);
+        if (body.age != null) u.setAge(body.age);
+        if (body.address != null) u.setAddress(body.address);
+        User saved = userRepository.save(u);
+        return toUserNested(saved);
+    }
+
+    @Transactional
+    public void changePassword(String userId, ChangePasswordDTO body) {
+        if (body == null || body.pass == null || body.newPass == null || body.confirmNewPass == null) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.BAD_REQUEST, "Invalid payload");
+        }
+        if (!body.newPass.equals(body.confirmNewPass)) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.BAD_REQUEST, "Confirm password does not match");
+        }
+        User u = userRepository.findById(userId).orElseThrow();
+        if (!passwordEncoder.matches(body.pass, u.getPassword())) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.BAD_REQUEST, "Current password is incorrect");
+        }
+        u.setPassword(passwordEncoder.encode(body.newPass));
+        userRepository.save(u);
     }
 }
 

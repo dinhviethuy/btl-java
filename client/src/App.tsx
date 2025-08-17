@@ -5,6 +5,7 @@ import Header from 'components/client/header.client';
 import NotFound from 'components/share/not.found';
 import ProtectedRoute from 'components/share/protected-route.ts';
 import PublicOnlyRoute from 'components/share/public-only-route';
+import ForgotPasswordPage from 'pages/auth/forgot-password';
 import LoginPage from 'pages/auth/login';
 import RegisterPage from 'pages/auth/register';
 import HomePage from 'pages/home';
@@ -154,6 +155,11 @@ export default function App() {
     {
       path: "/login",
       element: <PublicOnlyRoute><LoginPage /></PublicOnlyRoute>,
+    },
+
+    {
+      path: "/forgot-password",
+      element: <PublicOnlyRoute><ForgotPasswordPage /></PublicOnlyRoute>,
     },
 
     {
