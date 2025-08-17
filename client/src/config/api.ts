@@ -369,3 +369,29 @@ export const callFetchSubscriber = (query: string) => {
 export const callFetchSubscriberById = (id: string) => {
   return axios.get<IBackendRes<ISubscribers>>(`/api/v1/subscribers/${id}`);
 };
+
+/**
+ * AI endpoints
+ */
+export const callAiChat = (message: string, email?: string) => {
+  return axios.post<IBackendRes<{ reply: string }>>(`/api/v1/ai/chat`, {
+    message,
+    email,
+  });
+};
+
+export const callAiSuggestJobs = (payload: {
+  query: string;
+  skills?: string[];
+  locations?: string[];
+  current?: number;
+  pageSize?: number;
+}) => {
+  return axios.post<
+    IBackendRes<{
+      jobs: IModelPaginate<IJob>;
+      reasoning: string;
+      normalizedQuery: string;
+    }>
+  >(`/api/v1/ai/suggest-jobs`, payload);
+};

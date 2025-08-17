@@ -40,6 +40,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/v1/auth/login", "/v1/auth/register", "/v1/auth/register/send-otp", "/v1/auth/register/verify", "/v1/auth/refresh", "/v1/auth/logout").permitAll()
                         .requestMatchers("/v1/auth/forgot/send-otp", "/v1/auth/forgot/reset").permitAll()
+                        .requestMatchers("/v1/ai/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/v1/companies/**", "/v1/jobs/**", "/v1/files/**").permitAll()
                         .anyRequest().authenticated()
                 )

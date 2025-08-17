@@ -1,3 +1,5 @@
+import AiChatWidget from "@/components/client/modal/ai.chat";
+import AiSuggestWidget from "@/components/client/modal/ai.suggest";
 import NotAuthenticated from "@/components/share/protected-route.ts/not-authenticated";
 import NotPermitted from "@/components/share/protected-route.ts/not-permitted";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
@@ -38,7 +40,12 @@ const LayoutApp = (props: IProps) => {
     if (isAdminRoute && isAuthenticated && !isLoading && (!permissions || permissions.length === 0)) {
         return <NotPermitted />
     }
-    return (<>{props.children}</>)
+    return (<>
+        {props.children}
+        {/* AI widgets */}
+        <AiChatWidget />
+        <AiSuggestWidget />
+    </>)
 }
 
 export default LayoutApp;
