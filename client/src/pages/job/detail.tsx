@@ -1,15 +1,16 @@
-import { useLocation, useNavigate } from "react-router-dom";
-import { useState, useEffect } from 'react';
-import { IJob } from "@/types/backend";
+import JobCard from "@/components/client/card/job.card";
+import ApplyModal from "@/components/client/modal/apply.modal";
 import { callFetchJobById } from "@/config/api";
-import styles from 'styles/client.module.scss';
-import parse from 'html-react-parser';
-import { Col, Divider, Row, Skeleton, Tag } from "antd";
+import { convertSlug, getLocationName } from "@/config/utils";
+import { IJob } from "@/types/backend";
 import { DollarOutlined, EnvironmentOutlined, HistoryOutlined } from "@ant-design/icons";
-import { getLocationName } from "@/config/utils";
+import { Col, Divider, Row, Skeleton, Tag } from "antd";
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import ApplyModal from "@/components/client/modal/apply.modal";
+import parse from 'html-react-parser';
+import { useEffect, useState } from 'react';
+import { Link, useLocation } from "react-router-dom";
+import styles from 'styles/client.module.scss';
 dayjs.extend(relativeTime)
 
 
@@ -82,14 +83,29 @@ const ClientJobDetailPage = (props: any) => {
                             <Col span={24} md={8}>
                                 <div className={styles["company"]}>
                                     <div>
-                                        <img
-                                            alt="example"
-                                            src={`${jobDetail.company?.logo}`}
-                                        />
+                                        <Link to={`/company/${jobDetail.company?.name ? convertSlug(jobDetail.company.name) : ''}?id=${jobDetail.company?._id}`}>
+                                            <img
+                                                alt="example"
+                                                src={`${jobDetail.company?.logo}`}
+                                            />
+                                        </Link>
                                     </div>
                                     <div>
-                                        {jobDetail.company?.name}
+                                        <Link to={`/company/${jobDetail.company?.name ? convertSlug(jobDetail.company.name) : ''}?id=${jobDetail.company?._id}`}>
+                                            {jobDetail.company?.name}
+                                        </Link>
                                     </div>
+                                </div>
+                                {/* Gợi ý job theo skills liên quan */}
+                                <div style={{ width: '100%', marginTop: 24 }}>
+                                    <h2 style={{ fontSize: 18, marginBottom: 12 }}>Công việc liên quan</h2>
+                                    <JobCard
+                                        showPagination={false}
+                                        filter={`skills=${encodeURIComponent((jobDetail?.skills?.[0] || '').toLowerCase())}&excludeId=${jobDetail?._id}&scope=public`}
+                                        hideHeader
+                                        listDirection='vertical'
+                                        defaultPageSize={4}
+                                    />
                                 </div>
                             </Col>
                         </>

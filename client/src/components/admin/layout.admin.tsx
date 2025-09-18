@@ -1,27 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import { ALL_PERMISSIONS } from '@/config/permissions';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { setLogoutAction } from '@/redux/slice/accountSlide';
 import {
-    AppstoreOutlined,
-    ExceptionOutlined,
+    AliwangwangOutlined,
     ApiOutlined,
-    UserOutlined,
+    AppstoreOutlined,
     BankOutlined,
+    BugOutlined,
+    ExceptionOutlined,
+    HeartTwoTone,
     MenuFoldOutlined,
     MenuUnfoldOutlined,
-    AliwangwangOutlined,
-    LogoutOutlined,
-    HeartTwoTone,
-    BugOutlined,
     ScheduleOutlined,
+    UserOutlined
 } from '@ant-design/icons';
-import { Layout, Menu, Dropdown, Space, message, Avatar, Button } from 'antd';
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { Link } from 'react-router-dom';
-import { callLogout } from 'config/api';
-import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { isMobile } from 'react-device-detect';
 import type { MenuProps } from 'antd';
-import { setLogoutAction } from '@/redux/slice/accountSlide';
-import { ALL_PERMISSIONS } from '@/config/permissions';
+import { Avatar, Button, Dropdown, Layout, Menu, Space, message } from 'antd';
+import { callLogout } from 'config/api';
+import React, { useEffect, useState } from 'react';
+import { isMobile } from 'react-device-detect';
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+import styles from 'styles/admin.module.scss';
 
 const { Content, Footer, Sider } = Layout;
 
@@ -74,11 +73,6 @@ const LayoutAdmin = () => {
                 {
                     label: <Link to='/admin'>Dashboard</Link>,
                     key: '/admin',
-                    icon: <AppstoreOutlined />
-                },
-                {
-                    label: <Link to='/admin/send-mail'>Test Send Mail</Link>,
-                    key: '/send-mail',
                     icon: <AppstoreOutlined />
                 },
                 ...(viewCompany ? [{
@@ -134,36 +128,35 @@ const LayoutAdmin = () => {
         }
     }
 
-    // if (isMobile) {
-    //     items.push({
-    //         label: <label
-    //             style={{ cursor: 'pointer' }}
-    //             onClick={() => handleLogout()}
-    //         >Đăng xuất</label>,
-    //         key: 'logout',
-    //         icon: <LogoutOutlined />
-    //     })
-    // }
-
-    const itemsDropdown = [
+    const itemsDropdown: MenuProps['items'] = [
         {
-            label: <Link to={'/'}>Trang chủ</Link>,
+            label: 'Trang chủ',
             key: 'home',
         },
         {
-            label: <label
-                style={{ cursor: 'pointer' }}
-                onClick={() => handleLogout()}
-            >Đăng xuất</label>,
+            label: 'Đăng xuất',
             key: 'logout',
         },
     ];
+
+    const onDropdownClick: MenuProps['onClick'] = (info) => {
+        switch (info.key) {
+            case 'home':
+                navigate('/');
+                break;
+            case 'logout':
+                handleLogout();
+                break;
+            default:
+                break;
+        }
+    };
 
     return (
         <>
             <Layout
                 style={{ minHeight: '100vh' }}
-                className="layout-admin"
+                className={styles['layout-admin']}
             >
                 {!isMobile ?
                     <Sider
@@ -192,7 +185,7 @@ const LayoutAdmin = () => {
 
                 <Layout>
                     {!isMobile &&
-                        <div className='admin-header' style={{ display: "flex", justifyContent: "space-between", marginRight: 20 }}>
+                        <div className={styles['admin-header']} style={{ display: "flex", justifyContent: "space-between", paddingRight: 20 }}>
                             <Button
                                 type="text"
                                 icon={collapsed ? React.createElement(MenuUnfoldOutlined) : React.createElement(MenuFoldOutlined)}
@@ -204,10 +197,10 @@ const LayoutAdmin = () => {
                                 }}
                             />
 
-                            <Dropdown menu={{ items: itemsDropdown }} trigger={['click']}>
+                            <Dropdown menu={{ items: itemsDropdown, onClick: onDropdownClick }} trigger={['click']}>
                                 <Space style={{ cursor: "pointer" }}>
-                                    Welcome {user?.name}
-                                    <Avatar> {user?.name?.substring(0, 2)?.toUpperCase()} </Avatar>
+                                    Xin chào,{user?.name}
+                                    <Avatar>{user?.name?.substring(0, 2)?.toUpperCase()}</Avatar>
 
                                 </Space>
                             </Dropdown>

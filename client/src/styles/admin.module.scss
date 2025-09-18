@@ -1,11 +1,22 @@
 .upsert-job-container {
-    background-color: white;
-    padding: 10px 30px;
-    border-radius: 5px;
-    min-height: 100vh;
-    height: auto;
+  background-color: var(--surface);
+  padding: 10px 30px;
+  border-radius: 5px;
+  min-height: 100vh;
+  height: auto;
 
-    .title {
-        padding: 10px 0 20px 0;
-    }
+  .title {
+    padding: 10px 0 20px 0;
+  }
+}
+
+.layout-admin {
+  background: var(--background);
+}
+
+.admin-header {
+  background: var(--header-bg);
+  color: var(--text);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(8px);
 }

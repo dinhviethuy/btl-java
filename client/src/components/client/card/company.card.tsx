@@ -1,7 +1,7 @@
 import { callFetchCompany } from '@/config/api';
 import { convertSlug } from '@/config/utils';
 import { ICompany } from '@/types/backend';
-import { Card, Col, Divider, Empty, Pagination, Row, Spin } from 'antd';
+import { Col, Empty, Pagination, Row, Spin } from 'antd';
 import { useEffect, useState } from 'react';
 import { isMobile } from 'react-device-detect';
 import { Link, useNavigate } from 'react-router-dom';
@@ -9,24 +9,53 @@ import styles from 'styles/client.module.scss';
 
 interface IProps {
     showPagination?: boolean;
+    defaultCurrent?: number;
+    defaultPageSize?: number;
+    onPageChange?: (current: number, pageSize: number) => void;
+    filter?: string;
 }
 
 const CompanyCard = (props: IProps) => {
-    const { showPagination = false } = props;
+    const { showPagination = false, defaultCurrent, defaultPageSize, onPageChange, filter: externalFilter } = props;
 
     const [displayCompany, setDisplayCompany] = useState<ICompany[] | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    const [current, setCurrent] = useState(1);
-    const [pageSize, setPageSize] = useState(4);
+    const [current, setCurrent] = useState(defaultCurrent || 1);
+    const [pageSize, setPageSize] = useState(defaultPageSize || (showPagination ? 8 : 4));
     const [total, setTotal] = useState(0);
     const [filter, setFilter] = useState("");
-    const [sortQuery, setSortQuery] = useState("sort=-updatedAt");
+    const [sortQuery, setSortQuery] = useState("sort=-createdAt");
     const navigate = useNavigate();
 
     useEffect(() => {
         fetchCompany();
     }, [current, pageSize, filter, sortQuery]);
+
+    // Đồng bộ state phân trang với giá trị từ URL (props)
+    useEffect(() => {
+        if (typeof defaultCurrent === 'number' && defaultCurrent > 0 && defaultCurrent !== current) {
+            setCurrent(defaultCurrent);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [defaultCurrent]);
+    useEffect(() => {
+        if (typeof defaultPageSize === 'number' && defaultPageSize > 0 && defaultPageSize !== pageSize) {
+            setPageSize(defaultPageSize);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [defaultPageSize]);
+
+    // nhận filter từ props (URL)
+    useEffect(() => {
+        if (externalFilter !== undefined) {
+            const f = externalFilter ? `name=${externalFilter}` : "";
+            setFilter(f);
+            // khi filter thay đổi từ URL -> reset về trang 1
+            setCurrent(1);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [externalFilter]);
 
     const fetchCompany = async () => {
         setIsLoading(true)
@@ -46,7 +75,6 @@ const CompanyCard = (props: IProps) => {
         setIsLoading(false)
     }
 
-
     const handleOnchangePage = (pagination: { current: number, pageSize: number }) => {
         if (pagination && pagination.current !== current) {
             setCurrent(pagination.current)
@@ -54,6 +82,11 @@ const CompanyCard = (props: IProps) => {
         if (pagination && pagination.pageSize !== pageSize) {
             setPageSize(pagination.pageSize)
             setCurrent(1);
+        }
+        if (onPageChange) {
+            const nextCurrent = (pagination && pagination.current !== current) ? pagination.current : current;
+            const nextPageSize = (pagination && pagination.pageSize !== pageSize) ? pagination.pageSize : pageSize;
+            onPageChange(nextCurrent, nextPageSize);
         }
     }
 
@@ -68,35 +101,80 @@ const CompanyCard = (props: IProps) => {
         <div className={`${styles["company-section"]}`}>
             <div className={styles["company-content"]}>
                 <Spin spinning={isLoading} tip="Loading...">
-                    <Row gutter={[20, 20]}>
+                    <Row gutter={[16, 16]} style={{ margin: 0 }}>
                         <Col span={24}>
+
                             <div className={isMobile ? styles["dflex-mobile"] : styles["dflex-pc"]}>
-                                <span className={styles["title"]}>Nhà Tuyển Dụng Hàng Đầu</span>
-                                {!showPagination &&
-                                    <Link to="company">Xem tất cả</Link>
-                                }
+                                <h2 className={styles["title"]}>Nhà Tuyển Dụng Hàng Đầu</h2>
+                                {!showPagination && (
+                                    <Link to="/company">Xem tất cả</Link>
+                                )}
                             </div>
                         </Col>
 
                         {displayCompany?.map(item => {
                             return (
-                                <Col span={24} md={6} key={item._id}>
-                                    <Card
+                                <Col span={12} md={6} key={item._id} style={{ marginBottom: 16 }}>
+                                    <div style={{
+                                        background: 'var(--surface)',
+                                        border: '1px solid var(--border)',
+                                        borderRadius: 8,
+                                        overflow: 'hidden',
+                                        cursor: 'pointer',
+                                        transition: 'transform 0.2s ease',
+                                        height: 240,
+                                        width: '100%',
+                                        display: 'flex',
+                                        flexDirection: 'column'
+                                    }}
                                         onClick={() => handleViewDetailJob(item)}
-                                        style={{ height: 350 }}
-                                        hoverable
-                                        cover={
-                                            <div className={styles["card-customize"]} >
-                                                <img
-                                                    alt="example"
-                                                    src={`${item?.logo}`}
-                                                />
-                                            </div>
-                                        }
+                                        onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.02)'}
+                                        onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
                                     >
-                                        <Divider />
-                                        <h3 style={{ textAlign: "center" }}>{item.name}</h3>
-                                    </Card>
+                                        {/* Logo */}
+                                        <div style={{
+                                            height: 160,
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            background: 'var(--input-bg)',
+                                            padding: 16
+                                        }}>
+                                            <img
+                                                alt={item.name}
+                                                src={item?.logo}
+                                                style={{
+                                                    width: 140,
+                                                    height: 140,
+                                                    objectFit: 'contain'
+                                                }}
+                                            />
+                                        </div>
+                                        {/* Name */}
+                                        <div style={{
+                                            flex: 1,
+                                            padding: '12px 16px',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            borderTop: '1px solid var(--border)'
+                                        }}>
+                                            <span style={{
+                                                fontSize: 16,
+                                                fontWeight: 600,
+                                                color: 'var(--title-text)',
+                                                textAlign: 'center',
+                                                lineHeight: 1.3,
+                                                display: 'block',
+                                                width: '100%',
+                                                overflow: 'hidden',
+                                                textOverflow: 'ellipsis',
+                                                whiteSpace: 'nowrap'
+                                            }}>
+                                                {item.name}
+                                            </span>
+                                        </div>
+                                    </div>
                                 </Col>
                             )
                         })}

@@ -38,8 +38,10 @@ const ViewDetailResume = (props: IProps) => {
     }
 
     useEffect(() => {
-        if (dataInit) {
-            form.setFieldValue("status", dataInit.status)
+        if (dataInit && dataInit.status) {
+            form.setFieldsValue({ status: dataInit.status });
+        } else {
+            form.resetFields();
         }
         return () => form.resetFields();
     }, [dataInit])
@@ -63,12 +65,11 @@ const ViewDetailResume = (props: IProps) => {
                 }
             >
                 <Descriptions title="" bordered column={2} layout="vertical">
-                    <Descriptions.Item label="Email">{dataInit?.email}</Descriptions.Item>
+                    <Descriptions.Item label="Email">{dataInit?.email ?? '-'}</Descriptions.Item>
                     <Descriptions.Item label="CV">
-                        <a
-                            href={`${dataInit?.url}`}
-                            target="_blank"
-                        >Chi tiết</a>
+                        {dataInit?.url ? (
+                            <a href={dataInit.url} target="_blank" rel="noreferrer">Chi tiết</a>
+                        ) : '-'}
                     </Descriptions.Item>
                     <Descriptions.Item label="Trạng thái">
                         <Form
@@ -76,11 +77,8 @@ const ViewDetailResume = (props: IProps) => {
                         >
                             <Form.Item name={"status"}>
                                 <Select
-                                    // placeholder="Select a option and change input text above"
-                                    // onChange={onGenderChange}
-                                    // allowClear
                                     style={{ width: "100%" }}
-                                    defaultValue={dataInit?.status}
+                                    allowClear
                                 >
                                     <Option value="PENDING">PENDING</Option>
                                     <Option value="REVIEWING">REVIEWING</Option>
@@ -91,10 +89,10 @@ const ViewDetailResume = (props: IProps) => {
                         </Form>
                     </Descriptions.Item>
                     <Descriptions.Item label="Tên Job">
-                        {dataInit?.jobId?.name}
+                        {dataInit?.jobId?.name ?? '-'}
                     </Descriptions.Item>
                     <Descriptions.Item label="Tên Công Ty">
-                        {dataInit?.companyId?.name}
+                        {dataInit?.companyId?.name ?? '-'}
                     </Descriptions.Item>
                     <Descriptions.Item label="Ngày tạo">{dataInit && dataInit.createdAt ? dayjs(dataInit.createdAt).format('DD-MM-YYYY HH:mm:ss') : ""}</Descriptions.Item>
                     <Descriptions.Item label="Ngày sửa">{dataInit && dataInit.updatedAt ? dayjs(dataInit.updatedAt).format('DD-MM-YYYY HH:mm:ss') : ""}</Descriptions.Item>

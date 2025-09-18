@@ -61,29 +61,39 @@ const Header = (props: any) => {
     }
 
     const canSeeAdmin = isAuthenticated && user?.permissions && user.permissions.length > 0;
-    const itemsDropdown = [
+    const itemsDropdown: MenuProps['items'] = [
         {
-            label: <label
-                style={{ cursor: 'pointer' }}
-                onClick={() => setOpenManageAccount(true)}
-            >Quản lý tài khoản</label>,
+            label: 'Quản lý tài khoản',
             key: 'manage-account',
             icon: <ContactsOutlined />
         },
         ...(canSeeAdmin ? [{
-            label: <Link to={"/admin"}>Trang Quản Trị</Link>,
+            label: 'Trang Quản Trị',
             key: 'admin',
             icon: <DashOutlined />
         }] : []),
         {
-            label: <label
-                style={{ cursor: 'pointer' }}
-                onClick={() => handleLogout()}
-            >Đăng xuất</label>,
+            label: 'Đăng xuất',
             key: 'logout',
             icon: <LogoutOutlined />
         },
     ];
+
+    const handleDropdownClick: MenuProps['onClick'] = (info) => {
+        switch (info.key) {
+            case 'manage-account':
+                setOpenManageAccount(true);
+                break;
+            case 'admin':
+                navigate('/admin');
+                break;
+            case 'logout':
+                handleLogout();
+                break;
+            default:
+                break;
+        }
+    };
 
     const itemsMobiles = [...items, ...itemsDropdown];
 
@@ -100,10 +110,10 @@ const Header = (props: any) => {
                                 <ConfigProvider
                                     theme={{
                                         token: {
-                                            colorPrimary: '#fff',
-                                            colorBgContainer: '#222831',
-                                            colorText: '#a7a7a7',
-                                        },
+                                            colorPrimary: '#4299e1',
+                                            colorBgContainer: 'var(--header-bg)',
+                                            colorText: 'var(--muted-text)',
+                                        }
                                     }}
                                 >
 
@@ -118,9 +128,9 @@ const Header = (props: any) => {
                                     {isAuthenticated === false ?
                                         <Link to={'/login'}>Đăng Nhập</Link>
                                         :
-                                        <Dropdown menu={{ items: itemsDropdown }} trigger={['click']}>
+                                        <Dropdown menu={{ items: itemsDropdown, onClick: handleDropdownClick }} trigger={['click']}>
                                             <Space style={{ cursor: "pointer" }}>
-                                                <span>Welcome {user?.name}</span>
+                                                <span>Xin chào, {user?.name}</span>
                                                 <Avatar> {user?.name?.substring(0, 2)?.toUpperCase()} </Avatar>
                                             </Space>
                                         </Dropdown>

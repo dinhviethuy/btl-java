@@ -1,0 +1,74 @@
+:root {
+  color-scheme: light dark;
+  /* Light mode clean */
+  --background: #f9f9f9;
+  --surface: #ffffff;
+  --text: #030303;
+  --title-text: #111111;
+  --muted-text: #606060;
+  --muted: #909090;
+  --border: #e0e0e0;
+  --primary: #ff0000;
+  --link: #0066cc;
+  --danger: #cc0000;
+  --header-bg: #ffffff;
+  --header-bg-alpha: rgba(241, 241, 241, 0.9);
+  --input-bg: #f0f0f0;
+  --shadow-1: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-2: 0 4px 12px rgba(0, 0, 0, 0.15), 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  /* YouTube Dark theme inspired */
+  --background: #0f0f0f;
+  --surface: #212121;
+  --text: #ffffff;
+  --title-text: #ffffff;
+  --muted-text: #999999;
+  --muted: #717171;
+  --border: #484848;
+  --primary: #ff0000;
+  --link: #3ea6ff;
+  --danger: #ff4444;
+  --header-bg: #101010;
+  --header-bg-alpha: rgba(32, 32, 32, 0.95);
+  --input-bg: #121212;
+  --shadow-1: 0 1px 3px rgba(0, 0, 0, 0.6), 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-2: 0 4px 12px rgba(0, 0, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Global base */
+html,
+body,
+#root {
+  height: 100%;
+  background: var(--background);
+  color: var(--text);
+}
+
+/* Fix dropdown (antd) click-through & container z-index so it doesn't close on first click */
+.ant-select-dropdown,
+.ant-picker-dropdown,
+.ant-dropdown,
+.ant-tooltip,
+.ant-popover {
+  pointer-events: auto;
+}
+
+/* Ensure overlay renders above headers/inputs and doesn't get cut */
+.ant-select-dropdown,
+.ant-dropdown,
+.ant-popover,
+.ant-picker-dropdown {
+  z-index: 2000;
+}
+
+.layout-app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--background);
+  color: var(--text);
+  transition: background 0.25s ease, color 0.25s ease;
+}

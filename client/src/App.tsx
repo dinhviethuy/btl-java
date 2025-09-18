@@ -18,7 +18,6 @@ import {
 } from "react-router-dom";
 import styles from 'styles/app.module.scss';
 import ViewUpsertJob from './components/admin/job/upsert.job';
-import SendMail from './components/admin/send-mail/Send-Mail';
 import LayoutApp from './components/share/layout.app';
 import CompanyPage from './pages/admin/company';
 import DashboardPage from './pages/admin/dashboard';
@@ -100,10 +99,6 @@ export default function App() {
             <ProtectedRoute>
               <CompanyPage />
             </ProtectedRoute>
-        },
-        {
-          path: "send-mail",
-          element: <ProtectedRoute><SendMail /></ProtectedRoute>,
         },
         {
           path: "user",

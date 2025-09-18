@@ -1,11 +1,12 @@
-import { useLocation, useNavigate } from "react-router-dom";
-import { useState, useEffect } from 'react';
-import { ICompany } from "@/types/backend";
+import JobCard from "@/components/client/card/job.card";
 import { callFetchCompanyById } from "@/config/api";
-import styles from 'styles/client.module.scss';
-import parse from 'html-react-parser';
-import { Col, Divider, Row, Skeleton } from "antd";
+import { ICompany } from "@/types/backend";
 import { EnvironmentOutlined } from "@ant-design/icons";
+import { Col, Divider, Row, Skeleton } from "antd";
+import parse from 'html-react-parser';
+import { useEffect, useState } from 'react';
+import { useLocation } from "react-router-dom";
+import styles from 'styles/client.module.scss';
 
 
 const ClientCompanyDetailPage = (props: any) => {
@@ -49,6 +50,8 @@ const ClientCompanyDetailPage = (props: any) => {
 
                                 <Divider />
                                 {parse(companyDetail?.description ?? "")}
+                                <Divider />
+                                {/* Nội dung giới thiệu công ty giữ bên trái */}
                             </Col>
 
                             <Col span={24} md={8}>
@@ -62,6 +65,17 @@ const ClientCompanyDetailPage = (props: any) => {
                                     <div>
                                         {companyDetail?.name}
                                     </div>
+                                </div>
+                                {/* Danh sách Job của công ty đặt dưới logo */}
+                                <div style={{ width: '100%', marginTop: 24 }}>
+                                    <h2 style={{ fontSize: 18, marginBottom: 12 }}>Công việc đang tuyển</h2>
+                                    <JobCard
+                                        showPagination={false}
+                                        filter={`companyId=${companyDetail._id}&scope=public`}
+                                        hideHeader
+                                        listDirection='vertical'
+                                        defaultPageSize={4}
+                                    />
                                 </div>
                             </Col>
                         </>

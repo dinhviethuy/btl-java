@@ -1,18 +1,18 @@
-import { Breadcrumb, Col, ConfigProvider, Divider, Form, Row, message, notification } from "antd";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { DebounceSelect } from "../user/debouce.select";
-import { FooterToolbar, ProForm, ProFormDatePicker, ProFormDigit, ProFormSelect, ProFormSwitch, ProFormText } from "@ant-design/pro-components";
-import styles from 'styles/admin.module.scss';
-import { LOCATION_LIST, SKILLS_LIST } from "@/config/utils";
-import { ICompanySelect } from "../user/modal.user";
-import { useState, useEffect } from 'react';
 import { callCreateJob, callFetchCompany, callFetchJobById, callUpdateJob } from "@/config/api";
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+import { LOCATION_LIST, SKILLS_LIST } from "@/config/utils";
+import { IJob } from "@/types/backend";
 import { CheckSquareOutlined } from "@ant-design/icons";
+import { FooterToolbar, ProForm, ProFormDatePicker, ProFormDigit, ProFormSelect, ProFormSwitch, ProFormText } from "@ant-design/pro-components";
+import { Breadcrumb, Col, ConfigProvider, Divider, Form, Row, message, notification } from "antd";
 import enUS from 'antd/lib/locale/en_US';
 import dayjs from 'dayjs';
-import { IJob } from "@/types/backend";
+import { useEffect, useState } from 'react';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import styles from 'styles/admin.module.scss';
+import { DebounceSelect } from "../user/debouce.select";
+import { ICompanySelect } from "../user/modal.user";
 
 const ViewUpsertJob = (props: any) => {
     const [companies, setCompanies] = useState<ICompanySelect[]>([]);
@@ -205,7 +205,7 @@ const ViewUpsertJob = (props: any) => {
                                 <ProFormSelect
                                     name="location"
                                     label="Địa điểm"
-                                    options={LOCATION_LIST.filter(item => item.value !== 'ALL')}
+                                    options={LOCATION_LIST.filter(item => item.value)}
                                     placeholder="Please select a location"
                                     rules={[{ required: true, message: 'Vui lòng chọn địa điểm!' }]}
                                 />

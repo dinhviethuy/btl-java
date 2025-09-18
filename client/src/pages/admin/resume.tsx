@@ -69,13 +69,20 @@ const ResumePage = () => {
                     showSearch
                     mode="multiple"
                     allowClear
+                    placeholder="Trạng thái"
+                    fieldProps={{
+                        maxTagCount: 'responsive',
+                        maxTagTextLength: 10,
+                        maxTagPlaceholder: (omittedValues: any[]) => (
+                            <span title={omittedValues.map((o: any) => String(o.label ?? o.value)).join(', ')}>+ {omittedValues?.length} ...</span>
+                        )
+                    }}
                     valueEnum={{
                         PENDING: 'PENDING',
                         REVIEWING: 'REVIEWING',
                         APPROVED: 'APPROVED',
                         REJECTED: 'REJECTED',
                     }}
-                    placeholder="Chọn level"
                 />
             ),
         },
@@ -171,9 +178,9 @@ const ResumePage = () => {
             sortBy = sort.updatedAt === 'ascend' ? "sort=updatedAt" : "sort=-updatedAt";
         }
 
-        //mặc định sort theo updatedAt
+        //mặc định sort theo createdAt
         if (Object.keys(sortBy).length === 0) {
-            temp = `${temp}&sort=-updatedAt`;
+            temp = `${temp}&sort=-createdAt`;
         } else {
             temp = `${temp}&${sortBy}`;
         }
@@ -196,7 +203,8 @@ const ResumePage = () => {
                     dataSource={resumes}
                     request={async (params, sort, filter): Promise<any> => {
                         const query = buildQuery(params, sort, filter);
-                        dispatch(fetchResume({ query }))
+                        await dispatch(fetchResume({ query }));
+                        return true as any;
                     }}
                     scroll={{ x: true }}
                     pagination={

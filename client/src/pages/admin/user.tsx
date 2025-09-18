@@ -1,18 +1,18 @@
+import ModalUser from "@/components/admin/user/modal.user";
+import ViewDetailUser from "@/components/admin/user/view.user";
 import DataTable from "@/components/client/data-table";
+import Access from "@/components/share/access";
+import { callDeleteUser, callFetchCompany } from "@/config/api";
+import { ALL_PERMISSIONS } from "@/config/permissions";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { fetchUser } from "@/redux/slice/userSlide";
 import { IUser } from "@/types/backend";
 import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
-import { ActionType, ProColumns } from '@ant-design/pro-components';
+import { ActionType, ProColumns, ProFormSelect } from '@ant-design/pro-components';
 import { Button, Popconfirm, Space, message, notification } from "antd";
-import { useState, useRef } from 'react';
 import dayjs from 'dayjs';
-import { callDeleteUser } from "@/config/api";
 import queryString from 'query-string';
-import ModalUser from "@/components/admin/user/modal.user";
-import ViewDetailUser from "@/components/admin/user/view.user";
-import Access from "@/components/share/access";
-import { ALL_PERMISSIONS } from "@/config/permissions";
+import { useRef, useState } from 'react';
 
 const UserPage = () => {
     const [openModal, setOpenModal] = useState<boolean>(false);
@@ -71,6 +71,26 @@ const UserPage = () => {
             title: 'Email',
             dataIndex: 'email',
             sorter: true,
+        },
+        {
+            title: 'Công ty',
+            dataIndex: ['company', 'name'],
+            renderFormItem: () => (
+                <ProFormSelect
+                    showSearch
+                    debounceTime={300}
+                    placeholder="Chọn công ty"
+                    request={async ({ keyWords }) => {
+                        const query = `current=1&pageSize=10&name=${keyWords ? encodeURIComponent('/' + keyWords + '/i') : ''}`;
+                        const res = await callFetchCompany(query);
+                        if (res && res.data) {
+                            return res.data.result.map((c: any) => ({ label: c.name, value: c._id }));
+                        }
+                        return [];
+                    }}
+                    name="companyId"
+                />
+            ),
         },
 
         {
@@ -153,6 +173,7 @@ const UserPage = () => {
         const clone = { ...params };
         if (clone.name) clone.name = `/${clone.name}/i`;
         if (clone.email) clone.email = `/${clone.email}/i`;
+        if (clone.companyId) clone.companyId = clone.companyId;
 
         let temp = queryString.stringify(clone);
 

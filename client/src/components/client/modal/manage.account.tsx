@@ -33,6 +33,15 @@ const UserResume = (props: any) => {
         init();
     }, [])
 
+    const getCompanyName = (r: IResume) => typeof r.companyId === 'string' ? '' : (r.companyId?.name || '');
+    const getJobName = (r: IResume) => typeof r.jobId === 'string' ? '' : (r.jobId?.name || '');
+    const companyFilters = Array.from(new Set(listCV.map(getCompanyName).filter(Boolean)))
+        .map(n => ({ text: n, value: n }));
+    const jobFilters = Array.from(new Set(listCV.map(getJobName).filter(Boolean)))
+        .map(n => ({ text: n, value: n }));
+    const statusFilters = Array.from(new Set(listCV.map(r => r.status).filter(Boolean)))
+        .map(s => ({ text: s, value: s }));
+
     const columns: ColumnsType<IResume> = [
         {
             title: 'STT',
@@ -49,16 +58,23 @@ const UserResume = (props: any) => {
         {
             title: 'Công Ty',
             dataIndex: ["companyId", "name"],
-
+            filters: companyFilters,
+            onFilter: (value, record) => getCompanyName(record).toLowerCase().includes(String(value).toLowerCase()),
+            sorter: (a, b) => getCompanyName(a).localeCompare(getCompanyName(b)),
         },
         {
             title: 'Vị trí',
             dataIndex: ["jobId", "name"],
-
+            filters: jobFilters,
+            onFilter: (value, record) => getJobName(record).toLowerCase().includes(String(value).toLowerCase()),
+            sorter: (a, b) => getJobName(a).localeCompare(getJobName(b)),
         },
         {
             title: 'Trạng thái',
             dataIndex: "status",
+            filters: statusFilters,
+            onFilter: (value, record) => String(record.status) === String(value),
+            sorter: (a, b) => String(a.status).localeCompare(String(b.status)),
         },
         {
             title: 'Ngày rải CV',
@@ -68,6 +84,7 @@ const UserResume = (props: any) => {
                     <>{dayjs(record.createdAt).format('DD-MM-YYYY HH:mm:ss')}</>
                 )
             },
+            sorter: (a, b) => new Date(a.createdAt || '').getTime() - new Date(b.createdAt || '').getTime(),
         },
         {
             title: '',
@@ -89,7 +106,8 @@ const UserResume = (props: any) => {
                 columns={columns}
                 dataSource={listCV || []}
                 loading={isFetching}
-                pagination={false}
+                rowKey={(r) => r._id as string}
+                pagination={{ pageSize: 10, showSizeChanger: false }}
             />
         </div>
     )
@@ -334,7 +352,7 @@ const ManageAccount = (props: IProps) => {
                 maskClosable={false}
                 footer={null}
                 destroyOnClose={true}
-                width={isMobile ? "100%" : "1000px"}
+                width={isMobile ? "100%" : "1200px"}
             >
 
                 <div style={{ minHeight: 400 }}>

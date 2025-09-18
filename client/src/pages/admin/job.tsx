@@ -1,17 +1,17 @@
 import DataTable from "@/components/client/data-table";
+import Access from "@/components/share/access";
+import { callDeleteJob } from "@/config/api";
+import { ALL_PERMISSIONS } from "@/config/permissions";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { fetchJob } from "@/redux/slice/jobSlide";
 import { IJob } from "@/types/backend";
 import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import { ActionType, ProColumns, ProFormSelect } from '@ant-design/pro-components';
-import { Button, Popconfirm, Select, Space, Tag, message, notification } from "antd";
-import { useState, useRef } from 'react';
+import { Button, message, notification, Popconfirm, Slider, Space, Tag } from "antd";
 import dayjs from 'dayjs';
-import { callDeleteJob } from "@/config/api";
 import queryString from 'query-string';
+import { useRef } from 'react';
 import { useNavigate } from "react-router-dom";
-import { fetchJob } from "@/redux/slice/jobSlide";
-import Access from "@/components/share/access";
-import { ALL_PERMISSIONS } from "@/config/permissions";
 
 const JobPage = () => {
     const tableRef = useRef<ActionType>();
@@ -61,9 +61,40 @@ const JobPage = () => {
             sorter: true,
         },
         {
+            title: 'Công ty',
+            dataIndex: ['company', 'name'],
+            renderFormItem: () => (
+                <ProFormSelect
+                    showSearch
+                    debounceTime={300}
+                    placeholder="Chọn công ty"
+                    request={async ({ keyWords }) => {
+                        // Manager chỉ thấy danh sách công ty của chính mình; Super Admin thấy tất cả
+                        const query = `current=1&pageSize=10&name=${keyWords ? encodeURIComponent('/' + keyWords + '/i') : ''}`;
+                        const res = await import("@/config/api").then(m => m.callFetchCompany(query));
+                        if (res && res.data) {
+                            return res.data.result.map((c: any) => ({ label: c.name, value: c._id }));
+                        }
+                        return [];
+                    }}
+                    name="companyId"
+                />
+            ),
+        },
+        {
             title: 'Mức lương',
             dataIndex: 'salary',
             sorter: true,
+            renderFormItem: () => (
+                <Slider
+                    range
+                    min={0}
+                    max={100_000_000}
+                    step={1_000_000}
+                    tooltip={{ formatter: (v) => (v ?? 0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' đ' }}
+                    marks={{ 0: '0đ', 10_000_000: '10M', 50_000_000: '50M', 100_000_000: '100M+' }}
+                />
+            ),
             render(dom, entity, index, action, schema) {
                 const str = "" + entity.salary;
                 return <>{str?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} đ</>
@@ -178,12 +209,18 @@ const JobPage = () => {
     const buildQuery = (params: any, sort: any, filter: any) => {
         const clone = { ...params };
         if (clone.name) clone.name = `/${clone.name}/i`;
-        if (clone.salary) clone.salary = `/${clone.salary}/i`;
+        // chuyển slider salary (range) -> minSalary/maxSalary
+        if (Array.isArray(clone.salary) && clone.salary.length === 2) {
+            const [min, max] = clone.salary;
+            if (min !== undefined) clone.minSalary = min;
+            if (max !== undefined) clone.maxSalary = max;
+            delete clone.salary;
+        }
         if (clone?.level?.length) {
             clone.level = clone.level.join(",");
         }
 
-        let temp = queryString.stringify(clone);
+        let temp = queryString.stringify({ scope: 'admin', ...clone });
 
         let sortBy = "";
         if (sort && sort.name) {
