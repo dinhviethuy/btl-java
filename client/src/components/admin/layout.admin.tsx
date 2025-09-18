@@ -172,6 +172,7 @@ const LayoutAdmin = () => {
                             mode="inline"
                             items={menuItems}
                             onClick={(e) => setActiveMenu(e.key)}
+                            style={{ borderInlineEnd: 'none' }}
                         />
                     </Sider>
                     :

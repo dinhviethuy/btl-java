@@ -60,9 +60,11 @@ const ClientJobDetailPage = (props: any) => {
                                 <div className={styles["skills"]}>
                                     {jobDetail?.skills?.map((item, index) => {
                                         return (
-                                            <Tag key={`${index}-key`} color="gold" >
-                                                {item}
-                                            </Tag>
+                                            <Link to={`/job?skills=${encodeURIComponent(item.toLowerCase())}`}>
+                                                <Tag key={`${index}-key`} color="gold" >
+                                                    {item}
+                                                </Tag>
+                                            </Link>
                                         )
                                     })}
                                 </div>
