@@ -169,6 +169,7 @@ const UserUpdateInfo = (props: any) => {
                         <Upload
                             showUploadList={false}
                             beforeUpload={() => false}
+                            accept="image/*"
                             onChange={(info) => {
                                 const f: any = info?.file;
                                 const raw: File | undefined = f?.originFileObj || (f instanceof File ? f : undefined);

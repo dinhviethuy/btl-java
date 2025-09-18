@@ -10,6 +10,7 @@ import com.fullnestjob.modules.jobs.repo.JobRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -21,6 +22,7 @@ import java.util.*;
 
 @Component
 @ConditionalOnProperty(prefix = "app.seed", name = "enabled", havingValue = "true")
+@Order(30)
 public class SeedRunner implements CommandLineRunner {
     private final CompanyRepository companyRepository;
     private final JobRepository jobRepository;
@@ -32,12 +34,19 @@ public class SeedRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // Skip when seeding only permissions via PermissionsSeedRunner
-        for (String arg : args) {
-            if ("--seed-permissions".equals(arg) || "--seed.permissions".equals(arg)) {
-                System.out.println("SeedRunner: skipped (seeding permissions only)");
-                return;
-            }
+        boolean hasSpecificFlag = hasAny(args,
+                "--seed-admin", "--seed.admin",
+                "--seed-permissions", "--seed.permissions",
+                "--seed-data", "--seed.data",
+                "--seed-logos", "--seed.logos",
+                "--seed-logos-direct", "--seed.logos.direct",
+                "--seed-all", "--seed.all");
+        boolean logosOnly = hasAny(args, "--seed-logos", "--seed.logos", "--seed-logos-direct", "--seed.logos.direct");
+        boolean shouldRun = (!hasSpecificFlag && !logosOnly)
+                || hasAny(args, "--seed-data", "--seed.data", "--seed-all", "--seed.all");
+        if (!shouldRun) {
+            System.out.println("SeedRunner: skipped (flags)");
+            return;
         }
         ObjectMapper mapper = new ObjectMapper();
         Path appDir = Paths.get(System.getProperty("user.dir"));
@@ -130,6 +139,16 @@ public class SeedRunner implements CommandLineRunner {
         if (node == null || !node.has(field) || node.get(field).isNull()) return null;
         JsonNode v = node.get(field);
         return v.isTextual() ? v.asText() : v.toString();
+    }
+
+    private static boolean hasAny(String[] args, String... keys) {
+        if (args == null || args.length == 0) return false;
+        for (String a : args) {
+            for (String k : keys) {
+                if (k.equals(a)) return true;
+            }
+        }
+        return false;
     }
 }
 
