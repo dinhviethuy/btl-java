@@ -1,11 +1,11 @@
-import { callChangePassword, callFetchResumeByUser, callGetSubscriberSkills, callUpdateProfile, callUpdateSubscriber } from "@/config/api";
+import { callChangePassword, callFetchResumeByUser, callGetSubscriberSkills, callUpdateProfile, callUpdateSubscriber, callUploadSingleFile } from "@/config/api";
 import { SKILLS_LIST } from "@/config/utils";
 import { useAppSelector } from "@/redux/hooks";
 import { setUserLoginInfo } from '@/redux/slice/accountSlide';
 import { IResume } from "@/types/backend";
-import { MonitorOutlined } from "@ant-design/icons";
+import { MonitorOutlined, UploadOutlined } from "@ant-design/icons";
 import type { TabsProps } from 'antd';
-import { Button, Col, Form, Input, InputNumber, Modal, Row, Select, Table, Tabs, message, notification } from "antd";
+import { Avatar, Button, Col, Form, Input, InputNumber, Modal, Row, Select, Table, Tabs, Upload, message, notification } from "antd";
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
@@ -117,6 +117,9 @@ const UserUpdateInfo = (props: any) => {
     const [form] = Form.useForm();
     const dispatch = useDispatch();
     const user = useAppSelector(state => state.account.user);
+    const [uploading, setUploading] = useState<boolean>(false);
+    const [preview, setPreview] = useState<string | undefined>(user?.avatar || undefined);
+    const [avatarFile, setAvatarFile] = useState<File | undefined>(undefined);
 
     useEffect(() => {
         form.setFieldsValue({
@@ -128,10 +131,27 @@ const UserUpdateInfo = (props: any) => {
 
     const onFinish = async (values: any) => {
         const { name, age, address } = values;
-        const res = await callUpdateProfile({ name, age: age !== undefined && age !== null ? Number(age) : undefined, address });
+        const payload: { name?: string; age?: number; address?: string; avatar?: string | null } = {
+            name,
+            age: age !== undefined && age !== null ? Number(age) : undefined,
+            address,
+        };
+        // nếu có file mới -> upload lấy URL
+        if (avatarFile) {
+            try {
+                setUploading(true);
+                const up = await callUploadSingleFile(avatarFile, 'avatar');
+                if (up?.data?.url) payload.avatar = up.data.url;
+            } finally {
+                setUploading(false);
+            }
+        }
+        const res = await callUpdateProfile(payload);
         if (res && res.data) {
             message.success("Cập nhật thông tin thành công");
             dispatch(setUserLoginInfo(res.data));
+            setAvatarFile(undefined);
+            setPreview(res.data.avatar || undefined);
         } else {
             notification.error({ message: 'Có lỗi xảy ra', description: res?.message });
         }
@@ -140,6 +160,41 @@ const UserUpdateInfo = (props: any) => {
     return (
         <Form form={form} onFinish={onFinish} layout="vertical">
             <Row gutter={[20, 20]}>
+                <Col span={24}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                        <Avatar size={64} src={preview || user?.avatar} style={{ border: "1px solid #000" }}>
+                            {!(preview || user?.avatar) && (user?.name?.substring(0, 2)?.toUpperCase() || 'NA')}
+                        </Avatar>
+
+                        <Upload
+                            showUploadList={false}
+                            beforeUpload={() => false}
+                            onChange={(info) => {
+                                const f: any = info?.file;
+                                const raw: File | undefined = f?.originFileObj || (f instanceof File ? f : undefined);
+                                if (!raw) return;
+                                const reader = new FileReader();
+                                reader.onload = (e) => setPreview(String(e.target?.result || ''));
+                                reader.readAsDataURL(raw);
+                                setAvatarFile(raw);
+                            }}
+                        >
+                            <Button icon={<UploadOutlined />}>Chọn ảnh</Button>
+                        </Upload>
+                        {preview && preview !== user?.avatar && (
+                            <Button onClick={() => { setPreview(undefined); setAvatarFile(undefined); }}>Xóa ảnh đã chọn</Button>
+                        )}
+                        {(preview || user?.avatar) && (
+                            <Button danger onClick={async () => {
+                                setPreview(undefined);
+                                setAvatarFile(undefined);
+                                const res = await callUpdateProfile({ avatar: null });
+                                if (res?.data) { dispatch(setUserLoginInfo(res.data)); message.success('Đã gỡ avatar'); }
+                            }}>Gỡ avatar</Button>
+                        )}
+                    </div>
+
+                </Col>
                 <Col span={24}>
                     <Form.Item label={"Tên hiển thị"} name={"name"} rules={[{ required: true, message: 'Tên không được để trống!' }]}>
                         <Input />

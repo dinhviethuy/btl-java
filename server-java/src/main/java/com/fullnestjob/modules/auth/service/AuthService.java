@@ -170,6 +170,7 @@ public class AuthService {
         dto._id = u.get_id();
         dto.email = u.getEmail();
         dto.name = u.getName();
+        dto.avatar = u.getAvatar();
         dto.age = u.getAge();
         dto.address = u.getAddress();
         if (u.getRole() != null) {
@@ -328,6 +329,11 @@ public class AuthService {
     public UserNestedDto updateProfile(String userId, UpdateProfileDTO body) {
         User u = userRepository.findById(userId).orElseThrow();
         if (body.name != null && !body.name.isBlank()) u.setName(body.name);
+        if (body.avatar == null) {
+            u.setAvatar(null);
+        } else {
+            u.setAvatar(body.avatar);
+        }
         if (body.age != null) u.setAge(body.age);
         if (body.address != null) u.setAddress(body.address);
         User saved = userRepository.save(u);

@@ -200,8 +200,11 @@ const LayoutAdmin = () => {
                             <Dropdown menu={{ items: itemsDropdown, onClick: onDropdownClick }} trigger={['click']}>
                                 <Space style={{ cursor: "pointer" }}>
                                     Xin chào,{user?.name}
-                                    <Avatar>{user?.name?.substring(0, 2)?.toUpperCase()}</Avatar>
-
+                                    {user?.avatar ? (
+                                        <Avatar src={user.avatar} />
+                                    ) : (
+                                        <Avatar>{user?.name?.substring(0, 2)?.toUpperCase()}</Avatar>
+                                    )}
                                 </Space>
                             </Dropdown>
                         </div>

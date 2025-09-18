@@ -26,6 +26,7 @@ public class AuthDtos {
         @Email
         public String email;
         public String name;
+        public String avatar;
         public Integer age;
         public String address;
         public Object role; // can be string or object
@@ -65,6 +66,7 @@ public class AuthDtos {
 
     public static class UpdateProfileDTO {
         public String name;
+        public String avatar;
         public Integer age;
         public String address;
     }

@@ -20,6 +20,7 @@ public class UserDtos {
         @Email
         public String email;
         public String name;
+        public String avatar;
         public Integer age;
         public String gender;
         public RoleRefDTO role; // or string in auth
@@ -48,6 +49,7 @@ public class UserDtos {
         @Email
         public String email;
         public String name;
+        public String avatar;
         public Integer age;
         public String gender;
         public CompanyRefDTO company;

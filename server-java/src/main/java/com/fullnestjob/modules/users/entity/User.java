@@ -21,6 +21,8 @@ public class User extends BaseAuditEntity {
 	private Integer age;
 	private String gender;
 
+	private String avatar; // URL avatar (optional)
+
 	@ManyToOne
 	@JoinColumn(name = "company_id", referencedColumnName = "id")
 	private Company company;
@@ -73,6 +75,8 @@ public class User extends BaseAuditEntity {
 	public void setAge(Integer age) { this.age = age; }
 	public String getGender() { return gender; }
 	public void setGender(String gender) { this.gender = gender; }
+	public String getAvatar() { return avatar; }
+	public void setAvatar(String avatar) { this.avatar = avatar; }
 	public Company getCompany() { return company; }
 	public void setCompany(Company company) { this.company = company; }
 	public Role getRole() { return role; }

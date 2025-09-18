@@ -118,6 +118,7 @@ export const callUpdateProfile = (payload: {
   name?: string;
   age?: number;
   address?: string;
+  avatar?: string | null;
 }) => {
   return axios.patch<IBackendRes<IGetAccount["user"]>>("/api/v1/auth/profile", {
     ...payload,
