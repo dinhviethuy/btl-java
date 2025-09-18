@@ -38,7 +38,8 @@ public class ResumesService {
     public PageResultDTO<ResumeDetailDTO> find(PaginationQueryDTO query) {
         int current = query.getCurrent() != null ? query.getCurrent() : 1;
         int pageSize = query.getPageSize() != null ? query.getPageSize() : 10;
-        var pageable = PageRequest.of(current - 1, pageSize);
+        org.springframework.data.domain.Sort sort = parseSort(query);
+        var pageable = org.springframework.data.domain.PageRequest.of(current - 1, pageSize, sort);
         String status = query.getStatus();
         Page<Resume> page;
         String currentRole = com.fullnestjob.security.SecurityUtils.getCurrentRole();
@@ -87,6 +88,21 @@ public class ResumesService {
         meta.pages = page.getTotalPages();
         res.meta = meta;
         return res;
+    }
+
+    private org.springframework.data.domain.Sort parseSort(PaginationQueryDTO query) {
+        if (query == null) return org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Order.desc("createdAt"));
+        try {
+            java.lang.reflect.Field f = query.getClass().getDeclaredField("sort");
+            f.setAccessible(true);
+            Object v = f.get(query);
+            if (v instanceof String s && !s.isBlank()) {
+                String key = s.startsWith("sort=") ? s.substring(5) : s;
+                if (key.startsWith("-")) return org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Order.desc(key.substring(1)));
+                return org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Order.asc(key));
+            }
+        } catch (Exception ignored) {}
+        return org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Order.desc("createdAt"));
     }
 
     public ResumeDetailDTO findById(String id) {

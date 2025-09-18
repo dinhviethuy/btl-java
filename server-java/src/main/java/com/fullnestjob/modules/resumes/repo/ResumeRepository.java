@@ -14,6 +14,9 @@ public interface ResumeRepository extends JpaRepository<Resume, String> {
     @Query("select r from Resume r where r.companyId._id = :companyId")
     List<Resume> findByCompanyId(@Param("companyId") String companyId);
 
+    @Query("select r from Resume r where r.jobId._id = :jobId")
+    List<Resume> findByJobId(@Param("jobId") String jobId);
+
     List<Resume> findByUserId(String userId);
 
     Page<Resume> findByStatusContainingIgnoreCase(String status, Pageable pageable);

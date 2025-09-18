@@ -36,7 +36,7 @@ app:
   jwt:
     issuer: from server
     # Hỗ trợ định dạng ISO-8601 duration: PT15M (15 phút), P30D (30 ngày)
-    access-token-expiration: PT15S
+    access-token-expiration: P30D
     refresh-token-expiration: P30D
     secret: ${JWT_SECRET:Vt1yQZ4mK8rN2sP6xD9fA3cH7jL0wT5yU8iR2oE6bG9nC3vM7pQ1sL4dF8hJ2kR}
   cors:

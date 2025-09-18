@@ -24,11 +24,13 @@ public class JobsService {
     private final JobRepository jobRepository;
     private final CompanyRepository companyRepository;
     private final com.fullnestjob.modules.users.repo.UserRepository userRepository;
+    private final com.fullnestjob.modules.resumes.repo.ResumeRepository resumeRepository;
 
-    public JobsService(JobRepository jobRepository, CompanyRepository companyRepository, com.fullnestjob.modules.users.repo.UserRepository userRepository) {
+    public JobsService(JobRepository jobRepository, CompanyRepository companyRepository, com.fullnestjob.modules.users.repo.UserRepository userRepository, com.fullnestjob.modules.resumes.repo.ResumeRepository resumeRepository) {
         this.jobRepository = jobRepository;
         this.companyRepository = companyRepository;
         this.userRepository = userRepository;
+        this.resumeRepository = resumeRepository;
     }
 
     public PageResultDTO<JobDetailDTO> find(PaginationQueryDTO query) {
@@ -40,6 +42,45 @@ public class JobsService {
         String nameFilter = query.getName();
         String locationFilter = query.getLocation();
         String scope = query.getScope();
+        String companyIdFilter = query.getCompanyId();
+        String excludeId = query.getExcludeId();
+        String salaryStr = query.getSalary();
+        Double minSalaryParam = query.getMinSalary();
+        Double maxSalaryParam = query.getMaxSalary();
+        String levelCsv = query.getLevel();
+        Double minSalary = null;
+        Double maxSalary = null;
+        if (salaryStr != null && !salaryStr.isBlank()) {
+            try {
+                String cleaned = salaryStr.replaceAll("^/+|/i$", "").trim();
+                String lowered = cleaned.toLowerCase();
+                // Extract numeric part
+                String numeric = lowered.replaceAll("[^0-9\\.]", "");
+                if (!numeric.isBlank()) {
+                    double base = Double.parseDouble(numeric);
+                    double vnd;
+                    if (lowered.contains("usd")) {
+                        vnd = base * 24000d; // convert USD -> VND (approx)
+                    } else if (lowered.endsWith("k")) {
+                        vnd = base * 1_000d;
+                    } else if (lowered.endsWith("m")) {
+                        vnd = base * 1_000_000d;
+                    } else if (base <= 1000d) {
+                        // Assume millions VND if small integer like 10, 20, 200 (-> 10M, 20M, 200M)
+                        vnd = base * 1_000_000d;
+                    } else if (base <= 10000d) {
+                        // Assume USD if in the 1k..10k range (e.g., 2000 -> $2000)
+                        vnd = base * 24000d;
+                    } else {
+                        // Already VND
+                        vnd = base;
+                    }
+                    minSalary = vnd;
+                }
+            } catch (Exception ignored) {}
+        }
+        if (minSalaryParam != null) minSalary = minSalaryParam;
+        if (maxSalaryParam != null) maxSalary = maxSalaryParam;
         java.util.List<String> skillsFilter = query.getSkills();
         java.util.List<String> locationsFilter = query.getLocations();
         boolean hasSkills = skillsFilter != null && !skillsFilter.isEmpty();
@@ -50,34 +91,37 @@ public class JobsService {
         if (hasLocations) {
             locationsFilter = locationsFilter.stream().map(x -> x.toLowerCase()).collect(java.util.stream.Collectors.toList());
         }
-        boolean forcePublic = scope != null && scope.equalsIgnoreCase("public");
-        if (nameFilter != null) nameFilter = nameFilter.replaceAll("^/+|/i$", "");
-        if (locationFilter != null) locationFilter = locationFilter.replaceAll("^/+|/i$", "");
-
         String currentRole = com.fullnestjob.security.SecurityUtils.getCurrentRole();
         boolean isAdmin = currentRole != null && (currentRole.equalsIgnoreCase("ADMIN") || currentRole.equalsIgnoreCase("SUPER_ADMIN"));
-        if (forcePublic) {
+        boolean forcePublic = scope != null && scope.equalsIgnoreCase("public");
+        boolean forceAdmin = scope != null && scope.equalsIgnoreCase("admin") && isAdmin;
+        if (nameFilter != null) nameFilter = nameFilter.replaceAll("^/+|/i$", "");
+        if (locationFilter != null) locationFilter = locationFilter.replaceAll("^/+|/i$", "");
+        if (companyIdFilter != null && !companyIdFilter.isBlank()) {
+            // explicit filter by company id for public/company detail page
+            page = jobRepository.findByCompanyId(companyIdFilter, pageable);
+        } else if (forcePublic) {
             if (hasSkills && hasLocations) {
-                page = jobRepository.findPublicJobsBySkillsAndLocations(nameFilter, skillsFilter, locationsFilter, pageable);
+                page = jobRepository.findPublicJobsBySkillsAndLocations(nameFilter, skillsFilter, locationsFilter, excludeId, pageable);
             } else if (hasSkills) {
-                page = jobRepository.findPublicJobsBySkills(nameFilter, locationFilter, skillsFilter, pageable);
+                page = jobRepository.findPublicJobsBySkills(nameFilter, locationFilter, skillsFilter, excludeId, pageable);
             } else if (hasLocations) {
-                page = jobRepository.findPublicJobsByLocations(nameFilter, locationsFilter, pageable);
+                page = jobRepository.findPublicJobsByLocations(nameFilter, locationsFilter, excludeId, pageable);
             } else {
-                page = jobRepository.findPublicJobs(nameFilter, locationFilter, pageable);
+                page = jobRepository.findPublicJobs(nameFilter, locationFilter, excludeId, pageable);
             }
-        } else if (!isAdmin) {
+        } else if (!(isAdmin || forceAdmin)) {
             String currentUserId = com.fullnestjob.security.SecurityUtils.getCurrentUserId();
             if (currentUserId == null) {
                 // Public (chưa đăng nhập) => trả job PUBLIC + active + trong khoảng start..end
                 if (hasSkills && hasLocations) {
-                    page = jobRepository.findPublicJobsBySkillsAndLocations(nameFilter, skillsFilter, locationsFilter, pageable);
+                    page = jobRepository.findPublicJobsBySkillsAndLocations(nameFilter, skillsFilter, locationsFilter, excludeId, pageable);
                 } else if (hasSkills) {
-                    page = jobRepository.findPublicJobsBySkills(nameFilter, locationFilter, skillsFilter, pageable);
+                    page = jobRepository.findPublicJobsBySkills(nameFilter, locationFilter, skillsFilter, excludeId, pageable);
                 } else if (hasLocations) {
-                    page = jobRepository.findPublicJobsByLocations(nameFilter, locationsFilter, pageable);
+                    page = jobRepository.findPublicJobsByLocations(nameFilter, locationsFilter, excludeId, pageable);
                 } else {
-                    page = jobRepository.findPublicJobs(nameFilter, locationFilter, pageable);
+                    page = jobRepository.findPublicJobs(nameFilter, locationFilter, excludeId, pageable);
                 }
             } else {
                 var me = userRepository.findById(currentUserId).orElse(null);
@@ -97,15 +141,17 @@ public class JobsService {
                 }
             }
         } else {
-            if (nameFilter != null && locationFilter != null) {
-                page = jobRepository.findByNameContainingIgnoreCaseAndLocationContainingIgnoreCase(nameFilter, locationFilter, pageable);
-            } else if (nameFilter != null) {
-                page = jobRepository.findByNameContainingIgnoreCase(nameFilter, pageable);
-            } else if (locationFilter != null) {
-                page = jobRepository.findByLocationContainingIgnoreCase(locationFilter, pageable);
-            } else {
-                page = jobRepository.findAll(pageable);
+            // Admin scope (role hoặc scope=admin): có thể filter theo level (CSV)
+            java.util.List<String> levels = null;
+            if (levelCsv != null && !levelCsv.isBlank()) {
+                levels = java.util.Arrays.stream(levelCsv.split(","))
+                        .map(String::trim)
+                        .filter(s -> !s.isBlank())
+                        .map(String::toUpperCase)
+                        .collect(java.util.stream.Collectors.toList());
+                if (levels.isEmpty()) levels = null;
             }
+            page = jobRepository.findAdminJobs(nameFilter, locationFilter, minSalary, maxSalary, levels, pageable);
         }
         PageResultDTO<JobDetailDTO> res = new PageResultDTO<>();
         res.result = page.getContent().stream().map(this::toDetail).collect(Collectors.toList());
@@ -126,8 +172,12 @@ public class JobsService {
             Object v = f.get(query);
             if (v instanceof String s && !s.isBlank()) {
                 String key = s.startsWith("sort=") ? s.substring(5) : s;
-                if (key.startsWith("-")) return Sort.by(Sort.Order.desc(key.substring(1)));
-                return Sort.by(Sort.Order.asc(key));
+                boolean desc = key.startsWith("-");
+                String raw = desc ? key.substring(1) : key;
+                String mapped = raw;
+                if ("created".equalsIgnoreCase(raw)) mapped = "createdAt";
+                if ("updated".equalsIgnoreCase(raw)) mapped = "updatedAt";
+                return desc ? Sort.by(Sort.Order.desc(mapped)) : Sort.by(Sort.Order.asc(mapped));
             }
         } catch (Exception ignored) {}
         return Sort.by(Sort.Order.desc("updatedAt"));
@@ -179,6 +229,10 @@ public class JobsService {
 
     @Transactional
     public void delete(String id) {
+        java.util.List<com.fullnestjob.modules.resumes.entity.Resume> resumes = resumeRepository.findByJobId(id);
+        if (resumes != null && !resumes.isEmpty()) {
+            resumeRepository.deleteAll(resumes);
+        }
         jobRepository.deleteById(id);
     }
 

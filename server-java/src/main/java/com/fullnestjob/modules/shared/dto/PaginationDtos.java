@@ -20,6 +20,12 @@ public class PaginationDtos {
         private String scope; // "public" or "admin" (optional)
         private List<String> skills;
         private List<String> locations; // multiple locations for filtering
+        private String companyId; // optional: filter jobs by company
+        private String excludeId; // optional: exclude a specific id (e.g., current job)
+        private String salary; // optional: backward-compat string; prefers minSalary/maxSalary
+        private Double minSalary; // optional: VND
+        private Double maxSalary; // optional: VND
+        private String level; // optional: CSV levels filter, e.g. "INTERN,FRESHER"
 
         public Integer getCurrent() { return current; }
         public void setCurrent(Integer current) { this.current = current; }
@@ -50,6 +56,18 @@ public class PaginationDtos {
         public void setSkills(List<String> skills) { this.skills = skills; }
         public List<String> getLocations() { return locations; }
         public void setLocations(List<String> locations) { this.locations = locations; }
+        public String getCompanyId() { return companyId; }
+        public void setCompanyId(String companyId) { this.companyId = companyId; }
+        public String getExcludeId() { return excludeId; }
+        public void setExcludeId(String excludeId) { this.excludeId = excludeId; }
+        public String getSalary() { return salary; }
+        public void setSalary(String salary) { this.salary = salary; }
+        public Double getMinSalary() { return minSalary; }
+        public void setMinSalary(Double minSalary) { this.minSalary = minSalary; }
+        public Double getMaxSalary() { return maxSalary; }
+        public void setMaxSalary(Double maxSalary) { this.maxSalary = maxSalary; }
+        public String getLevel() { return level; }
+        public void setLevel(String level) { this.level = level; }
     }
 
     public static class MetaDTO {

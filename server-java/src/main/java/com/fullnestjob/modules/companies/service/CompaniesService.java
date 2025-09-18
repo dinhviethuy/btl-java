@@ -135,7 +135,7 @@ public class CompaniesService {
 
     @Transactional
     public void delete(String id) {
-        // Ensure no users/jobs/resumes reference this company before delete to avoid FK constraint violation
+        // Ensure cascade removal of related data to avoid orphans
         // 1) users.company -> null
         java.util.List<com.fullnestjob.modules.users.entity.User> users = userRepository.findAll();
         for (var u : users) {
@@ -145,21 +145,21 @@ public class CompaniesService {
         }
         userRepository.saveAll(users);
 
-        // 2) jobs.company -> null
+        // 2) delete resumes of jobs and delete jobs of this company
         List<Job> jobs = jobRepository.findByCompanyId(id);
-        for (Job j : jobs) {
-            j.setCompany(null);
-        }
         if (!jobs.isEmpty()) {
-            jobRepository.saveAll(jobs);
+            for (Job j : jobs) {
+                List<Resume> jobResumes = resumeRepository.findByJobId(j.get_id());
+                if (!jobResumes.isEmpty()) {
+                    resumeRepository.deleteAll(jobResumes);
+                }
+            }
+            jobRepository.deleteAll(jobs);
         }
-        // 3) resumes.companyId -> null
+        // 3) delete remaining resumes referencing companyId (safety)
         List<Resume> resumes = resumeRepository.findByCompanyId(id);
-        for (Resume r : resumes) {
-            r.setCompanyId(null);
-        }
         if (!resumes.isEmpty()) {
-            resumeRepository.saveAll(resumes);
+            resumeRepository.deleteAll(resumes);
         }
         companyRepository.deleteById(id);
     }

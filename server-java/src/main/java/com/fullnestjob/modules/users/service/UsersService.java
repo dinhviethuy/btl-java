@@ -43,8 +43,9 @@ public class UsersService {
 		Sort sort = parseSort(query);
 		var pageable = PageRequest.of(current - 1, pageSize, sort);
 
-		String name = query.getName();
-		String email = query.getEmail();
+        String name = query.getName();
+        String email = query.getEmail();
+        String companyIdFilter = query.getCompanyId();
 		if (name != null) name = name.replaceAll("^/+|/i$", "");
 		if (email != null) email = email.replaceAll("^/+|/i$", "");
 
@@ -69,17 +70,29 @@ public class UsersService {
 			} else {
 				page = Page.empty(pageable);
 			}
-		} else {
-			if (name != null && email != null) {
-				page = userRepository.findByNameContainingIgnoreCaseAndEmailContainingIgnoreCase(name, email, pageable);
-			} else if (name != null) {
-				page = userRepository.findByNameContainingIgnoreCase(name, pageable);
-			} else if (email != null) {
-				page = userRepository.findByEmailContainingIgnoreCase(email, pageable);
-			} else {
-				page = userRepository.findAll(pageable);
-			}
-		}
+        } else {
+            if (companyIdFilter != null && !companyIdFilter.isBlank()) {
+                if (name != null && email != null) {
+                    page = userRepository.findByCompanyIdAndNameLikeAndEmailLike(companyIdFilter, name, email, pageable);
+                } else if (name != null) {
+                    page = userRepository.findByCompanyIdAndNameLike(companyIdFilter, name, pageable);
+                } else if (email != null) {
+                    page = userRepository.findByCompanyIdAndEmailLike(companyIdFilter, email, pageable);
+                } else {
+                    page = userRepository.findByCompanyId(companyIdFilter, pageable);
+                }
+            } else {
+                if (name != null && email != null) {
+                    page = userRepository.findByNameContainingIgnoreCaseAndEmailContainingIgnoreCase(name, email, pageable);
+                } else if (name != null) {
+                    page = userRepository.findByNameContainingIgnoreCase(name, pageable);
+                } else if (email != null) {
+                    page = userRepository.findByEmailContainingIgnoreCase(email, pageable);
+                } else {
+                    page = userRepository.findAll(pageable);
+                }
+            }
+        }
 
 		PageResultDTO<UserDetailDTO> res = new PageResultDTO<>();
 		res.result = page.getContent().stream().map(this::toDetail).collect(Collectors.toList());
