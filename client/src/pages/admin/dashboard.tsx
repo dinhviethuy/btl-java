@@ -200,14 +200,14 @@ const DashboardPage = () => {
                 <Col span={24} md={12}>
                     <Card title="Jobs tạo theo ngày" bordered hoverable bodyStyle={{ background: 'var(--surface)' }}>
                         {chartType === 'line' && <Line data={ts?.jobsPerDay || []} xField="x" yField="y" smooth point height={240} theme={plotTheme} />}
-                        {chartType === 'area' && <Area data={ts?.jobsPerDay || []} xField="x" yField="y" smooth height={240} theme={plotTheme} />}
+                        {chartType === 'area' && <Area data={ts?.jobsPerDay || []} xField="x" yField="y" line={{ smooth: true }} height={240} theme={plotTheme} />}
                         {chartType === 'column' && <Column data={ts?.jobsPerDay || []} xField="x" yField="y" height={240} theme={plotTheme} />}
                     </Card>
                 </Col>
                 <Col span={24} md={12}>
                     <Card title="Resumes tạo theo ngày" bordered hoverable bodyStyle={{ background: 'var(--surface)' }}>
                         {chartType === 'line' && <Line data={ts?.resumesPerDay || []} xField="x" yField="y" smooth point height={240} theme={plotTheme} />}
-                        {chartType === 'area' && <Area data={ts?.resumesPerDay || []} xField="x" yField="y" smooth height={240} theme={plotTheme} />}
+                        {chartType === 'area' && <Area data={ts?.resumesPerDay || []} xField="x" yField="y" line={{ smooth: true }} height={240} theme={plotTheme} />}
                         {chartType === 'column' && <Column data={ts?.resumesPerDay || []} xField="x" yField="y" height={240} theme={plotTheme} />}
                     </Card>
                 </Col>
