@@ -18,6 +18,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 @Service
 public class SharedMailService {
@@ -84,6 +86,14 @@ public class SharedMailService {
         } catch (Exception ignored) {}
     }
 
+    private String formatCurrency(Double salary) {
+        if (salary == null) return "";
+        NumberFormat formatter = NumberFormat.getInstance(new Locale("vi", "VN"));
+        formatter.setMaximumFractionDigits(0);
+        formatter.setGroupingUsed(true);
+        return formatter.format(salary) + " đ";
+    }
+
     private void sendSimpleJobsEmail(String to, String name, List<Job> jobs) {
         if (fromEmail == null || fromEmail.isBlank()) return;
         String subject = "Gợi ý việc làm phù hợp";
@@ -100,7 +110,7 @@ public class SharedMailService {
             jobsHtml.append("<tr><td>");
             jobsHtml.append("<div style='font-size:16px;font-weight:600;margin-bottom:4px;'><a href='" + safe(urlForJob(j)) + "' target='_blank' style='text-decoration:none;color:#1677ff;'>" + safe(j.getName()) + "</a></div>");
             jobsHtml.append("<div style='font-size:14px;color:#595959;'>" + safe(j.getCompany()!=null? j.getCompany().getName(): "") + "</div>");
-            jobsHtml.append("<div style='font-size:14px;color:#595959;margin:6px 0;'>" + (j.getSalary()!=null? String.format("%.0f đ", j.getSalary()) : "") + "</div>");
+            jobsHtml.append("<div style='font-size:14px;color:#595959;margin:6px 0;'>" + (j.getSalary()!=null? formatCurrency(j.getSalary()) : "") + "</div>");
             if (j.getSkills()!=null) {
                 jobsHtml.append("<div style='margin-top:6px;'>");
                 for (String s : j.getSkills()) {
@@ -147,12 +157,26 @@ public class SharedMailService {
 
     private String urlForJob(Job j) {
         String id = (j.get_id()!=null? j.get_id(): "");
-        String path = webJobDetailPath.replace("{id}", id);
+        String name = (j.getName()!=null? j.getName(): "");
+        String path = webJobDetailPath.replace("{id}", id).replace("{name}", encodeURIComponent(name));
         if (!path.startsWith("/")) path = "/" + path;
         return webBaseUrl + path;
     }
 
     private String safe(String s) { return s == null ? "" : s; }
+
+    private String encodeURIComponent(String s) {
+        if (s == null) return "";
+        String encoded = java.net.URLEncoder.encode(s, java.nio.charset.StandardCharsets.UTF_8);
+        // Tiệm cận hành vi của JS encodeURIComponent: thay '+' bằng '%20' và khôi phục một số ký tự an toàn
+        return encoded
+                .replace("+", "%20")
+                .replace("%21", "!")
+                .replace("%27", "'")
+                .replace("%28", "(")
+                .replace("%29", ")")
+                .replace("%7E", "~");
+    }
 
     private List<Job> filterJobsBySkills(List<Job> jobs, List<String> subsSkills) {
         if (subsSkills == null || subsSkills.isEmpty()) return jobs;
@@ -169,7 +193,7 @@ public class SharedMailService {
                 "jobs", jobs.stream().map(j -> Map.of(
                         "title", j.getName(),
                         "company", j.getCompany() != null ? j.getCompany().getName() : "",
-                        "salary", j.getSalary() != null ? String.format("%.0f đ", j.getSalary()) : "",
+                        "salary", j.getSalary() != null ? formatCurrency(j.getSalary()) : "",
                         "skills", j.getSkills()
                 )).collect(Collectors.toList())
         );

@@ -1,19 +1,19 @@
+import ModalPermission from "@/components/admin/permission/modal.permission";
+import ViewDetailPermission from "@/components/admin/permission/view.permission";
 import DataTable from "@/components/client/data-table";
+import Access from "@/components/share/access";
+import { callDeletePermission } from "@/config/api";
+import { ALL_PERMISSIONS } from "@/config/permissions";
+import { colorMethod } from "@/config/utils";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { fetchPermission } from "@/redux/slice/permissionSlide";
 import { IPermission } from "@/types/backend";
 import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import { ActionType, ProColumns } from '@ant-design/pro-components';
 import { Button, Popconfirm, Space, message, notification } from "antd";
-import { useState, useRef } from 'react';
 import dayjs from 'dayjs';
-import { callDeletePermission } from "@/config/api";
 import queryString from 'query-string';
-import { fetchPermission } from "@/redux/slice/permissionSlide";
-import ViewDetailPermission from "@/components/admin/permission/view.permission";
-import ModalPermission from "@/components/admin/permission/modal.permission";
-import { colorMethod } from "@/config/utils";
-import Access from "@/components/share/access";
-import { ALL_PERMISSIONS } from "@/config/permissions";
+import { useRef, useState } from 'react';
 
 const PermissionPage = () => {
     const [openModal, setOpenModal] = useState<boolean>(false);
@@ -239,7 +239,10 @@ const PermissionPage = () => {
                                 <Button
                                     icon={<PlusOutlined />}
                                     type="primary"
-                                    onClick={() => setOpenModal(true)}
+                                    onClick={() => {
+                                        setDataInit(null);
+                                        setOpenModal(true);
+                                    }}
                                 >
                                     Thêm mới
                                 </Button>

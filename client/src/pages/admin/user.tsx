@@ -239,7 +239,10 @@ const UserPage = () => {
                                 <Button
                                     icon={<PlusOutlined />}
                                     type="primary"
-                                    onClick={() => setOpenModal(true)}
+                                    onClick={() => {
+                                        setDataInit(null);
+                                        setOpenModal(true);
+                                    }}
                                 >
                                     Thêm mới
                                 </Button>

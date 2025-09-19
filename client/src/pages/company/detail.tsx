@@ -36,7 +36,7 @@ const ClientCompanyDetailPage = (props: any) => {
             {isLoading ?
                 <Skeleton />
                 :
-                <Row gutter={[20, 20]}>
+                <Row gutter={[44, 20]}>
                     {companyDetail && companyDetail._id &&
                         <>
                             <Col span={24} md={16}>
@@ -60,6 +60,7 @@ const ClientCompanyDetailPage = (props: any) => {
                                         <img
                                             alt="example"
                                             src={`${companyDetail?.logo}`}
+                                            style={{ width: 200, height: 200, objectFit: 'contain' }}
                                         />
                                     </div>
                                     <div>

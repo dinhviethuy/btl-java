@@ -102,6 +102,7 @@ CREATE TABLE `users` (
   `deleted_by_id` varchar(255) DEFAULT NULL,
   `deleted_by_email` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_users_email` (`email`),
   KEY `idx_users_company_id` (`company_id`),
   KEY `idx_users_role_id` (`role_id`),
   CONSTRAINT `fk_users_company` FOREIGN KEY (`company_id`) REFERENCES `companies` (`id`),

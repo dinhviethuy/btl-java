@@ -190,7 +190,14 @@ public class UsersService {
 				throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.FORBIDDEN, "Cannot manage user outside your allowed companies");
 			}
 		}
-		if (body.email != null) u.setEmail(body.email);
+		// Validate duplicate email when updating
+		if (body.email != null) {
+			var existing = userRepository.findByEmail(body.email).orElse(null);
+			if (existing != null && existing.get_id() != null && !existing.get_id().equals(id)) {
+				throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.CONFLICT, "Email already exists");
+			}
+			u.setEmail(body.email);
+		}
 		if (body.name != null) u.setName(body.name);
 		if (body.age != null) u.setAge(body.age);
 		if (body.gender != null) u.setGender(body.gender);

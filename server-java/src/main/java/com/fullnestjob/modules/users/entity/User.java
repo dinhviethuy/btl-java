@@ -14,6 +14,7 @@ public class User extends BaseAuditEntity {
 	@Column(name = "id", length = 36)
 	private String _id;
 
+	@Column(name = "email", unique = true)
 	private String email;
 	private String password;
 	private String address;
