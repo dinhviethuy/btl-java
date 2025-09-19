@@ -1,9 +1,10 @@
+import { callCreatePermission, callUpdatePermission } from "@/config/api";
+import { ALL_MODULES } from "@/config/permissions";
+import { IPermission } from "@/types/backend";
 import { ModalForm, ProFormSelect, ProFormText } from "@ant-design/pro-components";
 import { Col, Form, Row, message, notification } from "antd";
+import { useEffect } from "react";
 import { isMobile } from 'react-device-detect';
-import { callCreatePermission, callUpdatePermission } from "@/config/api";
-import { IPermission } from "@/types/backend";
-import { ALL_MODULES } from "@/config/permissions";
 
 interface IProps {
     openModal: boolean;
@@ -19,7 +20,15 @@ const ModalPermission = (props: IProps) => {
     const { openModal, setOpenModal, reloadTable, dataInit, setDataInit } = props;
     const [form] = Form.useForm();
 
-
+    useEffect(() => {
+        if (openModal) {
+            if (dataInit?._id) {
+                form.setFieldsValue(dataInit);
+            } else {
+                form.resetFields();
+            }
+        }
+    }, [openModal, dataInit, form]);
     const submitPermission = async (valuesForm: any) => {
         const { name, apiPath, method, module } = valuesForm;
         if (dataInit?._id) {
@@ -69,23 +78,20 @@ const ModalPermission = (props: IProps) => {
     return (
         <>
             <ModalForm
-                title={<>{dataInit?._id ? "Cập nhật Permission" : "Tạo mới Permission"}</>}
+                title={dataInit?._id ? "Cập nhật Permission" : "Tạo mới Permission"}
                 open={openModal}
                 modalProps={{
-                    onCancel: () => { handleReset() },
-                    afterClose: () => handleReset(),
+                    onCancel: handleReset,
+                    afterClose: handleReset,
                     destroyOnClose: true,
                     width: isMobile ? "100%" : 900,
                     keyboard: false,
                     maskClosable: false,
-                    okText: <>{dataInit?._id ? "Cập nhật" : "Tạo mới"}</>,
+                    okText: dataInit?._id ? "Cập nhật" : "Tạo mới",
                     cancelText: "Hủy"
                 }}
-                scrollToFirstError={true}
-                preserve={false}
                 form={form}
                 onFinish={submitPermission}
-                initialValues={dataInit?._id ? dataInit : {}}
             >
                 <Row gutter={16}>
                     <Col lg={12} md={12} sm={24} xs={24}>

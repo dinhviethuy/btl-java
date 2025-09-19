@@ -28,30 +28,22 @@ const ModalUser = (props: IProps) => {
     const [form] = Form.useForm();
 
     useEffect(() => {
-        if (dataInit?._id) {
-            if (dataInit.company) {
-                setCompany({
-                    label: dataInit.company.name ?? "",
-                    value: dataInit.company._id,
-                    key: dataInit.company._id,
-                })
-            }
-            if (dataInit.role) {
-                const r: any = dataInit.role as any;
-                if (typeof r === 'string') {
-                    setRole({ label: r, value: r, key: r });
-                } else if (typeof r === 'object') {
-                    setRole({
-                        label: r?.name ?? r?._id ?? '',
-                        value: r?._id,
-                        key: r?._id,
-                    })
-                }
+        if (openModal) {
+            if (dataInit?._id) {
+                form.setFieldsValue({
+                    ...dataInit,
+                    role: dataInit.role
+                        ? { label: (dataInit.role as any)?.name ?? dataInit.role, value: (dataInit.role as any)?._id ?? dataInit.role }
+                        : null,
+                    company: dataInit.company
+                        ? { label: dataInit.company.name, value: dataInit.company._id }
+                        : null,
+                });
             } else {
-                setRole(null);
+                form.resetFields();
             }
         }
-    }, [dataInit]);
+    }, [openModal, dataInit, form]);
 
     const submitUser = async (valuesForm: any) => {
         const { name, email, password, address, age, gender, role, company } = valuesForm;
@@ -151,23 +143,20 @@ const ModalUser = (props: IProps) => {
     return (
         <>
             <ModalForm
-                title={<>{dataInit?._id ? "Cập nhật User" : "Tạo mới User"}</>}
+                title={dataInit?._id ? "Cập nhật User" : "Tạo mới User"}
                 open={openModal}
                 modalProps={{
-                    onCancel: () => { handleReset() },
-                    afterClose: () => handleReset(),
+                    onCancel: handleReset,
+                    afterClose: handleReset,
                     destroyOnClose: true,
                     width: isMobile ? "100%" : 900,
                     keyboard: false,
                     maskClosable: false,
-                    okText: <>{dataInit?._id ? "Cập nhật" : "Tạo mới"}</>,
+                    okText: dataInit?._id ? "Cập nhật" : "Tạo mới",
                     cancelText: "Hủy"
                 }}
-                scrollToFirstError={true}
-                preserve={false}
                 form={form}
                 onFinish={submitUser}
-                initialValues={dataInit?._id ? dataInit : {}}
             >
                 <Row gutter={16}>
                     <Col lg={12} md={12} sm={24} xs={24}>
