@@ -6,6 +6,7 @@ import { IJob } from "@/types/backend";
 import { CrownOutlined, DollarOutlined, EnvironmentOutlined, HistoryOutlined } from "@ant-design/icons";
 import { Col, Divider, Row, Skeleton, Tag } from "antd";
 import dayjs from 'dayjs';
+import 'dayjs/locale/vi';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import parse from 'html-react-parser';
 import { useEffect, useState } from 'react';
@@ -99,7 +100,7 @@ const ClientJobDetailPage = (props: any) => {
                                     <EnvironmentOutlined style={{ color: '#58aaab' }} />&nbsp;{getLocationName(jobDetail.location)}
                                 </div>
                                 <div>
-                                    <HistoryOutlined /> {dayjs(jobDetail.updatedAt).fromNow()}
+                                    <HistoryOutlined /> {dayjs(jobDetail.updatedAt).locale('vi').fromNow()}
                                 </div>
                                 <Divider />
                                 {parse(jobDetail.description)}
