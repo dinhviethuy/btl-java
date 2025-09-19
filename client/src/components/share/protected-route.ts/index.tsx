@@ -4,7 +4,7 @@ import NotAuthenticated from "./not-authenticated";
 
 const RoleBaseRoute = (props: any) => {
     const user = useAppSelector(state => state.account.user);
-    const userRole = user.role.name;
+    const userRole = (user?.role && typeof user.role === 'object') ? user.role.name : undefined;
 
     return (<>{props.children}</>)
 }

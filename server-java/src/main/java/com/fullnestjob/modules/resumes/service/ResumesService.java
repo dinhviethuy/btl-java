@@ -48,15 +48,21 @@ public class ResumesService {
         boolean isAdmin = currentRole != null && (currentRole.equalsIgnoreCase("ADMIN") || currentRole.equalsIgnoreCase("SUPER_ADMIN"));
         if (!isAdmin) {
             String currentUserId = com.fullnestjob.security.SecurityUtils.getCurrentUserId();
-            var userRepo = this.userRepository; // injected below
-            com.fullnestjob.modules.users.entity.User me = currentUserId != null ? userRepo.findById(currentUserId).orElse(null) : null;
-            String companyId = me != null && me.getCompany() != null ? me.getCompany().get_id() : null;
-            if (companyId != null) {
+            com.fullnestjob.modules.users.entity.User me = currentUserId != null ? userRepository.findById(currentUserId).orElse(null) : null;
+            java.util.Set<String> companyIds = new java.util.LinkedHashSet<>();
+            if (me != null && me.getCompany() != null && me.getCompany().get_id() != null) {
+                companyIds.add(me.getCompany().get_id());
+            }
+            for (Company c : companyRepository.findAllByCreatorId(currentUserId)) {
+                if (c != null && c.get_id() != null) companyIds.add(c.get_id());
+            }
+            if (!companyIds.isEmpty()) {
+                java.util.List<String> ids = new java.util.ArrayList<>(companyIds);
                 if (status != null && !status.isBlank()) {
                     String s = status.replaceAll("^/+|/i$", "");
-                    page = resumeRepository.findByCompanyIdAndStatusLike(companyId, s, pageable);
+                    page = resumeRepository.findByCompanyIdsAndStatusLike(ids, s, pageable);
                 } else {
-                    page = resumeRepository.findByCompanyId(companyId, pageable);
+                    page = resumeRepository.findByCompanyIds(ids, pageable);
                 }
             } else {
                 page = new org.springframework.data.domain.PageImpl<>(java.util.List.of(), pageable, 0);

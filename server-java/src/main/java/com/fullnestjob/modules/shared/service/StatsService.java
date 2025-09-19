@@ -24,44 +24,84 @@ public class StatsService {
         java.util.Map<String, Object> res = new java.util.HashMap<>();
         String role = com.fullnestjob.security.SecurityUtils.getCurrentRole();
         String currentUserId = com.fullnestjob.security.SecurityUtils.getCurrentUserId();
-        String companyId = null;
-        if (role == null || !(role.equalsIgnoreCase("SUPER_ADMIN"))) {
-            // hạn chế theo công ty của user (nếu có)
-            if (currentUserId != null) {
-                var me = userRepository.findById(currentUserId).orElse(null);
-                if (me != null && me.getCompany() != null) companyId = me.getCompany().get_id();
+        boolean isSuperAdmin = (role != null && role.equalsIgnoreCase("SUPER_ADMIN"));
+        java.util.List<String> companyIds = null;
+        if (!isSuperAdmin) {
+            java.util.Set<String> ids = new java.util.LinkedHashSet<>();
+            var me = currentUserId != null ? userRepository.findById(currentUserId).orElse(null) : null;
+            if (me != null && me.getCompany() != null && me.getCompany().get_id() != null) ids.add(me.getCompany().get_id());
+            for (com.fullnestjob.modules.companies.entity.Company c : companyRepository.findAllByCreatorId(currentUserId)) {
+                if (c != null && c.get_id() != null) ids.add(c.get_id());
             }
+            companyIds = new java.util.ArrayList<>(ids);
         }
 
-        if (companyId != null) {
-            res.put("openJobs", jobRepository.countByCompanyId(companyId));
-            res.put("jobsTotal", jobRepository.countByCompanyId(companyId));
-            res.put("resumesTotal", resumeRepository.findByCompanyId(companyId).size());
+        if (!isSuperAdmin && (companyIds == null || companyIds.isEmpty())) {
+            // Non-super-admin nhưng không có company nào trong phạm vi => tất cả thống kê = 0
+            res.put("openJobs", 0L);
+            res.put("jobsTotal", 0L);
+            res.put("resumesTotal", 0L);
+            res.put("companiesTotal", 0L);
+            res.put("usersTotal", 0L);
+            res.put("resumesByStatus", java.util.List.of());
+            res.put("usersPerDay", java.util.List.of());
+            return res;
+        }
+
+        if (!isSuperAdmin) {
+            res.put("openJobs", jobRepository.countActivePublicByCompanyIds(companyIds));
+            res.put("jobsTotal", jobRepository.countByCompanyIdIn(companyIds));
+            res.put("resumesTotal", resumeRepository.countByCompanyIds(companyIds));
+            // usersTotal trong scope công ty
+            res.put("usersTotal", userRepository.countByCompanyIds(companyIds));
+            // resumes by status trong scope
+            java.util.List<Object[]> rows = resumeRepository.countByStatusForCompanies(companyIds);
+            java.util.List<java.util.Map<String, Object>> byStatus = new java.util.ArrayList<>();
+            java.util.Map<String, String> labelMap = new java.util.HashMap<>();
+            labelMap.put("PENDING", "PENDING");
+            labelMap.put("REVIEWING", "REVIEWING");
+            labelMap.put("APPROVED", "APPROVED");
+            labelMap.put("REJECTED", "REJECTED");
+            for (Object[] r : rows) {
+                String key = String.valueOf(r[0]);
+                String label = labelMap.getOrDefault(key, key);
+                java.util.Map<String, Object> m = new java.util.HashMap<>();
+                m.put("x", label);
+                m.put("y", ((Number) r[1]).longValue());
+                byStatus.add(m);
+            }
+            res.put("resumesByStatus", byStatus);
+            res.put("companiesTotal", (long) companyIds.size());
         } else {
             res.put("openJobs", jobRepository.countActivePublicAll());
             res.put("jobsTotal", jobRepository.count());
             res.put("resumesTotal", resumeRepository.count());
+            res.put("usersTotal", userRepository.count());
+            // resumesByStatus toàn hệ thống
+            java.util.List<Object[]> rows = resumeRepository.countByStatus();
+            java.util.List<java.util.Map<String, Object>> byStatus = new java.util.ArrayList<>();
+            java.util.Map<String, String> labelMap = new java.util.HashMap<>();
+            labelMap.put("PENDING", "PENDING");
+            labelMap.put("REVIEWING", "REVIEWING");
+            labelMap.put("APPROVED", "APPROVED");
+            labelMap.put("REJECTED", "REJECTED");
+            for (Object[] r : rows) {
+                String key = String.valueOf(r[0]);
+                String label = labelMap.getOrDefault(key, key);
+                java.util.Map<String, Object> m = new java.util.HashMap<>();
+                m.put("x", label);
+                m.put("y", ((Number) r[1]).longValue());
+                byStatus.add(m);
+            }
+            res.put("resumesByStatus", byStatus);
+            res.put("companiesTotal", companyRepository.count());
         }
-        res.put("companiesTotal", companyRepository.count());
-        res.put("usersTotal", userRepository.count());
-        // map to x/y with readable names
-        java.util.List<Object[]> rows = resumeRepository.countByStatus();
-        java.util.List<java.util.Map<String, Object>> byStatus = new java.util.ArrayList<>();
-        java.util.Map<String, String> labelMap = new java.util.HashMap<>();
-        labelMap.put("PENDING", "PENDING");
-        labelMap.put("REVIEWING", "REVIEWING");
-        labelMap.put("APPROVED", "APPROVED");
-        labelMap.put("REJECTED", "REJECTED");
-        for (Object[] r : rows) {
-            String key = String.valueOf(r[0]);
-            String label = labelMap.getOrDefault(key, key);
-            java.util.Map<String, Object> m = new java.util.HashMap<>();
-            m.put("x", label);
-            m.put("y", ((Number) r[1]).longValue());
-            byStatus.add(m);
+        // usersPerDay: hạn chế theo scope nếu cần
+        if (!isSuperAdmin) {
+            res.put("usersPerDay", toPairs(userRepository.countCreatedPerDaySinceByCompanyIds(from, companyIds)));
+        } else {
+            res.put("usersPerDay", toPairs(userRepository.countCreatedPerDaySince(from)));
         }
-        res.put("resumesByStatus", byStatus);
-        res.put("usersPerDay", toPairs(userRepository.countCreatedPerDaySince(from)));
         return res;
     }
 
@@ -70,24 +110,39 @@ public class StatsService {
         java.util.Map<String, Object> res = new java.util.HashMap<>();
         String role = com.fullnestjob.security.SecurityUtils.getCurrentRole();
         String currentUserId = com.fullnestjob.security.SecurityUtils.getCurrentUserId();
-        String companyId = null;
-        if (role == null || !(role.equalsIgnoreCase("SUPER_ADMIN"))) {
-            if (currentUserId != null) {
-                var me = userRepository.findById(currentUserId).orElse(null);
-                if (me != null && me.getCompany() != null) companyId = me.getCompany().get_id();
+        boolean isSuperAdmin2 = (role != null && role.equalsIgnoreCase("SUPER_ADMIN"));
+        java.util.List<String> companyIds2 = null;
+        if (!isSuperAdmin2) {
+            java.util.Set<String> ids = new java.util.LinkedHashSet<>();
+            var me = currentUserId != null ? userRepository.findById(currentUserId).orElse(null) : null;
+            if (me != null && me.getCompany() != null && me.getCompany().get_id() != null) ids.add(me.getCompany().get_id());
+            for (com.fullnestjob.modules.companies.entity.Company c : companyRepository.findAllByCreatorId(currentUserId)) {
+                if (c != null && c.get_id() != null) ids.add(c.get_id());
             }
+            companyIds2 = new java.util.ArrayList<>(ids);
         }
-        if (companyId != null) {
-            res.put("jobsPerDay", toPairs(jobRepository.countCreatedPerDaySinceByCompany(from, companyId)));
-            res.put("resumesPerDay", toPairs(resumeRepository.countCreatedPerDaySinceByCompany(from, companyId)));
-            res.put("jobsByLevels", toPairs(jobRepository.countByLevelsForCompany(companyId)));
+
+        if (!isSuperAdmin2 && (companyIds2 == null || companyIds2.isEmpty())) {
+            res.put("jobsPerDay", java.util.List.of());
+            res.put("resumesPerDay", java.util.List.of());
+            res.put("jobsByLevels", java.util.List.of());
+            res.put("companiesPerMonth", java.util.List.of());
+            res.put("usersPerDay", java.util.List.of());
+            return res;
+        }
+
+        if (!isSuperAdmin2) {
+            res.put("jobsPerDay", toPairs(jobRepository.countCreatedPerDaySinceByCompanyIds(from, companyIds2)));
+            res.put("resumesPerDay", toPairs(resumeRepository.countCreatedPerDaySinceByCompanyIds(from, companyIds2)));
+            res.put("jobsByLevels", toPairs(jobRepository.countByLevelsForCompanies(companyIds2)));
+            res.put("usersPerDay", toPairs(userRepository.countCreatedPerDaySinceByCompanyIds(from, companyIds2)));
         } else {
             res.put("jobsPerDay", toPairs(jobRepository.countCreatedPerDaySince(from)));
             res.put("resumesPerDay", toPairs(resumeRepository.countCreatedPerDaySince(from)));
             res.put("jobsByLevels", toPairs(jobRepository.countByLevels()));
+            res.put("usersPerDay", toPairs(userRepository.countCreatedPerDaySince(from)));
         }
         res.put("companiesPerMonth", toPairs(companyRepository.countCreatedPerMonthSince(from)));
-        res.put("usersPerDay", toPairs(userRepository.countCreatedPerDaySince(from)));
         return res;
     }
 

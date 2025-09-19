@@ -59,17 +59,34 @@ public class CompaniesService {
                 // Public (chưa đăng nhập) => chỉ company chưa xóa
                 page = companyRepository.findPublicCompanies(nameFilter, addressFilter, pageable);
             } else {
-                // Non-admin logged-in: chỉ xem công ty của mình
+                // Non-admin logged-in: công ty mình đang ở + công ty mình tạo
                 var me = this.userRepository.findById(currentUserId).orElse(null);
-                String companyId = me != null && me.getCompany() != null ? me.getCompany().get_id() : null;
-                if (companyId != null) {
-                    java.util.Optional<com.fullnestjob.modules.companies.entity.Company> c = companyRepository.findById(companyId);
-                    java.util.List<Company> list = c.map(java.util.List::of).orElse(java.util.List.of());
-                    org.springframework.data.domain.PageImpl<Company> p = new org.springframework.data.domain.PageImpl<>(list, pageable, list.size());
-                    page = p;
-                } else {
-                    page = new org.springframework.data.domain.PageImpl<>(java.util.List.of(), pageable, 0);
+                java.util.Set<String> ids = new java.util.LinkedHashSet<>();
+                if (me != null && me.getCompany() != null && me.getCompany().get_id() != null) {
+                    ids.add(me.getCompany().get_id());
                 }
+                for (Company c : companyRepository.findAllByCreatorId(currentUserId)) {
+                    if (c != null && c.get_id() != null) ids.add(c.get_id());
+                }
+                java.util.List<Company> list = new java.util.ArrayList<>();
+                if (!ids.isEmpty()) {
+                    for (String id : ids) {
+                        companyRepository.findById(id).ifPresent(list::add);
+                    }
+                }
+                // lọc theo name/address (nếu có)
+                if (nameFilter != null && !nameFilter.isBlank()) {
+                    final String nf = nameFilter.toLowerCase();
+                    list = list.stream().filter(c -> c.getName() != null && c.getName().toLowerCase().contains(nf)).collect(java.util.stream.Collectors.toList());
+                }
+                if (addressFilter != null && !addressFilter.isBlank()) {
+                    final String af = addressFilter.toLowerCase();
+                    list = list.stream().filter(c -> c.getAddress() != null && c.getAddress().toLowerCase().contains(af)).collect(java.util.stream.Collectors.toList());
+                }
+                int start = Math.min((int) pageable.getOffset(), list.size());
+                int end = Math.min(start + pageable.getPageSize(), list.size());
+                java.util.List<Company> pageContent = list.subList(start, end);
+                page = new org.springframework.data.domain.PageImpl<>(pageContent, pageable, list.size());
             }
         } else {
             if (nameFilter != null && addressFilter != null) {
@@ -118,6 +135,16 @@ public class CompaniesService {
         c.setDescription(body.description);
         c.setAddress(body.address);
         c.setLogo(body.logo);
+        try {
+            String uid = com.fullnestjob.security.SecurityUtils.getCurrentUserId();
+            String email = com.fullnestjob.security.SecurityUtils.getCurrentEmail();
+            if (uid != null) {
+                com.fullnestjob.modules.common.Actor actor = new com.fullnestjob.modules.common.Actor();
+                actor.set_id(uid);
+                actor.setEmail(email);
+                c.setCreatedBy(actor);
+            }
+        } catch (Exception ignored) {}
         Company saved = companyRepository.save(c);
         return toDetail(saved);
     }
@@ -129,6 +156,16 @@ public class CompaniesService {
         if (body.description != null) c.setDescription(body.description);
         if (body.address != null) c.setAddress(body.address);
         if (body.logo != null) c.setLogo(body.logo);
+        try {
+            String uid = com.fullnestjob.security.SecurityUtils.getCurrentUserId();
+            String email = com.fullnestjob.security.SecurityUtils.getCurrentEmail();
+            if (uid != null) {
+                com.fullnestjob.modules.common.Actor actor = new com.fullnestjob.modules.common.Actor();
+                actor.set_id(uid);
+                actor.setEmail(email);
+                c.setUpdatedBy(actor);
+            }
+        } catch (Exception ignored) {}
         Company saved = companyRepository.save(c);
         return toDetail(saved);
     }

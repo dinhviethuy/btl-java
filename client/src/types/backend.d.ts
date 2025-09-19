@@ -63,15 +63,19 @@ export interface IUser {
   age: number;
   gender: string;
   address: string;
-  role?: {
-    _id: string;
-    name: string;
-  };
+  // Cho phép gửi role là id (string), object {_id,name}, hoặc null để detach
+  role?:
+    | string
+    | null
+    | {
+        _id: string;
+        name?: string;
+      };
 
   company?: {
     _id: string;
-    name: string;
-  };
+    name?: string;
+  } | null;
   createdBy?: string;
   isDeleted?: boolean;
   deletedAt?: boolean | null;

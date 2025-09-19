@@ -12,7 +12,10 @@ const DashboardPage = () => {
         );
     };
 
-    const roleName = useAppSelector(state => state.account.user.role?.name || "");
+    const roleName = useAppSelector(state => {
+        const r = state.account.user?.role as any;
+        return r && typeof r === 'object' ? (r.name || "") : "";
+    });
     const [overview, setOverview] = useState<any>({});
     const [ts, setTs] = useState<any>({});
     const [topCompanies, setTopCompanies] = useState<any[]>([]);

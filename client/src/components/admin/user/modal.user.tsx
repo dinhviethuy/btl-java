@@ -31,17 +31,24 @@ const ModalUser = (props: IProps) => {
         if (dataInit?._id) {
             if (dataInit.company) {
                 setCompany({
-                    label: dataInit.company.name,
+                    label: dataInit.company.name ?? "",
                     value: dataInit.company._id,
                     key: dataInit.company._id,
                 })
             }
             if (dataInit.role) {
-                setRole({
-                    label: dataInit.role?.name,
-                    value: dataInit.role?._id,
-                    key: dataInit.role?._id,
-                })
+                const r: any = dataInit.role as any;
+                if (typeof r === 'string') {
+                    setRole({ label: r, value: r, key: r });
+                } else if (typeof r === 'object') {
+                    setRole({
+                        label: r?.name ?? r?._id ?? '',
+                        value: r?._id,
+                        key: r?._id,
+                    })
+                }
+            } else {
+                setRole(null);
             }
         }
     }, [dataInit]);
@@ -50,18 +57,19 @@ const ModalUser = (props: IProps) => {
         const { name, email, password, address, age, gender, role, company } = valuesForm;
         if (dataInit?._id) {
             //update
-            const user = {
+            const user: IUser = {
                 name,
                 email,
                 password,
                 age,
                 gender,
                 address,
-                role: role?.value ?? role._id,
-                company: {
-                    _id: company?.value ?? company._id,
-                    name: company?.label ?? company.name
-                }
+                // gửi string id hoặc null để backend có thể detach khi null
+                role: role ? (role as any).value ?? (role as any)._id : null,
+                company: company ? {
+                    _id: (company as any)?.value ?? (company as any)?._id,
+                    name: (company as any)?.label ?? (company as any)?.name
+                } : null
             }
 
             const res = await callUpdateUser(user, dataInit._id);
@@ -77,18 +85,15 @@ const ModalUser = (props: IProps) => {
             }
         } else {
             //create
-            const user = {
+            const user: IUser = {
                 name,
                 email,
                 password,
                 age,
                 gender,
                 address,
-                role: role.value,
-                company: {
-                    _id: company.value,
-                    name: company.label
-                }
+                role: role ? (role as any).value ?? (role as any)._id : null,
+                company: company ? { _id: company.value, name: company.label } : null
             }
             const res = await callCreateUser(user);
             if (res.data) {
@@ -218,7 +223,6 @@ const ModalUser = (props: IProps) => {
                         <ProForm.Item
                             name="role"
                             label="Vai trò"
-                            rules={[{ required: true, message: 'Vui lòng chọn vai trò!' }]}
 
                         >
                             <DebounceSelect
@@ -229,7 +233,12 @@ const ModalUser = (props: IProps) => {
                                 placeholder="Chọn vai trò"
                                 fetchOptions={fetchRoleList}
                                 onChange={(newValue: any) => {
-                                    setRole(Array.isArray(newValue) ? (newValue[0] as ICompanySelect) : (newValue as ICompanySelect));
+                                    // allowClear => newValue can be undefined/null
+                                    if (!newValue || (Array.isArray(newValue) && newValue.length === 0)) {
+                                        setRole(null);
+                                    } else {
+                                        setRole(Array.isArray(newValue) ? (newValue[0] as ICompanySelect) : (newValue as ICompanySelect));
+                                    }
                                 }}
                                 style={{ width: '100%' }}
                             />
@@ -240,7 +249,7 @@ const ModalUser = (props: IProps) => {
                         <ProForm.Item
                             name="company"
                             label="Thuộc Công Ty"
-                            rules={[{ required: true, message: 'Vui lòng chọn company!' }]}
+                            rules={[]}
                         >
                             <DebounceSelect
                                 allowClear

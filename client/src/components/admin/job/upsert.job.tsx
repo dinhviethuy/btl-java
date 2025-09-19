@@ -87,10 +87,14 @@ const ViewUpsertJob = (props: any) => {
                 location: values.location,
                 salary: values.salary,
                 quantity: values.quantity,
-                levels: values.level,
+                levels: values.levels,
                 description: value,
-                startDate: /[0-9]{2}[/][0-9]{2}[/][0-9]{4}$/.test(values.startDate) ? dayjs(values.startDate, 'DD/MM/YYYY').toDate() : values.startDate,
-                endDate: /[0-9]{2}[/][0-9]{2}[/][0-9]{4}$/.test(values.endDate) ? dayjs(values.endDate, 'DD/MM/YYYY').toDate() : values.endDate,
+                startDate: /[0-9]{2}[/][0-9]{2}[/][0-9]{4}$/.test(values.startDate)
+                    ? dayjs(values.startDate, 'DD/MM/YYYY').startOf('day').toDate()
+                    : dayjs(values.startDate).startOf('day').toDate(),
+                endDate: /[0-9]{2}[/][0-9]{2}[/][0-9]{4}$/.test(values.endDate)
+                    ? dayjs(values.endDate, 'DD/MM/YYYY').endOf('day').toDate()
+                    : dayjs(values.endDate).endOf('day').toDate(),
                 isActive: values.isActive
             }
 
@@ -118,10 +122,10 @@ const ViewUpsertJob = (props: any) => {
                 location: values.location,
                 salary: values.salary,
                 quantity: values.quantity,
-                levels: values.level,
+                levels: values.levels,
                 description: value,
-                startDate: dayjs(values.startDate, 'DD/MM/YYYY').toDate(),
-                endDate: dayjs(values.endDate, 'DD/MM/YYYY').toDate(),
+                startDate: dayjs(values.startDate, 'DD/MM/YYYY').startOf('day').toDate(),
+                endDate: dayjs(values.endDate, 'DD/MM/YYYY').endOf('day').toDate(),
                 isActive: values.isActive
             }
 
@@ -240,7 +244,7 @@ const ViewUpsertJob = (props: any) => {
                             </Col>
                             <Col span={24} md={6}>
                                 <ProFormSelect
-                                    name="level"
+                                    name="levels"
                                     label="Trình độ"
                                     mode="multiple"
                                     valueEnum={{

@@ -99,7 +99,12 @@ public class JobsService {
         if (locationFilter != null) locationFilter = locationFilter.replaceAll("^/+|/i$", "");
         if (companyIdFilter != null && !companyIdFilter.isBlank()) {
             // explicit filter by company id for public/company detail page
-            page = jobRepository.findByCompanyId(companyIdFilter, pageable);
+            if (forcePublic || !(isAdmin || forceAdmin)) {
+                // Only return active + within date window for public scope
+                page = jobRepository.findPublicJobsByCompanyId(companyIdFilter, pageable);
+            } else {
+                page = jobRepository.findByCompanyId(companyIdFilter, pageable);
+            }
         } else if (forcePublic) {
             if (hasSkills && hasLocations) {
                 page = jobRepository.findPublicJobsBySkillsAndLocations(nameFilter, skillsFilter, locationsFilter, excludeId, pageable);
@@ -125,16 +130,24 @@ public class JobsService {
                 }
             } else {
                 var me = userRepository.findById(currentUserId).orElse(null);
-                String companyId = me != null && me.getCompany() != null ? me.getCompany().get_id() : null;
-                if (companyId != null) {
+                java.util.Set<String> companyIds = new java.util.LinkedHashSet<>();
+                if (me != null && me.getCompany() != null && me.getCompany().get_id() != null) {
+                    companyIds.add(me.getCompany().get_id());
+                }
+                // cộng thêm các công ty mình tạo
+                for (com.fullnestjob.modules.companies.entity.Company c : companyRepository.findAllByCreatorId(currentUserId)) {
+                    if (c != null && c.get_id() != null) companyIds.add(c.get_id());
+                }
+                if (!companyIds.isEmpty()) {
+                    java.util.List<String> ids = new java.util.ArrayList<>(companyIds);
                     if (nameFilter != null && locationFilter != null) {
-                        page = jobRepository.findByCompanyIdAndNameLikeAndLocationLike(companyId, nameFilter, locationFilter, pageable);
+                        page = jobRepository.findByCompanyIdsAndNameLikeAndLocationLike(ids, nameFilter, locationFilter, pageable);
                     } else if (nameFilter != null) {
-                        page = jobRepository.findByCompanyIdAndNameLike(companyId, nameFilter, pageable);
+                        page = jobRepository.findByCompanyIdsAndNameLike(ids, nameFilter, pageable);
                     } else if (locationFilter != null) {
-                        page = jobRepository.findByCompanyIdAndLocationLike(companyId, locationFilter, pageable);
+                        page = jobRepository.findByCompanyIdsAndLocationLike(ids, locationFilter, pageable);
                     } else {
-                        page = jobRepository.findByCompanyId(companyId, pageable);
+                        page = jobRepository.findByCompanyIds(ids, pageable);
                     }
                 } else {
                     page = Page.empty(pageable);
@@ -204,6 +217,7 @@ public class JobsService {
             Company c = companyRepository.findById(body.company._id).orElse(null);
             j.setCompany(c);
         }
+        // Note: Job entity does not expose createdBy setter; skipping audit embed here
         return toDetail(jobRepository.save(j));
     }
 
@@ -224,6 +238,7 @@ public class JobsService {
             Company c = companyRepository.findById(body.company._id).orElse(null);
             j.setCompany(c);
         }
+        // Note: Job entity does not expose updatedBy setter; skipping audit embed here
         return toDetail(jobRepository.save(j));
     }
 
