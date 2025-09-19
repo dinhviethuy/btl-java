@@ -5,7 +5,7 @@ import { EnvironmentOutlined, ThunderboltOutlined } from '@ant-design/icons';
 import { Card, Col, Empty, Pagination, Row, Spin, Tag, Tooltip } from 'antd';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { isMobile } from 'react-device-detect';
 import { Link, useNavigate } from 'react-router-dom';
 import styles from 'styles/client.module.scss';
@@ -34,6 +34,72 @@ const JobCard = (props: IProps) => {
     const [sortQuery, setSortQuery] = useState("sort=-createdAt");
     const navigate = useNavigate();
     const latestQueryRef = (function () { return { current: '' as string }; })();
+
+    const SkillsRow = ({ skills, jobId }: { skills: string[]; jobId: string }) => {
+        const containerRef = useRef<HTMLDivElement | null>(null);
+        const tagRefs = useRef<HTMLElement[]>([]);
+        const [visibleCount, setVisibleCount] = useState<number>(skills.length);
+        const [measuring, setMeasuring] = useState<boolean>(true);
+
+        const measure = () => {
+            const nodes = tagRefs.current;
+            if (!nodes || nodes.length === 0) { setMeasuring(false); return; }
+            const firstTop = nodes[0].offsetTop;
+            let count = nodes.length;
+            for (let i = 1; i < nodes.length; i++) {
+                if (nodes[i].offsetTop > firstTop) { count = i; break; }
+            }
+            // Reserve space for +n tag if overflow
+            if (count < nodes.length) count = Math.max(0, count - 1);
+            setVisibleCount(count);
+            setMeasuring(false);
+        };
+
+        useLayoutEffect(() => {
+            setMeasuring(true);
+        }, [skills]);
+
+        useLayoutEffect(() => {
+            if (measuring) {
+                // delay a frame to ensure DOM laid out
+                requestAnimationFrame(() => measure());
+            }
+        }, [measuring]);
+
+        useEffect(() => {
+            const onResize = () => {
+                setMeasuring(true);
+            };
+            window.addEventListener('resize', onResize);
+            return () => window.removeEventListener('resize', onResize);
+        }, []);
+
+        // reset refs each render
+        tagRefs.current = [];
+        const setTagRef = (el: any) => { if (el) tagRefs.current.push(el as HTMLElement); };
+
+        const visibleSkills = measuring ? skills : skills.slice(0, visibleCount);
+        const overflowSkills = measuring ? [] : skills.slice(visibleCount);
+
+        return (
+            <div
+                className={styles["job-skills"]}
+                ref={containerRef}
+                style={{ display: 'flex', flexWrap: measuring ? 'wrap' : 'nowrap', overflow: 'hidden' }}
+            >
+                {visibleSkills.map((s, idx) => (
+                    <Tag key={`${jobId}-sk-${s}-${idx}`} color="gold" style={{ marginBottom: 6 }} ref={setTagRef as any}>
+                        {s}
+                    </Tag>
+                ))}
+                {!measuring && overflowSkills.length > 0 && (
+                    <Tooltip title={overflowSkills.join(', ')}>
+                        <Tag style={{ marginBottom: 6, cursor: 'default' }}>+{overflowSkills.length}</Tag>
+                    </Tooltip>
+                )}
+            </div>
+        );
+    };
 
     useEffect(() => {
         setFilter(externalFilter || "");
@@ -135,18 +201,7 @@ const JobCard = (props: IProps) => {
                                             <div className={styles["card-job-right"]}>
                                                 <div className={styles["job-title"]}>{item.name}</div>
                                                 {item?.skills && item.skills.length > 0 && (
-                                                    <div className={styles["job-skills"]}>
-                                                        {item.skills.slice(0, 3).map((s) => (
-                                                            <Tag key={`${item._id}-sk-${s}`} color="gold" style={{ marginBottom: 6 }}>
-                                                                {s}
-                                                            </Tag>
-                                                        ))}
-                                                        {item.skills.length > 3 && (
-                                                            <Tooltip title={item.skills.slice(3).join(', ')}>
-                                                                <Tag style={{ marginBottom: 6, cursor: 'default' }}>+{item.skills.length - 3}</Tag>
-                                                            </Tooltip>
-                                                        )}
-                                                    </div>
+                                                    <SkillsRow skills={item.skills} jobId={item._id!} />
                                                 )}
                                                 <div className={styles["job-location"]}><EnvironmentOutlined style={{ color: '#58aaab' }} />&nbsp;{getLocationName(item.location)}</div>
                                                 <div><ThunderboltOutlined style={{ color: 'orange' }} />&nbsp;{(item.salary + "")?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} đ</div>

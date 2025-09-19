@@ -46,6 +46,7 @@ export interface ICompany {
   address?: string;
   logo: string;
   description?: string;
+  openJobs?: number;
   createdBy?: string;
   isDeleted?: boolean;
   deletedAt?: boolean | null;

@@ -1,7 +1,8 @@
 import { callFetchCompany } from '@/config/api';
 import { convertSlug } from '@/config/utils';
 import { ICompany } from '@/types/backend';
-import { Col, Empty, Pagination, Row, Spin } from 'antd';
+import { EnvironmentOutlined } from '@ant-design/icons';
+import { Col, Empty, Pagination, Row, Spin, Tooltip } from 'antd';
 import { useEffect, useState } from 'react';
 import { isMobile } from 'react-device-detect';
 import { Link, useNavigate } from 'react-router-dom';
@@ -122,7 +123,7 @@ const CompanyCard = (props: IProps) => {
                                         overflow: 'hidden',
                                         cursor: 'pointer',
                                         transition: 'transform 0.2s ease',
-                                        height: 240,
+                                        height: 300,
                                         width: '100%',
                                         display: 'flex',
                                         flexDirection: 'column'
@@ -133,46 +134,67 @@ const CompanyCard = (props: IProps) => {
                                     >
                                         {/* Logo */}
                                         <div style={{
-                                            height: 160,
+                                            height: 220,
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'center',
                                             background: 'var(--input-bg)',
-                                            padding: 16
+                                            padding: 16,
+                                            flexDirection: 'column',
+                                            gap: 16
                                         }}>
                                             <img
                                                 alt={item.name}
                                                 src={item?.logo}
                                                 style={{
-                                                    width: 140,
-                                                    height: 140,
+                                                    width: 160,
+                                                    height: 160,
                                                     objectFit: 'contain'
                                                 }}
                                             />
-                                        </div>
-                                        {/* Name */}
-                                        <div style={{
-                                            flex: 1,
-                                            padding: '12px 16px',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            borderTop: '1px solid var(--border)'
-                                        }}>
-                                            <span style={{
-                                                fontSize: 16,
-                                                fontWeight: 600,
+                                            <div style={{
+                                                fontSize: 18,
+                                                fontWeight: 700,
                                                 color: 'var(--title-text)',
                                                 textAlign: 'center',
                                                 lineHeight: 1.3,
-                                                display: 'block',
                                                 width: '100%',
                                                 overflow: 'hidden',
                                                 textOverflow: 'ellipsis',
                                                 whiteSpace: 'nowrap'
                                             }}>
                                                 {item.name}
-                                            </span>
+                                            </div>
+                                        </div>
+                                        {/* Content */}
+                                        <div style={{
+                                            flex: 1,
+                                            padding: '12px 16px',
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            gap: 8,
+                                            borderTop: '1px solid var(--border)'
+                                        }}>
+                                            {/* footer bar */}
+                                            <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0, flex: 1 }}>
+                                                    <EnvironmentOutlined style={{ color: '#58aaab' }} />
+                                                    <Tooltip title={item.address} mouseEnterDelay={0.2} placement="top">
+                                                        <span style={{
+                                                            color: 'var(--sub-text)',
+                                                            maxWidth: '100%',
+                                                            overflow: 'hidden',
+                                                            textOverflow: 'ellipsis',
+                                                            whiteSpace: 'nowrap',
+                                                            display: 'inline-block'
+                                                        }}>{item.address}</span>
+                                                    </Tooltip>
+                                                </div>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, whiteSpace: 'nowrap' }}>
+                                                    <span className={styles["pulse-dot"]} />
+                                                    <span style={{ fontWeight: 600 }}>{(item.openJobs ?? 0).toLocaleString('vi-VN')} Job</span>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </Col>

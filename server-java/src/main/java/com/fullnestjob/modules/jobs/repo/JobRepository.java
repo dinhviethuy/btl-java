@@ -45,6 +45,10 @@ public interface JobRepository extends JpaRepository<Job, String> {
     // Admin searching: optional levels filter, optional min salary filter
     @Query("select j from Job j where (:name is null or lower(j.name) like lower(concat('%', :name, '%'))) and ((:location is null) or lower(j.location) like lower(concat('%', :location, '%'))) and (:minSalary is null or j.salary >= :minSalary) and (:maxSalary is null or j.salary <= :maxSalary) and (:levels is null or upper(j.level) in :levels)")
     Page<Job> findAdminJobs(@Param("name") String name, @Param("location") String location, @Param("minSalary") Double minSalary, @Param("maxSalary") Double maxSalary, @Param("levels") List<String> levels, Pageable pageable);
+
+    // Count active and non-expired jobs for a company (for public/company cards)
+    @Query("select count(j) from Job j where j.company._id = :companyId and j.isActive = true and (j.startDate is null or j.startDate <= CURRENT_TIMESTAMP) and (j.endDate is null or j.endDate >= CURRENT_TIMESTAMP)")
+    long countActivePublicByCompanyId(@Param("companyId") String companyId);
 }
 
 

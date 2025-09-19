@@ -3,7 +3,7 @@ import { LOCATION_LIST, SKILLS_LIST } from "@/config/utils";
 import { IJob } from "@/types/backend";
 import { CheckSquareOutlined } from "@ant-design/icons";
 import { FooterToolbar, ProForm, ProFormDatePicker, ProFormDigit, ProFormSelect, ProFormSwitch, ProFormText } from "@ant-design/pro-components";
-import { Breadcrumb, Col, ConfigProvider, Divider, Form, Row, message, notification } from "antd";
+import { Breadcrumb, Col, ConfigProvider, Divider, Form, message, notification, Row, Tooltip } from "antd";
 import enUS from 'antd/lib/locale/en_US';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
@@ -196,7 +196,14 @@ const ViewUpsertJob = (props: any) => {
                                     allowClear
                                     mode="multiple"
                                     fieldProps={{
-                                        showArrow: false
+                                        showArrow: false,
+                                        maxTagCount: 'responsive',
+                                        // Hiển thị "+n" khi tràn và hover để xem danh sách còn lại
+                                        maxTagPlaceholder: (omittedValues: any[]) => (
+                                            <Tooltip title={omittedValues.map((v: any) => v?.label ?? v?.value).join(', ')}>
+                                                +{omittedValues.length}
+                                            </Tooltip>
+                                        )
                                     }}
 
                                 />

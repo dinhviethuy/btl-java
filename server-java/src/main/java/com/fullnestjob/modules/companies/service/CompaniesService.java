@@ -171,6 +171,13 @@ public class CompaniesService {
         dto.description = c.getDescription();
         dto.address = c.getAddress();
         dto.logo = c.getLogo();
+        try {
+            if (c.get_id() != null) {
+                dto.openJobs = jobRepository.countActivePublicByCompanyId(c.get_id());
+            }
+        } catch (Exception ignored) {
+            dto.openJobs = null;
+        }
         dto.createdAt = c.getCreatedAt();
         dto.updatedAt = c.getUpdatedAt();
         dto.deletedAt = c.getDeletedAt();
