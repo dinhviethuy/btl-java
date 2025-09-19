@@ -4,6 +4,7 @@ import { IJob } from '@/types/backend';
 import { EnvironmentOutlined, ThunderboltOutlined } from '@ant-design/icons';
 import { Card, Col, Empty, Pagination, Row, Spin, Tag, Tooltip } from 'antd';
 import dayjs from 'dayjs';
+import 'dayjs/locale/vi';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { isMobile } from 'react-device-detect';
@@ -213,7 +214,7 @@ const JobCard = (props: IProps) => {
                                                         </span>
                                                     )}
                                                 </div>
-                                                <div className={styles["job-updatedAt"]}>{dayjs(item.updatedAt).fromNow()}</div>
+                                                <div className={styles["job-updatedAt"]}>{dayjs(item.updatedAt).locale('vi').fromNow()}</div>
                                             </div>
                                         </div>
                                     </Card>
