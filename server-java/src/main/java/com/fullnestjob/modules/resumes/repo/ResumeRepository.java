@@ -33,6 +33,17 @@ public interface ResumeRepository extends JpaRepository<Resume, String> {
     // Admin: search by optional companyName and jobName (case-insensitive contains)
     @Query("select r from Resume r left join r.companyId c left join r.jobId j where (:companyName is null or lower(c.name) like lower(concat('%', :companyName, '%'))) and (:jobName is null or lower(j.name) like lower(concat('%', :jobName, '%')))")
     Page<Resume> findByCompanyNameAndJobName(@Param("companyName") String companyName, @Param("jobName") String jobName, Pageable pageable);
+
+    // Stats: resumes per status
+    @Query("select upper(coalesce(r.status, 'PENDING')), count(r) from Resume r group by upper(coalesce(r.status, 'PENDING'))")
+    java.util.List<Object[]> countByStatus();
+
+    // Stats: resumes per day since
+    @Query(value = "select date(created_at) as d, count(*) as c from resumes where created_at >= :from group by date(created_at) order by d", nativeQuery = true)
+    java.util.List<Object[]> countCreatedPerDaySince(@Param("from") java.util.Date from);
+
+    @Query(value = "select date(created_at) as d, count(*) as c from resumes where created_at >= :from and company_id = :companyId group by date(created_at) order by d", nativeQuery = true)
+    java.util.List<Object[]> countCreatedPerDaySinceByCompany(@Param("from") java.util.Date from, @Param("companyId") String companyId);
 }
 
 

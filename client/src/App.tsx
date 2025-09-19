@@ -88,6 +88,7 @@ export default function App() {
       errorElement: <NotFound />,
       children: [
         {
+          path: "dashboard",
           index: true, element:
             <ProtectedRoute>
               <DashboardPage />

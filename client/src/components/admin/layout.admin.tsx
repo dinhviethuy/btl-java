@@ -71,7 +71,7 @@ const LayoutAdmin = () => {
 
             const full = [
                 {
-                    label: <Link to='/admin'>Dashboard</Link>,
+                    label: <Link to='/admin/dashboard'>Dashboard</Link>,
                     key: '/admin',
                     icon: <AppstoreOutlined />
                 },
@@ -154,10 +154,7 @@ const LayoutAdmin = () => {
 
     return (
         <>
-            <Layout
-                style={{ minHeight: '100vh' }}
-                className={styles['layout-admin']}
-            >
+            <Layout className={styles['layout-admin']}>
                 {!isMobile ?
                     <Sider
                         theme='light'
@@ -184,7 +181,7 @@ const LayoutAdmin = () => {
                     />
                 }
 
-                <Layout>
+                <Layout style={{ height: '100vh' }}>
                     {!isMobile &&
                         <div className={styles['admin-header']} style={{ display: "flex", justifyContent: "space-between", paddingRight: 20 }}>
                             <Button
@@ -210,7 +207,7 @@ const LayoutAdmin = () => {
                             </Dropdown>
                         </div>
                     }
-                    <Content style={{ padding: '15px' }}>
+                    <Content style={{ padding: '15px', overflow: 'auto' }}>
                         <Outlet />
                     </Content>
                     <Footer style={{ padding: 10, textAlign: 'center' }}>

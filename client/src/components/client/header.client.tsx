@@ -85,7 +85,7 @@ const Header = (props: any) => {
                 setOpenManageAccount(true);
                 break;
             case 'admin':
-                navigate('/admin');
+                navigate('/admin/dashboard');
                 break;
             case 'logout':
                 handleLogout();

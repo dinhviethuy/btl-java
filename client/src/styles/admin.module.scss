@@ -12,6 +12,7 @@
 
 .layout-admin {
   background: var(--background);
+  height: 100vh;
 }
 
 .admin-header {
@@ -19,4 +20,7 @@
   color: var(--text);
   border-bottom: 1px solid var(--border);
   backdrop-filter: blur(8px);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }

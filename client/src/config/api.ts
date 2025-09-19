@@ -370,3 +370,21 @@ export const callFetchSubscriber = (query: string) => {
 export const callFetchSubscriberById = (id: string) => {
   return axios.get<IBackendRes<ISubscribers>>(`/api/v1/subscribers/${id}`);
 };
+
+export const callGetStatsOverview = (fromDays: number = 30) => {
+  return axios.get<IBackendRes<any>>(
+    `/api/v1/stats/overview?fromDays=${fromDays}`
+  );
+};
+
+export const callGetStatsTimeSeries = (fromDays: number = 30) => {
+  return axios.get<IBackendRes<any>>(
+    `/api/v1/stats/timeseries?fromDays=${fromDays}`
+  );
+};
+
+export const callGetTopCompanies = (limit: number = 5) => {
+  return axios.get<IBackendRes<any>>(
+    `/api/v1/stats/top-companies?limit=${limit}`
+  );
+};

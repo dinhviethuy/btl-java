@@ -49,6 +49,31 @@ public interface JobRepository extends JpaRepository<Job, String> {
     // Count active and non-expired jobs for a company (for public/company cards)
     @Query("select count(j) from Job j where j.company._id = :companyId and j.isActive = true and (j.startDate is null or j.startDate <= CURRENT_TIMESTAMP) and (j.endDate is null or j.endDate >= CURRENT_TIMESTAMP)")
     long countActivePublicByCompanyId(@Param("companyId") String companyId);
+
+    // Count all open jobs
+    @Query("select count(j) from Job j where j.isActive = true and (j.startDate is null or j.startDate <= CURRENT_TIMESTAMP) and (j.endDate is null or j.endDate >= CURRENT_TIMESTAMP)")
+    long countActivePublicAll();
+
+    // Stats: count jobs created per day since a date
+    @Query(value = "select date(created_at) as d, count(*) as c from jobs where created_at >= :from group by date(created_at) order by d", nativeQuery = true)
+    List<Object[]> countCreatedPerDaySince(@Param("from") java.util.Date from);
+
+    @Query(value = "select date(created_at) as d, count(*) as c from jobs where created_at >= :from and company_id = :companyId group by date(created_at) order by d", nativeQuery = true)
+    List<Object[]> countCreatedPerDaySinceByCompany(@Param("from") java.util.Date from, @Param("companyId") String companyId);
+
+    // Stats: count by level (ElementCollection levels)
+    @Query("select upper(l) as lv, count(j) from Job j join j.levels l group by upper(l)")
+    List<Object[]> countByLevels();
+
+    @Query("select upper(l) as lv, count(j) from Job j join j.levels l where j.company._id = :companyId group by upper(l)")
+    List<Object[]> countByLevelsForCompany(@Param("companyId") String companyId);
+
+    // Stats: top companies by open jobs
+    @Query(value = "select c.id, c.name, c.logo, count(*) as cnt from jobs j join companies c on j.company_id = c.id where j.is_active = true and (j.start_date is null or j.start_date <= now()) and (j.end_date is null or j.end_date >= now()) group by c.id, c.name, c.logo order by cnt desc limit :limit", nativeQuery = true)
+    List<Object[]> topCompaniesByOpenJobs(@Param("limit") int limit);
+
+    @Query("select count(j) from Job j where j.company._id = :companyId")
+    long countByCompanyId(@Param("companyId") String companyId);
 }
 
 

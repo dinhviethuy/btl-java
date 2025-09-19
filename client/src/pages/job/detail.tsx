@@ -3,7 +3,7 @@ import ApplyModal from "@/components/client/modal/apply.modal";
 import { callFetchJobById } from "@/config/api";
 import { convertSlug, getLocationName } from "@/config/utils";
 import { IJob } from "@/types/backend";
-import { DollarOutlined, EnvironmentOutlined, HistoryOutlined } from "@ant-design/icons";
+import { CrownOutlined, DollarOutlined, EnvironmentOutlined, HistoryOutlined } from "@ant-design/icons";
 import { Col, Divider, Row, Skeleton, Tag } from "antd";
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
@@ -72,6 +72,29 @@ const ClientJobDetailPage = (props: any) => {
                                     <DollarOutlined />
                                     <span>&nbsp;{(jobDetail.salary + "")?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} đ</span>
                                 </div>
+                                {Array.isArray(jobDetail.levels) && jobDetail.levels.length > 0 && (
+                                    <div style={{ margin: '8px 0' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                                            <CrownOutlined style={{ color: '#f7c948' }} />
+                                            <span>Level tuyển:</span>
+                                            {jobDetail.levels.map((lv, idx) => {
+                                                const upper = (lv || '').toUpperCase();
+                                                const colorMap: Record<string, string> = {
+                                                    INTERN: 'cyan',
+                                                    FRESHER: 'green',
+                                                    JUNIOR: 'geekblue',
+                                                    MIDDLE: 'purple',
+                                                    SENIOR: 'volcano',
+                                                };
+                                                return (
+                                                    <Tag key={`lv-${idx}`} color={colorMap[upper] || 'geekblue'}>
+                                                        {upper}
+                                                    </Tag>
+                                                )
+                                            })}
+                                        </div>
+                                    </div>
+                                )}
                                 <div className={styles["location"]}>
                                     <EnvironmentOutlined style={{ color: '#58aaab' }} />&nbsp;{getLocationName(jobDetail.location)}
                                 </div>

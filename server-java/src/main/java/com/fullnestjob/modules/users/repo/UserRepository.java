@@ -26,6 +26,10 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     @Query("select u from User u where u.company._id = :companyId and lower(u.name) like lower(concat('%', :name, '%')) and lower(u.email) like lower(concat('%', :email, '%'))")
     Page<User> findByCompanyIdAndNameLikeAndEmailLike(@Param("companyId") String companyId, @Param("name") String name, @Param("email") String email, Pageable pageable);
+
+    // Stats: users created per day since
+    @Query(value = "select date(created_at) as d, count(*) as c from users where created_at >= :from group by date(created_at) order by d", nativeQuery = true)
+    java.util.List<Object[]> countCreatedPerDaySince(@Param("from") java.util.Date from);
 }
 
 
