@@ -55,7 +55,7 @@ app:
     # Mẫu path chi tiết job, {id} sẽ được thay bằng job id
     job-detail-path: /job/{id}
   seed:
-    enabled: true
+    enabled: false
   admin:
     email: ${ADMIN_EMAIL:admin@gmail.com}
     password: ${ADMIN_PASSWORD:123456}

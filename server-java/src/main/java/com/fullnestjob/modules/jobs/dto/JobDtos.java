@@ -19,7 +19,7 @@ public class JobDtos {
         public List<String> skills;
         public Double salary;
         public Integer quantity;
-        public String level;
+        public java.util.List<String> levels;
         public String description;
         public Date startDate;
         public Date endDate;
@@ -39,8 +39,8 @@ public class JobDtos {
         public Double salary;
         @NotNull
         public Integer quantity;
-        @NotBlank
-        public String level;
+        @NotNull
+        public java.util.List<String> levels;
         public String description;
         @NotNull
         public Date startDate;
@@ -56,7 +56,7 @@ public class JobDtos {
         public List<String> skills;
         public Double salary;
         public Integer quantity;
-        public String level;
+        public java.util.List<String> levels;
         public String description;
         public Date startDate;
         public Date endDate;

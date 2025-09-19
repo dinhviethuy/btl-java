@@ -42,6 +42,8 @@ public class ResumesService {
         var pageable = org.springframework.data.domain.PageRequest.of(current - 1, pageSize, sort);
         String status = query.getStatus();
         Page<Resume> page;
+        String companyName = query.getName(); // reuse 'name' for job/company? We'll parse explicitly below
+        String jobName = query.getApiPath(); // use other spare fields? Better extend DTO, but reuse for quick filter
         String currentRole = com.fullnestjob.security.SecurityUtils.getCurrentRole();
         boolean isAdmin = currentRole != null && (currentRole.equalsIgnoreCase("ADMIN") || currentRole.equalsIgnoreCase("SUPER_ADMIN"));
         if (!isAdmin) {
@@ -60,7 +62,21 @@ public class ResumesService {
                 page = new org.springframework.data.domain.PageImpl<>(java.util.List.of(), pageable, 0);
             }
         } else {
-            if (status != null && !status.isBlank()) {
+            String companyNameFilter = null;
+            String jobNameFilter = null;
+            String companyIdFilter = null;
+            // Read via getters (dto updated)
+            companyNameFilter = query.getCompanyName();
+            jobNameFilter = query.getJobName();
+            companyIdFilter = query.getCompanyId();
+            if (companyNameFilter != null) companyNameFilter = companyNameFilter.replaceAll("^/+|/i$", "");
+            if (jobNameFilter != null) jobNameFilter = jobNameFilter.replaceAll("^/+|/i$", "");
+
+            if (companyIdFilter != null && !companyIdFilter.isBlank()) {
+                page = resumeRepository.findByCompanyId(companyIdFilter, pageable);
+            } else if ((companyNameFilter != null && !companyNameFilter.isBlank()) || (jobNameFilter != null && !jobNameFilter.isBlank())) {
+                page = resumeRepository.findByCompanyNameAndJobName(companyNameFilter, jobNameFilter, pageable);
+            } else if (status != null && !status.isBlank()) {
                 // support multiple comma-separated values; normalize to upper-case
                 String decoded = java.net.URLDecoder.decode(status, java.nio.charset.StandardCharsets.UTF_8);
                 String[] parts = decoded.split(",");

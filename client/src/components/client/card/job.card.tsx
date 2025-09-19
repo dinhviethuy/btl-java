@@ -204,7 +204,15 @@ const JobCard = (props: IProps) => {
                                                     <SkillsRow skills={item.skills} jobId={item._id!} />
                                                 )}
                                                 <div className={styles["job-location"]}><EnvironmentOutlined style={{ color: '#58aaab' }} />&nbsp;{getLocationName(item.location)}</div>
-                                                <div><ThunderboltOutlined style={{ color: 'orange' }} />&nbsp;{(item.salary + "")?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} đ</div>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                                                    <ThunderboltOutlined style={{ color: 'orange' }} />
+                                                    <span>{(item.salary + "")?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} đ</span>
+                                                    {Array.isArray(item.levels) && item.levels.length > 0 && (
+                                                        <span style={{ color: 'var(--sub-text)' }}>
+                                                            · {item.levels.join(', ')}
+                                                        </span>
+                                                    )}
+                                                </div>
                                                 <div className={styles["job-updatedAt"]}>{dayjs(item.updatedAt).fromNow()}</div>
                                             </div>
                                         </div>

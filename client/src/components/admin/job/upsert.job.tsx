@@ -87,7 +87,7 @@ const ViewUpsertJob = (props: any) => {
                 location: values.location,
                 salary: values.salary,
                 quantity: values.quantity,
-                level: values.level,
+                levels: values.level,
                 description: value,
                 startDate: /[0-9]{2}[/][0-9]{2}[/][0-9]{4}$/.test(values.startDate) ? dayjs(values.startDate, 'DD/MM/YYYY').toDate() : values.startDate,
                 endDate: /[0-9]{2}[/][0-9]{2}[/][0-9]{4}$/.test(values.endDate) ? dayjs(values.endDate, 'DD/MM/YYYY').toDate() : values.endDate,
@@ -118,7 +118,7 @@ const ViewUpsertJob = (props: any) => {
                 location: values.location,
                 salary: values.salary,
                 quantity: values.quantity,
-                level: values.level,
+                levels: values.level,
                 description: value,
                 startDate: dayjs(values.startDate, 'DD/MM/YYYY').toDate(),
                 endDate: dayjs(values.endDate, 'DD/MM/YYYY').toDate(),
@@ -242,6 +242,7 @@ const ViewUpsertJob = (props: any) => {
                                 <ProFormSelect
                                     name="level"
                                     label="Trình độ"
+                                    mode="multiple"
                                     valueEnum={{
                                         INTERN: 'INTERN',
                                         FRESHER: 'FRESHER',
@@ -249,8 +250,16 @@ const ViewUpsertJob = (props: any) => {
                                         MIDDLE: 'MIDDLE',
                                         SENIOR: 'SENIOR',
                                     }}
-                                    placeholder="Please select a level"
+                                    placeholder="Please select level(s)"
                                     rules={[{ required: true, message: 'Vui lòng chọn level!' }]}
+                                    fieldProps={{
+                                        maxTagCount: 'responsive',
+                                        maxTagPlaceholder: (omittedValues: any[]) => (
+                                            <Tooltip title={omittedValues.map((v: any) => v?.label ?? v?.value).join(', ')}>
+                                                +{omittedValues.length}
+                                            </Tooltip>
+                                        )
+                                    }}
                                 />
                             </Col>
 

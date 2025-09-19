@@ -7,7 +7,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { fetchResume } from "@/redux/slice/resumeSlide";
 import { IResume } from "@/types/backend";
 import { DeleteOutlined, EyeOutlined, LinkOutlined } from "@ant-design/icons";
-import { ActionType, ProColumns, ProFormSelect } from '@ant-design/pro-components';
+import { ActionType, ProColumns, ProFormSelect, ProFormText } from '@ant-design/pro-components';
 import { Popconfirm, Space, message, notification } from "antd";
 import dayjs from 'dayjs';
 import queryString from 'query-string';
@@ -90,12 +90,30 @@ const ResumePage = () => {
         {
             title: 'Job',
             dataIndex: ["jobId", "name"],
-            hideInSearch: true,
+            renderFormItem: () => (
+                <ProFormText name="jobName" placeholder="Tìm theo tên job" />
+            ),
         },
         {
             title: 'Company',
             dataIndex: ["companyId", "name"],
-            hideInSearch: true,
+            renderFormItem: () => (
+                <ProFormSelect
+                    showSearch
+                    debounceTime={300}
+                    placeholder="Chọn công ty"
+                    request={async ({ keyWords }) => {
+                        const query = `current=1&pageSize=10&scope=admin&name=${keyWords ? encodeURIComponent('/' + keyWords + '/i') : ''}`;
+                        const res = await import("@/config/api").then(m => m.callFetchCompany(query));
+                        if (res && res.data) {
+                            return res.data.result.map((c: any) => ({ label: c.name, value: c._id }));
+                        }
+                        return [];
+                    }}
+                    name="companyId"
+                    fieldProps={{ labelInValue: true }}
+                />
+            ),
         },
 
         {
@@ -163,7 +181,16 @@ const ResumePage = () => {
         if (clone?.status?.length) {
             clone.status = clone.status.join(",");
         }
+        if (clone.companyId) {
+            const cid = typeof clone.companyId === 'object' ? (clone.companyId.value || clone.companyId.key || clone.companyId._id) : clone.companyId;
+            if (cid) clone.companyId = cid;
+        }
+        if (clone.jobId && typeof clone.jobId === 'object') {
+            delete clone.jobId;
+        }
 
+        if (clone.jobName) clone.jobName = `/${String(clone.jobName).trim()}/i`;
+        // companyName: dùng select nên không gửi companyName khi đã có companyId
         let temp = queryString.stringify(clone);
 
         let sortBy = "";

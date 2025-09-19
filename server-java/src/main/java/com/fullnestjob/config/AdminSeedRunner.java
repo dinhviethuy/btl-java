@@ -47,7 +47,8 @@ public class AdminSeedRunner implements CommandLineRunner {
 				"--seed-logos", "--seed.logos",
 				"--seed-logos-direct", "--seed.logos.direct",
 				"--seed-all", "--seed.all");
-		boolean shouldRun = !hasSpecificFlag || hasAny(args, "--seed-admin", "--seed.admin", "--seed-all", "--seed.all");
+        // Chỉ chạy khi có truyền cờ cụ thể, tránh auto-run khi bootRun không có args
+        boolean shouldRun = hasAny(args, "--seed-admin", "--seed.admin", "--seed-all", "--seed.all");
 		if (!shouldRun) return;
 
 		if (adminEmail == null || adminEmail.isBlank() || adminPassword == null || adminPassword.isBlank()) {

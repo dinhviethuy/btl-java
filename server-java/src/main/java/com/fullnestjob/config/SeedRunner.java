@@ -42,8 +42,8 @@ public class SeedRunner implements CommandLineRunner {
                 "--seed-logos-direct", "--seed.logos.direct",
                 "--seed-all", "--seed.all");
         boolean logosOnly = hasAny(args, "--seed-logos", "--seed.logos", "--seed-logos-direct", "--seed.logos.direct");
-        boolean shouldRun = (!hasSpecificFlag && !logosOnly)
-                || hasAny(args, "--seed-data", "--seed.data", "--seed-all", "--seed.all");
+        // Chỉ chạy khi có cờ seed-data hoặc seed-all. Tránh tự chạy khi không truyền args
+        boolean shouldRun = hasAny(args, "--seed-data", "--seed.data", "--seed-all", "--seed.all");
         if (!shouldRun) {
             System.out.println("SeedRunner: skipped (flags)");
             return;
@@ -108,7 +108,22 @@ public class SeedRunner implements CommandLineRunner {
                         if (node.has("quantity") && node.get("quantity").isInt()) {
                             j.setQuantity(node.get("quantity").asInt());
                         }
-                        j.setLevel(optText(node, "level"));
+                        // level có thể là string hoặc mảng -> map sang levels (list)
+                        java.util.List<String> levels = new java.util.ArrayList<>();
+                        if (node.has("levels") && node.get("levels").isArray()) {
+                            node.get("levels").forEach(s -> { if (s.isTextual()) levels.add(s.asText()); });
+                        } else if (node.has("level") && !node.get("level").isNull()) {
+                            String lv = optText(node, "level");
+                            if (lv != null && !lv.isBlank()) {
+                                // support CSV or single value
+                                if (lv.contains(",")) {
+                                    for (String x : lv.split(",")) { if (!x.isBlank()) levels.add(x.trim()); }
+                                } else {
+                                    levels.add(lv);
+                                }
+                            }
+                        }
+                        j.setLevels(levels);
                         j.setDescription(optText(node, "description"));
                         if (node.has("skills") && node.get("skills").isArray()) {
                             List<String> skills = new ArrayList<>();

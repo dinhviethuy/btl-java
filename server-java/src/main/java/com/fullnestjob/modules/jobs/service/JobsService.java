@@ -195,7 +195,7 @@ public class JobsService {
         j.setSkills(body.skills);
         j.setSalary(body.salary);
         j.setQuantity(body.quantity);
-        j.setLevel(body.level);
+        j.setLevels(body.levels != null ? new java.util.ArrayList<>(body.levels) : new java.util.ArrayList<>());
         j.setDescription(body.description);
         j.setStartDate(body.startDate);
         j.setEndDate(body.endDate);
@@ -215,7 +215,7 @@ public class JobsService {
         if (body.skills != null) j.setSkills(body.skills);
         if (body.salary != null) j.setSalary(body.salary);
         if (body.quantity != null) j.setQuantity(body.quantity);
-        if (body.level != null) j.setLevel(body.level);
+        if (body.levels != null) j.setLevels(new java.util.ArrayList<>(body.levels));
         if (body.description != null) j.setDescription(body.description);
         if (body.startDate != null) j.setStartDate(body.startDate);
         if (body.endDate != null) j.setEndDate(body.endDate);
@@ -244,7 +244,7 @@ public class JobsService {
         dto.skills = j.getSkills() != null ? new java.util.ArrayList<>(j.getSkills()) : java.util.Collections.emptyList();
         dto.salary = j.getSalary();
         dto.quantity = j.getQuantity();
-        dto.level = j.getLevel();
+        dto.levels = j.getLevels() != null ? new java.util.ArrayList<>(j.getLevels()) : java.util.Collections.emptyList();
         dto.description = j.getDescription();
         dto.startDate = j.getStartDate();
         dto.endDate = j.getEndDate();

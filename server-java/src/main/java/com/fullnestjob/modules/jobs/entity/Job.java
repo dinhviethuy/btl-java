@@ -25,9 +25,12 @@ public class Job extends BaseAuditEntity {
 	@Column(name = "skill")
 	private List<String> skills = new ArrayList<>();
 
-	private Double salary;
-	private Integer quantity;
-	private String level;
+    private Double salary;
+    private Integer quantity;
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "job_levels", joinColumns = @JoinColumn(name = "job_id", referencedColumnName = "id"))
+    @Column(name = "level")
+    private List<String> levels = new ArrayList<>();
 	@jakarta.persistence.Column(columnDefinition = "LONGTEXT")
 	private String description;
 	private Date startDate;
@@ -71,8 +74,8 @@ public class Job extends BaseAuditEntity {
 	public void setSalary(Double salary) { this.salary = salary; }
 	public Integer getQuantity() { return quantity; }
 	public void setQuantity(Integer quantity) { this.quantity = quantity; }
-	public String getLevel() { return level; }
-	public void setLevel(String level) { this.level = level; }
+    public List<String> getLevels() { return levels; }
+    public void setLevels(List<String> levels) { this.levels = levels; }
 	public String getDescription() { return description; }
 	public void setDescription(String description) { this.description = description; }
 	public Date getStartDate() { return startDate; }

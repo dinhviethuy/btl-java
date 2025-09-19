@@ -39,7 +39,8 @@ public class PermissionsSeedRunner implements CommandLineRunner {
 				"--seed-logos", "--seed.logos",
 				"--seed-logos-direct", "--seed.logos.direct",
 				"--seed-all", "--seed.all");
-		boolean shouldRun = !hasSpecificFlag || hasAny(args, "--seed-permissions", "--seed.permissions", "--seed-all", "--seed.all");
+        // Chỉ chạy khi có cờ tương ứng
+        boolean shouldRun = hasAny(args, "--seed-permissions", "--seed.permissions", "--seed-all", "--seed.all");
 		if (!shouldRun) return;
 
 		Map<RequestMappingInfo, HandlerMethod> map = handlerMapping.getHandlerMethods();

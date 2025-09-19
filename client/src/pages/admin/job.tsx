@@ -102,8 +102,18 @@ const JobPage = () => {
         },
         {
             title: 'Level',
-            dataIndex: 'level',
-            renderFormItem: (item, props, form) => (
+            dataIndex: 'levels',
+            render(dom, entity) {
+                if (!entity.levels || entity.levels.length === 0) return <>-</>;
+                return (
+                    <Space wrap size={[4, 4]}>
+                        {entity.levels.map((lv) => (
+                            <Tag key={`${entity._id}-lv-${lv}`} color="blue">{lv}</Tag>
+                        ))}
+                    </Space>
+                );
+            },
+            renderFormItem: () => (
                 <ProFormSelect
                     showSearch
                     mode="multiple"
@@ -216,8 +226,9 @@ const JobPage = () => {
             if (max !== undefined) clone.maxSalary = max;
             delete clone.salary;
         }
-        if (clone?.level?.length) {
-            clone.level = clone.level.join(",");
+        if (clone?.levels?.length) {
+            clone.level = clone.levels.join(",");
+            delete clone.levels;
         }
 
         let temp = queryString.stringify({ scope: 'admin', ...clone });

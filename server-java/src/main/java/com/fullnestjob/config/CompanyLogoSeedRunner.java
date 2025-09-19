@@ -47,7 +47,8 @@ public class CompanyLogoSeedRunner implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         boolean hasSpecificFlag = hasAny(args, "--seed-admin", "--seed.admin", "--seed-permissions", "--seed.permissions", "--seed-logos", "--seed.logos", "--seed-logos-direct", "--seed.logos.direct", "--seed-data", "--seed.data", "--seed-all", "--seed.all");
-        boolean shouldRun = !hasSpecificFlag || hasAny(args, "--seed-logos", "--seed.logos", "--seed-logos-direct", "--seed.logos.direct", "--seed-data", "--seed.data", "--seed-all", "--seed.all");
+        // Chỉ chạy khi có cờ seed-logos/seed-logos-direct hoặc seed-all
+        boolean shouldRun = hasAny(args, "--seed-logos", "--seed.logos", "--seed-logos-direct", "--seed.logos.direct", "--seed-all", "--seed.all");
         if (!shouldRun) return;
         boolean directOnly = hasAny(args, "--seed-logos-direct", "--seed.logos.direct");
         updateCompanyLogos(directOnly);

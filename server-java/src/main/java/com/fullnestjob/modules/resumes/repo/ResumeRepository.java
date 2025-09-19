@@ -29,6 +29,10 @@ public interface ResumeRepository extends JpaRepository<Resume, String> {
 
     @Query("select r from Resume r where r.companyId._id = :companyId and lower(r.status) like lower(concat('%', :status, '%'))")
     Page<Resume> findByCompanyIdAndStatusLike(@Param("companyId") String companyId, @Param("status") String status, Pageable pageable);
+
+    // Admin: search by optional companyName and jobName (case-insensitive contains)
+    @Query("select r from Resume r left join r.companyId c left join r.jobId j where (:companyName is null or lower(c.name) like lower(concat('%', :companyName, '%'))) and (:jobName is null or lower(j.name) like lower(concat('%', :jobName, '%')))")
+    Page<Resume> findByCompanyNameAndJobName(@Param("companyName") String companyName, @Param("jobName") String jobName, Pageable pageable);
 }
 
 

@@ -26,6 +26,9 @@ public class PaginationDtos {
         private Double minSalary; // optional: VND
         private Double maxSalary; // optional: VND
         private String level; // optional: CSV levels filter, e.g. "INTERN,FRESHER"
+        // Optional filters for resumes module
+        private String companyName; // filter resumes by company name (contains, case-insensitive)
+        private String jobName;     // filter resumes by job name (contains, case-insensitive)
 
         public Integer getCurrent() { return current; }
         public void setCurrent(Integer current) { this.current = current; }
@@ -68,6 +71,10 @@ public class PaginationDtos {
         public void setMaxSalary(Double maxSalary) { this.maxSalary = maxSalary; }
         public String getLevel() { return level; }
         public void setLevel(String level) { this.level = level; }
+        public String getCompanyName() { return companyName; }
+        public void setCompanyName(String companyName) { this.companyName = companyName; }
+        public String getJobName() { return jobName; }
+        public void setJobName(String jobName) { this.jobName = jobName; }
     }
 
     public static class MetaDTO {

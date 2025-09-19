@@ -91,7 +91,7 @@ export interface IJob {
   location: string;
   salary: number;
   quantity: number;
-  level: string;
+  levels: string[];
   description: string;
   startDate: Date;
   endDate: Date;
