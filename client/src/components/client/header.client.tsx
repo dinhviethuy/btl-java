@@ -126,7 +126,15 @@ const Header = (props: any) => {
                                 </ConfigProvider>
                                 <div className={styles['extra']}>
                                     {isAuthenticated === false ?
-                                        <Link to={'/login'}>Đăng Nhập</Link>
+                                        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginTop: '8px' }}>
+                                            <Link to='/login' className={`${styles.buttonLink} ${styles.buttonLogin}`}>
+                                                Đăng Nhập
+                                            </Link>
+                                            <Link to='/register' className={`${styles.buttonLink} ${styles.buttonRegister}`}>
+                                                Đăng Ký
+                                            </Link>
+                                        </div>
+
                                         :
                                         <Dropdown menu={{ items: itemsDropdown, onClick: handleDropdownClick }} trigger={['click']}>
                                             <Space style={{ cursor: "pointer" }}>
