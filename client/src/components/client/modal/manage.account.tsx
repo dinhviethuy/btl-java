@@ -126,7 +126,10 @@ const UserUpdateInfo = (props: any) => {
             name: user?.name,
             age: user?.age,
             address: user?.address
-        })
+        });
+        // Reset avatar states khi user thay đổi
+        setAvatarFile(undefined);
+        setPreview(user?.avatar || undefined);
     }, [user])
 
     const onFinish = async (values: any) => {
@@ -135,22 +138,33 @@ const UserUpdateInfo = (props: any) => {
             name,
             age: age !== undefined && age !== null ? Number(age) : undefined,
             address,
+            avatar: user?.avatar || null
         };
-        // nếu có file mới -> upload lấy URL
+
+        // Xử lý avatar: nếu có file mới thì upload, nếu không thì gửi avatar cũ
         if (avatarFile) {
+            // Có file mới -> upload lấy URL mới
             try {
                 setUploading(true);
                 const up = await callUploadSingleFile(avatarFile, 'avatar');
-                if (up?.data?.url) payload.avatar = up.data.url;
+                if (up?.data?.url) {
+                    payload.avatar = up.data.url;
+                }
             } finally {
                 setUploading(false);
             }
+        } else {
+            // Không có file mới -> gửi avatar cũ để giữ nguyên
+            payload.avatar = user?.avatar || null;
         }
+
         const res = await callUpdateProfile(payload);
         if (res && res.data) {
             message.success("Cập nhật thông tin thành công");
             dispatch(setUserLoginInfo(res.data));
+            // Reset avatar file state sau khi update thành công
             setAvatarFile(undefined);
+            // Cập nhật preview với avatar mới từ server
             setPreview(res.data.avatar || undefined);
         } else {
             notification.error({ message: 'Có lỗi xảy ra', description: res?.message });
@@ -175,22 +189,33 @@ const UserUpdateInfo = (props: any) => {
                                 const raw: File | undefined = f?.originFileObj || (f instanceof File ? f : undefined);
                                 if (!raw) return;
                                 const reader = new FileReader();
-                                reader.onload = (e) => setPreview(String(e.target?.result || ''));
+                                reader.onload = (e) => {
+                                    const result = String(e.target?.result || '');
+                                    setPreview(result);
+                                    setAvatarFile(raw);
+                                };
                                 reader.readAsDataURL(raw);
-                                setAvatarFile(raw);
                             }}
                         >
                             <Button icon={<UploadOutlined />}>Chọn ảnh</Button>
                         </Upload>
                         {preview && preview !== user?.avatar && (
-                            <Button onClick={() => { setPreview(undefined); setAvatarFile(undefined); }}>Xóa ảnh đã chọn</Button>
+                            <Button onClick={() => {
+                                setPreview(user?.avatar || undefined);
+                                setAvatarFile(undefined);
+                            }}>Xóa ảnh đã chọn</Button>
                         )}
                         {(preview || user?.avatar) && (
                             <Button danger onClick={async () => {
                                 setPreview(undefined);
                                 setAvatarFile(undefined);
                                 const res = await callUpdateProfile({ avatar: null });
-                                if (res?.data) { dispatch(setUserLoginInfo(res.data)); message.success('Đã gỡ avatar'); }
+                                if (res?.data) {
+                                    dispatch(setUserLoginInfo(res.data));
+                                    message.success('Đã gỡ avatar');
+                                    // Reset preview về undefined sau khi gỡ thành công
+                                    setPreview(undefined);
+                                }
                             }}>Gỡ avatar</Button>
                         )}
                     </div>
