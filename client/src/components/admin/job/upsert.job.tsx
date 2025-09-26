@@ -59,7 +59,8 @@ const ViewUpsertJob = (props: any) => {
 
     // Usage of DebounceSelect
     async function fetchCompanyList(name: string): Promise<ICompanySelect[]> {
-        const res = await callFetchCompany(`current=1&pageSize=100&name=/${name}/i`);
+        const search = name && name.trim().length > 0 ? `&name=/${name}/i` : "";
+        const res = await callFetchCompany(`current=1&pageSize=100${search}`);
         if (res && res.data) {
             const list = res.data.result;
             const temp = list.map(item => {

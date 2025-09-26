@@ -42,8 +42,8 @@ public class ResumesService {
         var pageable = org.springframework.data.domain.PageRequest.of(current - 1, pageSize, sort);
         String status = query.getStatus();
         Page<Resume> page;
-        String companyName = query.getName(); // reuse 'name' for job/company? We'll parse explicitly below
-        String jobName = query.getApiPath(); // use other spare fields? Better extend DTO, but reuse for quick filter
+        String companyName = query.getCompanyName();
+        String jobName = query.getJobName();
         String currentRole = com.fullnestjob.security.SecurityUtils.getCurrentRole();
         boolean isAdmin = currentRole != null && (currentRole.equalsIgnoreCase("ADMIN") || currentRole.equalsIgnoreCase("SUPER_ADMIN"));
         if (!isAdmin) {
@@ -58,46 +58,70 @@ public class ResumesService {
             }
             if (!companyIds.isEmpty()) {
                 java.util.List<String> ids = new java.util.ArrayList<>(companyIds);
+                String companyIdFilter = query.getCompanyId();
+                String companyNameFilter = query.getCompanyName();
+                String jobNameFilter = query.getJobName();
+                if (companyNameFilter != null) companyNameFilter = companyNameFilter.replaceAll("^/+|/i$", "");
+                if (jobNameFilter != null) jobNameFilter = jobNameFilter.replaceAll("^/+|/i$", "");
+                
+                // Xử lý status dạng CSV
+                java.util.List<String> statusList = null;
                 if (status != null && !status.isBlank()) {
-                    String s = status.replaceAll("^/+|/i$", "");
-                    page = resumeRepository.findByCompanyIdsAndStatusLike(ids, s, pageable);
+                    String decoded = java.net.URLDecoder.decode(status, java.nio.charset.StandardCharsets.UTF_8);
+                    String[] parts = decoded.split(",");
+                    statusList = new java.util.ArrayList<>();
+                    for (String p : parts) {
+                        if (p == null || p.isBlank()) continue;
+                        String s = p.replaceAll("^/+|/i$", "").toUpperCase();
+                        statusList.add(s);
+                    }
+                    if (statusList.isEmpty()) statusList = null;
+                }
+                
+                // Kết hợp tất cả các filter
+                if (companyIdFilter != null && !companyIdFilter.isBlank() && companyIds.contains(companyIdFilter)) {
+                    // Filter theo companyId cụ thể + jobName + status
+                    page = resumeRepository.findByCompanyIdAndJobNameAndStatusIn(companyIdFilter, jobNameFilter, statusList, pageable);
                 } else {
-                    page = resumeRepository.findByCompanyIds(ids, pageable);
+                    // Filter theo danh sách companyIds + jobName + status
+                    page = resumeRepository.findByCompanyIdsAndJobNameAndStatusIn(ids, jobNameFilter, statusList, pageable);
                 }
             } else {
                 page = new org.springframework.data.domain.PageImpl<>(java.util.List.of(), pageable, 0);
             }
         } else {
-            String companyNameFilter = null;
-            String jobNameFilter = null;
-            String companyIdFilter = null;
-            // Read via getters (dto updated)
-            companyNameFilter = query.getCompanyName();
-            jobNameFilter = query.getJobName();
-            companyIdFilter = query.getCompanyId();
+            String companyNameFilter = query.getCompanyName();
+            String jobNameFilter = query.getJobName();
+            String companyIdFilter = query.getCompanyId();
             if (companyNameFilter != null) companyNameFilter = companyNameFilter.replaceAll("^/+|/i$", "");
             if (jobNameFilter != null) jobNameFilter = jobNameFilter.replaceAll("^/+|/i$", "");
 
-            if (companyIdFilter != null && !companyIdFilter.isBlank()) {
-                page = resumeRepository.findByCompanyId(companyIdFilter, pageable);
-            } else if ((companyNameFilter != null && !companyNameFilter.isBlank()) || (jobNameFilter != null && !jobNameFilter.isBlank())) {
-                page = resumeRepository.findByCompanyNameAndJobName(companyNameFilter, jobNameFilter, pageable);
-            } else if (status != null && !status.isBlank()) {
-                // support multiple comma-separated values; normalize to upper-case
+            // Xử lý status dạng CSV
+            java.util.List<String> statusList = null;
+            if (status != null && !status.isBlank()) {
                 String decoded = java.net.URLDecoder.decode(status, java.nio.charset.StandardCharsets.UTF_8);
                 String[] parts = decoded.split(",");
-                java.util.List<String> ups = new java.util.ArrayList<>();
+                statusList = new java.util.ArrayList<>();
                 for (String p : parts) {
                     if (p == null || p.isBlank()) continue;
                     String s = p.replaceAll("^/+|/i$", "").toUpperCase();
-                    ups.add(s);
+                    statusList.add(s);
                 }
-                if (!ups.isEmpty()) {
-                    page = resumeRepository.findByStatusInIgnoreCase(ups, pageable);
-                } else {
-                    page = resumeRepository.findAll(pageable);
-                }
+                if (statusList.isEmpty()) statusList = null;
+            }
+
+            // Kết hợp tất cả các filter cho admin
+            if (companyIdFilter != null && !companyIdFilter.isBlank()) {
+                // Filter theo companyId + jobName + status
+                page = resumeRepository.findByCompanyIdAndJobNameAndStatusInAdmin(companyIdFilter, jobNameFilter, statusList, pageable);
+            } else if (companyNameFilter != null || jobNameFilter != null) {
+                // Filter theo companyName + jobName + status
+                page = resumeRepository.findByCompanyNameAndJobNameAndStatusInAdmin(companyNameFilter, jobNameFilter, statusList, pageable);
+            } else if (statusList != null) {
+                // Chỉ filter theo status
+                page = resumeRepository.findByStatusInIgnoreCase(statusList, pageable);
             } else {
+                // Không có filter nào
                 page = resumeRepository.findAll(pageable);
             }
         }

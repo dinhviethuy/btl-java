@@ -166,7 +166,7 @@ const CompanyPage = () => {
             <Access permission={ALL_PERMISSIONS.COMPANIES.GET_PAGINATE}>
                 <DataTable<ICompany>
                     actionRef={tableRef}
-                    headerTitle="Danh sách Công Ty"
+                    headerTitle="Danh sách công ty"
                     rowKey="_id"
                     loading={isFetching}
                     columns={columns}

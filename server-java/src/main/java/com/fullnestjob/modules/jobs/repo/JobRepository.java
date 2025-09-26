@@ -34,6 +34,16 @@ public interface JobRepository extends JpaRepository<Job, String> {
 	@Query("select j from Job j where j.company._id in :companyIds and lower(j.name) like lower(concat('%', :name, '%')) and lower(j.location) like lower(concat('%', :location, '%'))")
 	Page<Job> findByCompanyIdsAndNameLikeAndLocationLike(@Param("companyIds") java.util.List<String> companyIds, @Param("name") String name, @Param("location") String location, Pageable pageable);
 
+	// Multi-company + skills/locations filters for non-admin scope
+	@Query("select distinct j from Job j join j.skills s where j.company._id in :companyIds and (:name is null or lower(j.name) like lower(concat('%', :name, '%'))) and ((:location is null) or lower(j.location) like lower(concat('%', :location, '%'))) and ((:skills) is null or lower(s) in :skills)")
+	Page<Job> findByCompanyIdsWithSkills(@Param("companyIds") java.util.List<String> companyIds, @Param("name") String name, @Param("location") String location, @Param("skills") java.util.List<String> skills, Pageable pageable);
+
+	@Query("select distinct j from Job j where j.company._id in :companyIds and (:name is null or lower(j.name) like lower(concat('%', :name, '%'))) and (:locations is null or lower(j.location) in :locations)")
+	Page<Job> findByCompanyIdsWithLocations(@Param("companyIds") java.util.List<String> companyIds, @Param("name") String name, @Param("locations") java.util.List<String> locations, Pageable pageable);
+
+	@Query("select distinct j from Job j join j.skills s where j.company._id in :companyIds and (:name is null or lower(j.name) like lower(concat('%', :name, '%'))) and (:locations is null or lower(j.location) in :locations) and ((:skills) is null or lower(s) in :skills)")
+	Page<Job> findByCompanyIdsWithSkillsAndLocations(@Param("companyIds") java.util.List<String> companyIds, @Param("name") String name, @Param("skills") java.util.List<String> skills, @Param("locations") java.util.List<String> locations, Pageable pageable);
+
     @Query("select j from Job j where j.company._id = :companyId and lower(j.name) like lower(concat('%', :name, '%'))")
     Page<Job> findByCompanyIdAndNameLike(@Param("companyId") String companyId, @Param("name") String name, Pageable pageable);
 
@@ -61,6 +71,43 @@ public interface JobRepository extends JpaRepository<Job, String> {
     // Admin searching: optional levels filter, optional min salary filter
     @Query("select j from Job j where (:name is null or lower(j.name) like lower(concat('%', :name, '%'))) and ((:location is null) or lower(j.location) like lower(concat('%', :location, '%'))) and (:minSalary is null or j.salary >= :minSalary) and (:maxSalary is null or j.salary <= :maxSalary) and (:levels is null or exists (select l from j.levels l where upper(l) in :levels))")
     Page<Job> findAdminJobs(@Param("name") String name, @Param("location") String location, @Param("minSalary") Double minSalary, @Param("maxSalary") Double maxSalary, @Param("levels") List<String> levels, Pageable pageable);
+
+    // Admin: comprehensive filter with all conditions
+    @Query("select distinct j from Job j join j.skills s where (:name is null or lower(j.name) like lower(concat('%', :name, '%'))) and ((:location is null) or lower(j.location) like lower(concat('%', :location, '%'))) and (:minSalary is null or j.salary >= :minSalary) and (:maxSalary is null or j.salary <= :maxSalary) and (:levels is null or exists (select l from j.levels l where upper(l) in :levels)) and ((:skills) is null or lower(s) in :skills)")
+    Page<Job> findAdminJobsWithSkills(@Param("name") String name, @Param("location") String location, @Param("minSalary") Double minSalary, @Param("maxSalary") Double maxSalary, @Param("levels") List<String> levels, @Param("skills") java.util.List<String> skills, Pageable pageable);
+
+    @Query("select distinct j from Job j where (:name is null or lower(j.name) like lower(concat('%', :name, '%'))) and (:locations is null or lower(j.location) in :locations) and (:minSalary is null or j.salary >= :minSalary) and (:maxSalary is null or j.salary <= :maxSalary) and (:levels is null or exists (select l from j.levels l where upper(l) in :levels))")
+    Page<Job> findAdminJobsWithLocations(@Param("name") String name, @Param("locations") java.util.List<String> locations, @Param("minSalary") Double minSalary, @Param("maxSalary") Double maxSalary, @Param("levels") List<String> levels, Pageable pageable);
+
+    @Query("select distinct j from Job j join j.skills s where (:name is null or lower(j.name) like lower(concat('%', :name, '%'))) and (:locations is null or lower(j.location) in :locations) and (:minSalary is null or j.salary >= :minSalary) and (:maxSalary is null or j.salary <= :maxSalary) and (:levels is null or exists (select l from j.levels l where upper(l) in :levels)) and ((:skills) is null or lower(s) in :skills)")
+    Page<Job> findAdminJobsWithSkillsAndLocations(@Param("name") String name, @Param("skills") java.util.List<String> skills, @Param("locations") java.util.List<String> locations, @Param("minSalary") Double minSalary, @Param("maxSalary") Double maxSalary, @Param("levels") List<String> levels, Pageable pageable);
+
+    // Admin: filter by specific companyId with all other filters
+    @Query("select j from Job j where j.company._id = :companyId and (:name is null or lower(j.name) like lower(concat('%', :name, '%'))) and ((:location is null) or lower(j.location) like lower(concat('%', :location, '%'))) and (:minSalary is null or j.salary >= :minSalary) and (:maxSalary is null or j.salary <= :maxSalary) and (:levels is null or exists (select l from j.levels l where upper(l) in :levels))")
+    Page<Job> findAdminJobsByCompanyId(@Param("companyId") String companyId, @Param("name") String name, @Param("location") String location, @Param("minSalary") Double minSalary, @Param("maxSalary") Double maxSalary, @Param("levels") List<String> levels, Pageable pageable);
+
+    @Query("select distinct j from Job j join j.skills s where j.company._id = :companyId and (:name is null or lower(j.name) like lower(concat('%', :name, '%'))) and ((:location is null) or lower(j.location) like lower(concat('%', :location, '%'))) and (:minSalary is null or j.salary >= :minSalary) and (:maxSalary is null or j.salary <= :maxSalary) and (:levels is null or exists (select l from j.levels l where upper(l) in :levels)) and ((:skills) is null or lower(s) in :skills)")
+    Page<Job> findAdminJobsByCompanyIdWithSkills(@Param("companyId") String companyId, @Param("name") String name, @Param("location") String location, @Param("minSalary") Double minSalary, @Param("maxSalary") Double maxSalary, @Param("levels") List<String> levels, @Param("skills") java.util.List<String> skills, Pageable pageable);
+
+    @Query("select distinct j from Job j where j.company._id = :companyId and (:name is null or lower(j.name) like lower(concat('%', :name, '%'))) and (:locations is null or lower(j.location) in :locations) and (:minSalary is null or j.salary >= :minSalary) and (:maxSalary is null or j.salary <= :maxSalary) and (:levels is null or exists (select l from j.levels l where upper(l) in :levels))")
+    Page<Job> findAdminJobsByCompanyIdWithLocations(@Param("companyId") String companyId, @Param("name") String name, @Param("locations") java.util.List<String> locations, @Param("minSalary") Double minSalary, @Param("maxSalary") Double maxSalary, @Param("levels") List<String> levels, Pageable pageable);
+
+    @Query("select distinct j from Job j join j.skills s where j.company._id = :companyId and (:name is null or lower(j.name) like lower(concat('%', :name, '%'))) and (:locations is null or lower(j.location) in :locations) and (:minSalary is null or j.salary >= :minSalary) and (:maxSalary is null or j.salary <= :maxSalary) and (:levels is null or exists (select l from j.levels l where upper(l) in :levels)) and ((:skills) is null or lower(s) in :skills)")
+    Page<Job> findAdminJobsByCompanyIdWithSkillsAndLocations(@Param("companyId") String companyId, @Param("name") String name, @Param("skills") java.util.List<String> skills, @Param("locations") java.util.List<String> locations, @Param("minSalary") Double minSalary, @Param("maxSalary") Double maxSalary, @Param("levels") List<String> levels, Pageable pageable);
+
+    // Non-admin: same filters but scoped to multiple companies
+    @Query("select j from Job j where j.company._id in :companyIds and (:name is null or lower(j.name) like lower(concat('%', :name, '%'))) and ((:location is null) or lower(j.location) like lower(concat('%', :location, '%'))) and (:minSalary is null or j.salary >= :minSalary) and (:maxSalary is null or j.salary <= :maxSalary) and (:levels is null or exists (select l from j.levels l where upper(l) in :levels))")
+    Page<Job> findScopedJobs(@Param("companyIds") java.util.List<String> companyIds, @Param("name") String name, @Param("location") String location, @Param("minSalary") Double minSalary, @Param("maxSalary") Double maxSalary, @Param("levels") List<String> levels, Pageable pageable);
+
+    // Non-admin: comprehensive filter with all conditions
+    @Query("select distinct j from Job j join j.skills s where j.company._id in :companyIds and (:name is null or lower(j.name) like lower(concat('%', :name, '%'))) and ((:location is null) or lower(j.location) like lower(concat('%', :location, '%'))) and (:minSalary is null or j.salary >= :minSalary) and (:maxSalary is null or j.salary <= :maxSalary) and (:levels is null or exists (select l from j.levels l where upper(l) in :levels)) and ((:skills) is null or lower(s) in :skills)")
+    Page<Job> findScopedJobsWithSkills(@Param("companyIds") java.util.List<String> companyIds, @Param("name") String name, @Param("location") String location, @Param("minSalary") Double minSalary, @Param("maxSalary") Double maxSalary, @Param("levels") List<String> levels, @Param("skills") java.util.List<String> skills, Pageable pageable);
+
+    @Query("select distinct j from Job j where j.company._id in :companyIds and (:name is null or lower(j.name) like lower(concat('%', :name, '%'))) and (:locations is null or lower(j.location) in :locations) and (:minSalary is null or j.salary >= :minSalary) and (:maxSalary is null or j.salary <= :maxSalary) and (:levels is null or exists (select l from j.levels l where upper(l) in :levels))")
+    Page<Job> findScopedJobsWithLocations(@Param("companyIds") java.util.List<String> companyIds, @Param("name") String name, @Param("locations") java.util.List<String> locations, @Param("minSalary") Double minSalary, @Param("maxSalary") Double maxSalary, @Param("levels") List<String> levels, Pageable pageable);
+
+    @Query("select distinct j from Job j join j.skills s where j.company._id in :companyIds and (:name is null or lower(j.name) like lower(concat('%', :name, '%'))) and (:locations is null or lower(j.location) in :locations) and (:minSalary is null or j.salary >= :minSalary) and (:maxSalary is null or j.salary <= :maxSalary) and (:levels is null or exists (select l from j.levels l where upper(l) in :levels)) and ((:skills) is null or lower(s) in :skills)")
+    Page<Job> findScopedJobsWithSkillsAndLocations(@Param("companyIds") java.util.List<String> companyIds, @Param("name") String name, @Param("skills") java.util.List<String> skills, @Param("locations") java.util.List<String> locations, @Param("minSalary") Double minSalary, @Param("maxSalary") Double maxSalary, @Param("levels") List<String> levels, Pageable pageable);
 
     // Count active and non-expired jobs for a company (for public/company cards)
     @Query("select count(j) from Job j where j.company._id = :companyId and j.isActive = true and (j.startDate is null or j.startDate <= CURRENT_TIMESTAMP) and (j.endDate is null or j.endDate >= CURRENT_TIMESTAMP)")

@@ -183,7 +183,7 @@ const RolePage = () => {
             >
                 <DataTable<IRole>
                     actionRef={tableRef}
-                    headerTitle="Danh sách Roles (Vai Trò)"
+                    headerTitle="Danh sách vai trò"
                     rowKey="_id"
                     loading={isFetching}
                     columns={columns}

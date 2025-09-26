@@ -210,7 +210,7 @@ const UserPage = () => {
             >
                 <DataTable<IUser>
                     actionRef={tableRef}
-                    headerTitle="Danh sách Users"
+                    headerTitle="Danh sách người dùng"
                     rowKey="_id"
                     loading={isFetching}
                     columns={columns}

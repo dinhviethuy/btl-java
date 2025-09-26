@@ -36,9 +36,32 @@ public interface ResumeRepository extends JpaRepository<Resume, String> {
     @Query("select r from Resume r where r.companyId._id in :companyIds and lower(r.status) like lower(concat('%', :status, '%'))")
     Page<Resume> findByCompanyIdsAndStatusLike(@Param("companyIds") java.util.List<String> companyIds, @Param("status") String status, Pageable pageable);
 
+    @Query("select r from Resume r where r.companyId._id in :companyIds and upper(r.status) in :statuses")
+    Page<Resume> findByCompanyIdsAndStatusInIgnoreCase(@Param("companyIds") java.util.List<String> companyIds, @Param("statuses") java.util.List<String> statuses, Pageable pageable);
+
+    // Non-admin: filter by companyIds with optional companyName/jobName contains
+    @Query("select r from Resume r left join r.companyId c left join r.jobId j where r.companyId._id in :companyIds and (:companyName is null or lower(c.name) like lower(concat('%', :companyName, '%'))) and (:jobName is null or lower(j.name) like lower(concat('%', :jobName, '%')))")
+    Page<Resume> findByCompanyIdsAndCompanyNameAndJobName(@Param("companyIds") java.util.List<String> companyIds, @Param("companyName") String companyName, @Param("jobName") String jobName, Pageable pageable);
+
+    // Non-admin: filter by specific companyId with jobName and status
+    @Query("select r from Resume r left join r.jobId j where r.companyId._id = :companyId and (:jobName is null or lower(j.name) like lower(concat('%', :jobName, '%'))) and (:statuses is null or upper(r.status) in :statuses)")
+    Page<Resume> findByCompanyIdAndJobNameAndStatusIn(@Param("companyId") String companyId, @Param("jobName") String jobName, @Param("statuses") java.util.List<String> statuses, Pageable pageable);
+
+    // Non-admin: filter by companyIds with jobName and status
+    @Query("select r from Resume r left join r.jobId j where r.companyId._id in :companyIds and (:jobName is null or lower(j.name) like lower(concat('%', :jobName, '%'))) and (:statuses is null or upper(r.status) in :statuses)")
+    Page<Resume> findByCompanyIdsAndJobNameAndStatusIn(@Param("companyIds") java.util.List<String> companyIds, @Param("jobName") String jobName, @Param("statuses") java.util.List<String> statuses, Pageable pageable);
+
     // Admin: search by optional companyName and jobName (case-insensitive contains)
     @Query("select r from Resume r left join r.companyId c left join r.jobId j where (:companyName is null or lower(c.name) like lower(concat('%', :companyName, '%'))) and (:jobName is null or lower(j.name) like lower(concat('%', :jobName, '%')))")
     Page<Resume> findByCompanyNameAndJobName(@Param("companyName") String companyName, @Param("jobName") String jobName, Pageable pageable);
+
+    // Admin: filter by companyId with jobName and status
+    @Query("select r from Resume r left join r.jobId j where r.companyId._id = :companyId and (:jobName is null or lower(j.name) like lower(concat('%', :jobName, '%'))) and (:statuses is null or upper(r.status) in :statuses)")
+    Page<Resume> findByCompanyIdAndJobNameAndStatusInAdmin(@Param("companyId") String companyId, @Param("jobName") String jobName, @Param("statuses") java.util.List<String> statuses, Pageable pageable);
+
+    // Admin: filter by companyName, jobName and status
+    @Query("select r from Resume r left join r.companyId c left join r.jobId j where (:companyName is null or lower(c.name) like lower(concat('%', :companyName, '%'))) and (:jobName is null or lower(j.name) like lower(concat('%', :jobName, '%'))) and (:statuses is null or upper(r.status) in :statuses)")
+    Page<Resume> findByCompanyNameAndJobNameAndStatusInAdmin(@Param("companyName") String companyName, @Param("jobName") String jobName, @Param("statuses") java.util.List<String> statuses, Pageable pageable);
 
     // Stats: resumes per status
     @Query("select upper(coalesce(r.status, 'PENDING')), count(r) from Resume r group by upper(coalesce(r.status, 'PENDING'))")

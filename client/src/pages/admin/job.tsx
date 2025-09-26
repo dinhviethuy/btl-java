@@ -7,7 +7,7 @@ import { fetchJob } from "@/redux/slice/jobSlide";
 import { IJob } from "@/types/backend";
 import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import { ActionType, ProColumns, ProFormSelect } from '@ant-design/pro-components';
-import { Button, message, notification, Popconfirm, Slider, Space, Tag } from "antd";
+import { Button, message, notification, Popconfirm, Slider, Space, Tag, Tooltip } from "antd";
 import dayjs from 'dayjs';
 import queryString from 'query-string';
 import { useEffect, useRef } from 'react';
@@ -127,6 +127,14 @@ const JobPage = () => {
                         SENIOR: 'SENIOR',
                     }}
                     placeholder="Chọn level"
+                    fieldProps={{
+                        maxTagCount: 'responsive',
+                        maxTagPlaceholder: (omittedValues: any[]) => (
+                            <Tooltip title={omittedValues.map((v: any) => v?.label ?? v?.value).join(', ')}>
+                                +{omittedValues.length}
+                            </Tooltip>
+                        )
+                    }}
                 />
             ),
         },
@@ -265,7 +273,7 @@ const JobPage = () => {
             >
                 <DataTable<IJob>
                     actionRef={tableRef}
-                    headerTitle="Danh sách Jobs"
+                    headerTitle="Danh sách việc làm"
                     rowKey="_id"
                     loading={isFetching}
                     columns={columns}

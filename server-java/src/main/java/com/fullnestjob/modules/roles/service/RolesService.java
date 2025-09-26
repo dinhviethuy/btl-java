@@ -41,12 +41,22 @@ public class RolesService {
         Page<Role> page = name != null ? roleRepository.findByNameContainingIgnoreCase(name, pageable)
                 : roleRepository.findAll(pageable);
         PageResultDTO<RoleDetailDTO> res = new PageResultDTO<>();
-        res.result = page.getContent().stream().map(this::toDetail).collect(Collectors.toList());
+        // Ẩn SUPER_ADMIN đối với người không phải SUPER_ADMIN
+        String currentRole = com.fullnestjob.security.SecurityUtils.getCurrentRole();
+        boolean isSuperAdmin = currentRole != null && currentRole.equalsIgnoreCase("SUPER_ADMIN");
+        java.util.List<Role> content = page.getContent();
+        if (!isSuperAdmin && content != null && !content.isEmpty()) {
+            content = content.stream()
+                    .filter(r -> r.getName() == null || !r.getName().equalsIgnoreCase("SUPER_ADMIN"))
+                    .collect(java.util.stream.Collectors.toList());
+        }
+        res.result = content.stream().map(this::toDetail).collect(Collectors.toList());
         MetaDTO meta = new MetaDTO();
         meta.current = current;
         meta.pageSize = pageSize;
-        meta.total = (int) page.getTotalElements();
-        meta.pages = page.getTotalPages();
+        // Cập nhật lại total/pages theo danh sách sau khi ẩn
+        meta.total = res.result.size();
+        meta.pages = (int) Math.ceil((double) meta.total / pageSize);
         res.meta = meta;
         return res;
     }

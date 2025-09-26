@@ -39,19 +39,8 @@ public class PermissionsService {
         if (module != null) module = module.replaceAll("^/+|/i$", "");
 
         Page<Permission> page;
-        if (name != null && apiPath != null) {
-            page = permissionRepository.findByNameContainingIgnoreCaseAndApiPathContainingIgnoreCase(name, apiPath, pageable);
-        } else if (name != null) {
-            page = permissionRepository.findByNameContainingIgnoreCase(name, pageable);
-        } else if (apiPath != null) {
-            page = permissionRepository.findByApiPathContainingIgnoreCase(apiPath, pageable);
-        } else if (method != null) {
-            page = permissionRepository.findByMethodContainingIgnoreCase(method, pageable);
-        } else if (module != null) {
-            page = permissionRepository.findByModuleContainingIgnoreCase(module, pageable);
-        } else {
-            page = permissionRepository.findAll(pageable);
-        }
+        // Sử dụng method kết hợp tất cả filter thay vì if-else
+        page = permissionRepository.findByAllFilters(name, apiPath, method, module, pageable);
         PageResultDTO<PermissionDetailDTO> res = new PageResultDTO<>();
         res.result = page.getContent().stream().map(this::toDetail).collect(Collectors.toList());
         MetaDTO meta = new MetaDTO();

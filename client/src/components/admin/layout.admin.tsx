@@ -71,39 +71,39 @@ const LayoutAdmin = () => {
 
             const full = [
                 {
-                    label: <Link to='/admin/dashboard'>Dashboard</Link>,
+                    label: <Link to='/admin/dashboard'>Bảng điều khiển</Link>,
                     key: '/admin/dashboard',
                     icon: <AppstoreOutlined />
                 },
                 ...(viewCompany ? [{
-                    label: <Link to='/admin/company'>Company</Link>,
+                    label: <Link to='/admin/company'>Công ty</Link>,
                     key: '/admin/company',
                     icon: <BankOutlined />,
                 }] : []),
 
                 ...(viewUser ? [{
-                    label: <Link to='/admin/user'>User</Link>,
+                    label: <Link to='/admin/user'>Người dùng</Link>,
                     key: '/admin/user',
                     icon: <UserOutlined />
                 }] : []),
                 ...(viewJob ? [{
-                    label: <Link to='/admin/job'>Job</Link>,
+                    label: <Link to='/admin/job'>Việc làm</Link>,
                     key: '/admin/job',
                     icon: <ScheduleOutlined />
                 }] : []),
 
                 ...(viewResume ? [{
-                    label: <Link to='/admin/resume'>Resume</Link>,
+                    label: <Link to='/admin/resume'>Hồ sơ ứng tuyển</Link>,
                     key: '/admin/resume',
                     icon: <AliwangwangOutlined />
                 }] : []),
                 ...(viewPermission ? [{
-                    label: <Link to='/admin/permission'>Permission</Link>,
+                    label: <Link to='/admin/permission'>Quyền hạn</Link>,
                     key: '/admin/permission',
                     icon: <ApiOutlined />
                 }] : []),
                 ...(viewRole ? [{
-                    label: <Link to='/admin/role'>Role</Link>,
+                    label: <Link to='/admin/role'>Vai trò</Link>,
                     key: '/admin/role',
                     icon: <ExceptionOutlined />
                 }] : []),
@@ -162,7 +162,7 @@ const LayoutAdmin = () => {
                         collapsed={collapsed}
                         onCollapse={(value) => setCollapsed(value)}>
                         <div style={{ height: 32, margin: 16, textAlign: 'center' }}>
-                            <BugOutlined />  ADMIN
+                            <BugOutlined />  {collapsed ? 'ADMIN' : 'Trang quản trị'}
                         </div>
                         <Menu
                             selectedKeys={[activeMenu]}

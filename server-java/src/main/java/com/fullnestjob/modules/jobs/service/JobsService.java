@@ -97,16 +97,22 @@ public class JobsService {
         boolean forceAdmin = scope != null && scope.equalsIgnoreCase("admin") && isAdmin;
         if (nameFilter != null) nameFilter = nameFilter.replaceAll("^/+|/i$", "");
         if (locationFilter != null) locationFilter = locationFilter.replaceAll("^/+|/i$", "");
-        if (companyIdFilter != null && !companyIdFilter.isBlank()) {
-            // explicit filter by company id for public/company detail page
-            if (forcePublic || !(isAdmin || forceAdmin)) {
-                // Only return active + within date window for public scope
+        // Xử lý levels dạng CSV (cần khai báo sớm để sử dụng trong các nhánh)
+        java.util.List<String> levels = null;
+        if (levelCsv != null && !levelCsv.isBlank()) {
+            levels = java.util.Arrays.stream(levelCsv.split(","))
+                    .map(String::trim)
+                    .filter(s -> !s.isBlank())
+                    .map(String::toUpperCase)
+                    .collect(java.util.stream.Collectors.toList());
+            if (levels.isEmpty()) levels = null;
+        }
+
+        if (forcePublic) {
+            // Public scope: chỉ trả job active + trong khoảng thời gian
+            if (companyIdFilter != null && !companyIdFilter.isBlank()) {
                 page = jobRepository.findPublicJobsByCompanyId(companyIdFilter, pageable);
-            } else {
-                page = jobRepository.findByCompanyId(companyIdFilter, pageable);
-            }
-        } else if (forcePublic) {
-            if (hasSkills && hasLocations) {
+            } else if (hasSkills && hasLocations) {
                 page = jobRepository.findPublicJobsBySkillsAndLocations(nameFilter, skillsFilter, locationsFilter, excludeId, pageable);
             } else if (hasSkills) {
                 page = jobRepository.findPublicJobsBySkills(nameFilter, locationFilter, skillsFilter, excludeId, pageable);
@@ -114,6 +120,46 @@ public class JobsService {
                 page = jobRepository.findPublicJobsByLocations(nameFilter, locationsFilter, excludeId, pageable);
             } else {
                 page = jobRepository.findPublicJobs(nameFilter, locationFilter, excludeId, pageable);
+            }
+        } else if (companyIdFilter != null && !companyIdFilter.isBlank()) {
+            // Có companyId: kết hợp với tất cả filter khác
+            if (isAdmin || forceAdmin) {
+                // Admin: filter theo companyId + tất cả filter khác
+                if (hasSkills && hasLocations) {
+                    page = jobRepository.findAdminJobsByCompanyIdWithSkillsAndLocations(companyIdFilter, nameFilter, skillsFilter, locationsFilter, minSalary, maxSalary, levels, pageable);
+                } else if (hasSkills) {
+                    page = jobRepository.findAdminJobsByCompanyIdWithSkills(companyIdFilter, nameFilter, locationFilter, minSalary, maxSalary, levels, skillsFilter, pageable);
+                } else if (hasLocations) {
+                    page = jobRepository.findAdminJobsByCompanyIdWithLocations(companyIdFilter, nameFilter, locationsFilter, minSalary, maxSalary, levels, pageable);
+                } else {
+                    page = jobRepository.findAdminJobsByCompanyId(companyIdFilter, nameFilter, locationFilter, minSalary, maxSalary, levels, pageable);
+                }
+            } else {
+                // Non-admin: kiểm tra companyId có trong phạm vi không
+                String currentUserId = com.fullnestjob.security.SecurityUtils.getCurrentUserId();
+                var me = userRepository.findById(currentUserId).orElse(null);
+                java.util.Set<String> companyIds = new java.util.LinkedHashSet<>();
+                if (me != null && me.getCompany() != null && me.getCompany().get_id() != null) {
+                    companyIds.add(me.getCompany().get_id());
+                }
+                for (com.fullnestjob.modules.companies.entity.Company c : companyRepository.findAllByCreatorId(currentUserId)) {
+                    if (c != null && c.get_id() != null) companyIds.add(c.get_id());
+                }
+                if (companyIds.contains(companyIdFilter)) {
+                    // CompanyId trong phạm vi: filter theo companyId + tất cả filter khác
+                    java.util.List<String> ids = java.util.Arrays.asList(companyIdFilter);
+                    if (hasSkills && hasLocations) {
+                        page = jobRepository.findScopedJobsWithSkillsAndLocations(ids, nameFilter, skillsFilter, locationsFilter, minSalary, maxSalary, levels, pageable);
+                    } else if (hasSkills) {
+                        page = jobRepository.findScopedJobsWithSkills(ids, nameFilter, locationFilter, minSalary, maxSalary, levels, skillsFilter, pageable);
+                    } else if (hasLocations) {
+                        page = jobRepository.findScopedJobsWithLocations(ids, nameFilter, locationsFilter, minSalary, maxSalary, levels, pageable);
+                    } else {
+                        page = jobRepository.findScopedJobs(ids, nameFilter, locationFilter, minSalary, maxSalary, levels, pageable);
+                    }
+                } else {
+                    page = Page.empty(pageable);
+                }
             }
         } else if (!(isAdmin || forceAdmin)) {
             String currentUserId = com.fullnestjob.security.SecurityUtils.getCurrentUserId();
@@ -140,31 +186,33 @@ public class JobsService {
                 }
                 if (!companyIds.isEmpty()) {
                     java.util.List<String> ids = new java.util.ArrayList<>(companyIds);
-                    if (nameFilter != null && locationFilter != null) {
-                        page = jobRepository.findByCompanyIdsAndNameLikeAndLocationLike(ids, nameFilter, locationFilter, pageable);
-                    } else if (nameFilter != null) {
-                        page = jobRepository.findByCompanyIdsAndNameLike(ids, nameFilter, pageable);
-                    } else if (locationFilter != null) {
-                        page = jobRepository.findByCompanyIdsAndLocationLike(ids, locationFilter, pageable);
+                    
+                    // Kết hợp tất cả các filter
+                    if (hasSkills && hasLocations) {
+                        page = jobRepository.findScopedJobsWithSkillsAndLocations(ids, nameFilter, skillsFilter, locationsFilter, minSalary, maxSalary, levels, pageable);
+                    } else if (hasSkills) {
+                        page = jobRepository.findScopedJobsWithSkills(ids, nameFilter, locationFilter, minSalary, maxSalary, levels, skillsFilter, pageable);
+                    } else if (hasLocations) {
+                        page = jobRepository.findScopedJobsWithLocations(ids, nameFilter, locationsFilter, minSalary, maxSalary, levels, pageable);
                     } else {
-                        page = jobRepository.findByCompanyIds(ids, pageable);
+                        page = jobRepository.findScopedJobs(ids, nameFilter, locationFilter, minSalary, maxSalary, levels, pageable);
                     }
                 } else {
                     page = Page.empty(pageable);
                 }
             }
         } else {
-            // Admin scope (role hoặc scope=admin): có thể filter theo level (CSV)
-            java.util.List<String> levels = null;
-            if (levelCsv != null && !levelCsv.isBlank()) {
-                levels = java.util.Arrays.stream(levelCsv.split(","))
-                        .map(String::trim)
-                        .filter(s -> !s.isBlank())
-                        .map(String::toUpperCase)
-                        .collect(java.util.stream.Collectors.toList());
-                if (levels.isEmpty()) levels = null;
+            // Admin scope (role hoặc scope=admin): kết hợp tất cả filter
+            // Kết hợp tất cả các filter cho admin
+            if (hasSkills && hasLocations) {
+                page = jobRepository.findAdminJobsWithSkillsAndLocations(nameFilter, skillsFilter, locationsFilter, minSalary, maxSalary, levels, pageable);
+            } else if (hasSkills) {
+                page = jobRepository.findAdminJobsWithSkills(nameFilter, locationFilter, minSalary, maxSalary, levels, skillsFilter, pageable);
+            } else if (hasLocations) {
+                page = jobRepository.findAdminJobsWithLocations(nameFilter, locationsFilter, minSalary, maxSalary, levels, pageable);
+            } else {
+                page = jobRepository.findAdminJobs(nameFilter, locationFilter, minSalary, maxSalary, levels, pageable);
             }
-            page = jobRepository.findAdminJobs(nameFilter, locationFilter, minSalary, maxSalary, levels, pageable);
         }
         PageResultDTO<JobDetailDTO> res = new PageResultDTO<>();
         res.result = page.getContent().stream().map(this::toDetail).collect(Collectors.toList());

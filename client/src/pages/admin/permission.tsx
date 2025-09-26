@@ -232,7 +232,7 @@ const PermissionPage = () => {
             >
                 <DataTable<IPermission>
                     actionRef={tableRef}
-                    headerTitle="Danh sách Permissions (Quyền Hạn)"
+                    headerTitle="Danh sách quyền"
                     rowKey="_id"
                     loading={isFetching}
                     columns={columns}

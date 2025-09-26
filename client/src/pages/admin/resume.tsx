@@ -191,7 +191,11 @@ const ResumePage = () => {
         }
 
         if (clone.jobName) clone.jobName = `/${String(clone.jobName).trim()}/i`;
-        // companyName: dùng select nên không gửi companyName khi đã có companyId
+        // companyName: gửi cả companyName và companyId để backend có thể filter đúng
+        if (clone.companyId && typeof clone.companyId === 'object') {
+            const companyName = clone.companyId.label;
+            if (companyName) clone.companyName = `/${String(companyName).trim()}/i`;
+        }
         let temp = queryString.stringify(clone);
 
         let sortBy = "";
@@ -224,7 +228,7 @@ const ResumePage = () => {
             >
                 <DataTable<IResume>
                     actionRef={tableRef}
-                    headerTitle="Danh sách Resumes"
+                    headerTitle="Danh sách hồ sơ ứng tuyển"
                     rowKey="_id"
                     loading={isFetching}
                     columns={columns}

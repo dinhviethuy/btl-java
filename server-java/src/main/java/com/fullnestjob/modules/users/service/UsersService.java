@@ -57,28 +57,41 @@ public class UsersService {
 		// Scope by company if current user is not SUPER_ADMIN (ADMIN cũng bị giới hạn)
 		String currentRole = com.fullnestjob.security.SecurityUtils.getCurrentRole();
 		boolean isSuperAdmin = currentRole != null && currentRole.equalsIgnoreCase("SUPER_ADMIN");
-		if (!isSuperAdmin) {
-			String currentUserId = com.fullnestjob.security.SecurityUtils.getCurrentUserId();
-			User me = currentUserId != null ? userRepository.findById(currentUserId).orElse(null) : null;
-			java.util.Set<String> companyIds = new java.util.LinkedHashSet<>();
-			if (me != null && me.getCompany() != null && me.getCompany().get_id() != null) companyIds.add(me.getCompany().get_id());
-			for (Company c : companyRepository.findAllByCreatorId(currentUserId)) {
-				if (c != null && c.get_id() != null) companyIds.add(c.get_id());
-			}
-			if (!companyIds.isEmpty()) {
-				java.util.List<String> ids = new java.util.ArrayList<>(companyIds);
-				if (name != null && email != null) {
-					page = userRepository.findByCompanyIdsAndNameLikeAndEmailLike(ids, name, email, pageable);
-				} else if (name != null) {
-					page = userRepository.findByCompanyIdsAndNameLike(ids, name, pageable);
-				} else if (email != null) {
-					page = userRepository.findByCompanyIdsAndEmailLike(ids, email, pageable);
-				} else {
-					page = userRepository.findByCompanyIds(ids, pageable);
-				}
-			} else {
-				page = Page.empty(pageable);
-			}
+        if (!isSuperAdmin) {
+            String currentUserId = com.fullnestjob.security.SecurityUtils.getCurrentUserId();
+            User me = currentUserId != null ? userRepository.findById(currentUserId).orElse(null) : null;
+            java.util.Set<String> companyIds = new java.util.LinkedHashSet<>();
+            if (me != null && me.getCompany() != null && me.getCompany().get_id() != null) companyIds.add(me.getCompany().get_id());
+            for (Company c : companyRepository.findAllByCreatorId(currentUserId)) {
+                if (c != null && c.get_id() != null) companyIds.add(c.get_id());
+            }
+            if (!companyIds.isEmpty()) {
+                // Nếu client truyền companyId, chỉ cho phép khi nằm trong phạm vi cho phép
+                if (companyIdFilter != null && !companyIdFilter.isBlank() && companyIds.contains(companyIdFilter)) {
+                    if (name != null && email != null) {
+                        page = userRepository.findByCompanyIdAndNameLikeAndEmailLike(companyIdFilter, name, email, pageable);
+                    } else if (name != null) {
+                        page = userRepository.findByCompanyIdAndNameLike(companyIdFilter, name, pageable);
+                    } else if (email != null) {
+                        page = userRepository.findByCompanyIdAndEmailLike(companyIdFilter, email, pageable);
+                    } else {
+                        page = userRepository.findByCompanyId(companyIdFilter, pageable);
+                    }
+                } else {
+                    java.util.List<String> ids = new java.util.ArrayList<>(companyIds);
+                    if (name != null && email != null) {
+                        page = userRepository.findByCompanyIdsAndNameLikeAndEmailLike(ids, name, email, pageable);
+                    } else if (name != null) {
+                        page = userRepository.findByCompanyIdsAndNameLike(ids, name, pageable);
+                    } else if (email != null) {
+                        page = userRepository.findByCompanyIdsAndEmailLike(ids, email, pageable);
+                    } else {
+                        page = userRepository.findByCompanyIds(ids, pageable);
+                    }
+                }
+            } else {
+                page = Page.empty(pageable);
+            }
         } else {
 			if (companyIdFilter != null && !companyIdFilter.isBlank()) {
                 if (name != null && email != null) {
