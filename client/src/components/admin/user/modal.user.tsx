@@ -48,7 +48,7 @@ const ModalUser = (props: IProps) => {
                     setRole(null);
                 }
                 if (dataInit.company) {
-                    setCompany({ label: dataInit.company.name, value: dataInit.company._id });
+                    setCompany({ label: dataInit.company.name ?? '', value: dataInit.company._id ?? '' });
                 } else {
                     setCompany(null);
                 }
