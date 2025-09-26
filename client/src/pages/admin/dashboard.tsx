@@ -55,6 +55,26 @@ const DashboardPage = () => {
         } catch { }
     }, [rangeDays, roleName]);
 
+    useEffect(() => {
+        if (typeof document === 'undefined') return;
+        const el = document.documentElement;
+        const updateTheme = () => {
+            const themeAttr = el.getAttribute('data-theme');
+            setPlotTheme(themeAttr === 'dark' ? 'classicDark' : 'classic');
+        };
+        const observer = new MutationObserver((mutations) => {
+            for (const m of mutations) {
+                if (m.type === 'attributes' && m.attributeName === 'data-theme') {
+                    updateTheme();
+                }
+            }
+        });
+        observer.observe(el, { attributes: true, attributeFilter: ['data-theme'] });
+        // sync ngay lần đầu
+        updateTheme();
+        return () => observer.disconnect();
+    }, []);
+
     return (
         <div style={{ padding: 8 }}>
             <Row gutter={[16, 16]}>
