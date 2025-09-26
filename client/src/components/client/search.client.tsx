@@ -1,6 +1,6 @@
 import { callFetchCompany, callFetchCompanyById } from '@/config/api';
 import { LOCATION_LIST, SKILLS_LIST } from '@/config/utils';
-import { CheckOutlined, EnvironmentOutlined, MonitorOutlined } from '@ant-design/icons';
+import { EnvironmentOutlined, MonitorOutlined } from '@ant-design/icons';
 import { ProForm } from '@ant-design/pro-components';
 import { AutoComplete, Button, Col, Form, Row, Select, Tag } from 'antd';
 import { useEffect, useRef, useState } from 'react';
@@ -18,6 +18,7 @@ const SearchClient = ({ onSearch }: { onSearch?: (query: string) => void }) => {
     const [selectedCompanyName, setSelectedCompanyName] = useState<string | undefined>(undefined);
     const debounceRef = useRef<any>();
     const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
+    const submitNow = () => setTimeout(() => form.submit(), 0);
 
 
     const onFinish = async (values: any) => {
@@ -115,6 +116,7 @@ const SearchClient = ({ onSearch }: { onSearch?: (query: string) => void }) => {
                                 style={{ width: '100%' }}
                                 allowClear
                                 dropdownMatchSelectWidth={420}
+                                onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); form.submit(); } }}
                                 options={[
                                     ...((companyInput ? optionsSkills.filter(s => s.label.toLowerCase().includes(companyInput.toLowerCase()) || s.value.toLowerCase().includes(companyInput.toLowerCase())) : optionsSkills)
                                         .slice(0, 6)
@@ -159,6 +161,7 @@ const SearchClient = ({ onSearch }: { onSearch?: (query: string) => void }) => {
                                         // clear input so không hiển thị lại text vừa chọn
                                         form.setFieldsValue({ name: '' });
                                         setCompanyInput('');
+                                        submitNow();
                                     } else if (option?.metaType === 'company') {
                                         const id = String(option.metaValue);
                                         const name = String(option.value);
@@ -274,21 +277,10 @@ const SearchClient = ({ onSearch }: { onSearch?: (query: string) => void }) => {
                     <Button type='primary' onClick={() => form.submit()} style={{ whiteSpace: 'nowrap' }}>Tìm kiếm</Button>
                 </Col>
             </Row>
-            {(selectedCompanyId || selectedSkills.length > 0) && (
+            {(selectedSkills.length > 0) && (
                 <div style={{ marginTop: 8, display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                    {selectedCompanyId && (
-                        <Tag
-                            color="blue"
-                            closable
-                            style={{ fontWeight: 700 }}
-                            onClose={(e) => { e.preventDefault(); setSelectedCompanyId(undefined); setSelectedCompanyName(undefined); form.setFieldsValue({ companyId: undefined }); }}
-                            icon={<CheckOutlined />}
-                        >
-                            {selectedCompanyName || 'Company selected'}
-                        </Tag>
-                    )}
                     {selectedSkills.map(s => (
-                        <Tag key={s} color="gold" style={{ fontWeight: 700 }} closable onClose={(e) => { e.preventDefault(); setSelectedSkills(prev => prev.filter(x => x !== s)); }}>
+                        <Tag key={s} color="gold" style={{ fontWeight: 700 }} closable onClose={(e) => { e.preventDefault(); setSelectedSkills(prev => prev.filter(x => x !== s)); submitNow(); }}>
                             #{optionsSkills.find(o => o.value === s)?.label || s}
                         </Tag>
                     ))}

@@ -1,41 +1,35 @@
 import JobCard from '@/components/client/card/job.card';
 import SearchClient from '@/components/client/search.client';
 import { Col, Divider, Row } from 'antd';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import styles from 'styles/client.module.scss';
 
 const ClientJobPage = (props: any) => {
     const location = useLocation();
     const navigate = useNavigate();
-    const [filter, setFilter] = useState("");
     const [current, setCurrent] = useState<number>(1);
     const [pageSize, setPageSize] = useState<number>(8);
 
-    // parse URL on first load & changes
-    useEffect(() => {
+    // parse URL on first load & changes (derive filter without intermediate state to tránh nháy)
+    const urlFilter = useMemo(() => {
         const params = new URLSearchParams(location.search);
-        const c = parseInt(params.get('page') || '1');
-        // pageSize không lưu trên URL; lấy mặc định hiện tại
-        const ps = pageSize;
         const skills = params.getAll('skills');
         const locations = params.getAll('locations');
         const companyId = params.get('companyId');
         const name = params.get('name');
         let q = '';
-        if (skills.length) {
-            q += skills.map(s => `skills=${encodeURIComponent(s)}`).join('&');
-        }
-        if (locations.length) {
-            q += (q ? '&' : '') + locations.map(l => `locations=${encodeURIComponent(l.toUpperCase() === "ALL" ? "" : l)}`).join('&');
-        }
-        if (companyId) {
-            q += (q ? '&' : '') + `companyId=${encodeURIComponent(companyId)}`;
-        }
-        if (name) {
-            q += (q ? '&' : '') + `name=${encodeURIComponent(name)}`;
-        }
-        setFilter(q);
+        if (skills.length) q += skills.map(s => `skills=${encodeURIComponent(s)}`).join('&');
+        if (locations.length) q += (q ? '&' : '') + locations.map(l => `locations=${encodeURIComponent(l)}`).join('&');
+        if (companyId) q += (q ? '&' : '') + `companyId=${encodeURIComponent(companyId)}`;
+        if (name) q += (q ? '&' : '') + `name=${encodeURIComponent(name)}`;
+        return q;
+    }, [location.search]);
+
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const c = parseInt(params.get('page') || '1');
+        const ps = pageSize; // giữ pageSize hiện tại
         setCurrent(isNaN(c) ? 1 : c);
         setPageSize(isNaN(ps) ? 8 : ps);
     }, [location.search]);
@@ -75,7 +69,7 @@ const ClientJobPage = (props: any) => {
                 <Col span={24}>
                     <JobCard
                         showPagination={true}
-                        filter={filter}
+                        filter={urlFilter}
                         defaultCurrent={current}
                         defaultPageSize={pageSize}
                         onPageChange={handlePageChange}

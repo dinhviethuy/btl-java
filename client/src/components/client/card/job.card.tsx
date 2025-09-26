@@ -31,10 +31,10 @@ const JobCard = (props: IProps) => {
     const [current, setCurrent] = useState(defaultCurrent || 1);
     const [pageSize, setPageSize] = useState(defaultPageSize || (showPagination ? 8 : 6));
     const [total, setTotal] = useState(0);
-    const [filter, setFilter] = useState(externalFilter || "");
+    const [filter, setFilter] = useState<string | null>(null);
     const [sortQuery, setSortQuery] = useState("sort=-createdAt");
     const navigate = useNavigate();
-    const latestQueryRef = (function () { return { current: '' as string }; })();
+    const latestQueryRef = useRef<string>('');
 
     const SkillsRow = ({ skills, jobId }: { skills: string[]; jobId: string }) => {
         const containerRef = useRef<HTMLDivElement | null>(null);
@@ -103,7 +103,7 @@ const JobCard = (props: IProps) => {
     };
 
     useEffect(() => {
-        setFilter(externalFilter || "");
+        setFilter(externalFilter ?? "");
         setCurrent(1);
     }, [externalFilter]);
 
@@ -120,6 +120,7 @@ const JobCard = (props: IProps) => {
     }, [defaultPageSize]);
 
     useEffect(() => {
+        if (filter === null) return; // đợi đồng bộ filter ban đầu từ URL/props
         fetchJob();
     }, [current, pageSize, filter, sortQuery]);
 
@@ -144,8 +145,8 @@ const JobCard = (props: IProps) => {
                 setDisplayJob(res.data.result);
                 setTotal(res.data.meta.total)
             }
-            setIsLoading(false)
         }
+        setIsLoading(false)
     }
 
 

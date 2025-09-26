@@ -61,8 +61,8 @@ const ClientJobDetailPage = (props: any) => {
                                 <div className={styles["skills"]}>
                                     {jobDetail?.skills?.map((item, index) => {
                                         return (
-                                            <Link to={`/job?skills=${encodeURIComponent(item.toLowerCase())}`}>
-                                                <Tag key={`${index}-key`} color="gold" >
+                                            <Link key={`${index}-key`} to={`/job?skills=${encodeURIComponent(item.toLowerCase())}`} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+                                                <Tag color="gold" >
                                                     {item}
                                                 </Tag>
                                             </Link>
