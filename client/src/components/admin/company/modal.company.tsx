@@ -44,15 +44,47 @@ const ModalCompany = (props: IProps) => {
     const [value, setValue] = useState<string>("");
     const [form] = Form.useForm();
 
+    // useEffect cho dataInit
     useEffect(() => {
-        if (dataInit?._id && dataInit?.description) {
-            setValue(dataInit.description);
+        console.log('useEffect dataInit:', dataInit);
+        if (dataInit?._id) {
+            // Set description
+            if (dataInit.description) {
+                setValue(dataInit.description);
+            } else {
+                setValue("");
+            }
+
+            // Set logo state
+            setDataLogo([]);
         } else {
+            // Reset khi không có dataInit
             setValue("");
+            setDataLogo([]);
         }
-        // defaultFileList đã hiển thị logo cũ, nhưng state riêng để validate khi create
-        if (!dataInit?._id) setDataLogo([]);
     }, [dataInit]);
+
+    // useEffect riêng cho openModal để set form values
+    useEffect(() => {
+        if (openModal && dataInit?._id) {
+            console.log('Modal opened with dataInit:', dataInit);
+            console.log('Setting form values:', {
+                name: dataInit.name,
+                address: dataInit.address
+            });
+
+            // Delay một chút để đảm bảo form đã render
+            setTimeout(() => {
+                form.setFieldsValue({
+                    name: dataInit.name,
+                    address: dataInit.address
+                });
+            }, 100);
+        } else if (openModal && !dataInit?._id) {
+            // Reset form khi tạo mới
+            form.resetFields();
+        }
+    }, [openModal, dataInit, form]);
 
     const submitCompany = async (valuesForm: ICompanyForm) => {
         if (isView) return; // an toàn
@@ -88,14 +120,15 @@ const ModalCompany = (props: IProps) => {
     }
 
     const handleReset = async () => {
+        setAnimation('close');
+        await new Promise(r => setTimeout(r, 400));
+
+        // Reset states sau khi đóng modal
         form.resetFields();
         setValue("");
         setDataInit(null);
         setDataLogo([]);
         setIsView?.(false);
-
-        setAnimation('close');
-        await new Promise(r => setTimeout(r, 400));
         setOpenModal(false);
         setAnimation('open');
     }
@@ -188,7 +221,6 @@ const ModalCompany = (props: IProps) => {
                         preserve={false}
                         form={form}
                         onFinish={submitCompany}
-                        initialValues={dataInit?._id ? dataInit : {}}
                         // Ẩn submit khi xem chi tiết, chỉ còn nút Đóng
                         submitter={
                             isView
