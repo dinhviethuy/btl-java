@@ -11,9 +11,10 @@ import { ActionType, ProColumns, ProFormSelect, ProFormText } from '@ant-design/
 import { Popconfirm, Space, message, notification } from "antd";
 import dayjs from 'dayjs';
 import queryString from 'query-string';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const ResumePage = () => {
+    useEffect(() => { document.title = 'Hồ sơ ứng tuyển'; }, []);
     const tableRef = useRef<ActionType>();
 
     const isFetching = useAppSelector(state => state.resume.isFetching);

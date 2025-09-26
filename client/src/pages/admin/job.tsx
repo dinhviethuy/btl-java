@@ -10,10 +10,11 @@ import { ActionType, ProColumns, ProFormSelect } from '@ant-design/pro-component
 import { Button, message, notification, Popconfirm, Slider, Space, Tag } from "antd";
 import dayjs from 'dayjs';
 import queryString from 'query-string';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useNavigate } from "react-router-dom";
 
 const JobPage = () => {
+    useEffect(() => { document.title = 'Việc làm'; }, []);
     const tableRef = useRef<ActionType>();
 
     const isFetching = useAppSelector(state => state.job.isFetching);

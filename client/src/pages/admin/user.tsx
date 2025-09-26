@@ -12,9 +12,10 @@ import { ActionType, ProColumns, ProFormSelect } from '@ant-design/pro-component
 import { Button, Popconfirm, Space, message, notification } from "antd";
 import dayjs from 'dayjs';
 import queryString from 'query-string';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const UserPage = () => {
+    useEffect(() => { document.title = 'Người dùng'; }, []);
     const [openModal, setOpenModal] = useState<boolean>(false);
     const [dataInit, setDataInit] = useState<IUser | null>(null);
     const [openViewDetail, setOpenViewDetail] = useState<boolean>(false);

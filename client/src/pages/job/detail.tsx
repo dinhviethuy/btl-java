@@ -39,6 +39,8 @@ const ClientJobDetailPage = (props: any) => {
         init();
     }, [id]);
 
+    useEffect(() => { document.title = jobDetail?.name || 'Chi tiết việc làm'; }, [jobDetail]);
+
     return (
         <div className={`${styles["container"]} ${styles["detail-job-section"]}`}>
             {isLoading ?

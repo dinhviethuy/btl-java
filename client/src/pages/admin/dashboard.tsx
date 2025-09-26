@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import CountUp from 'react-countup';
 
 const DashboardPage = () => {
+    useEffect(() => { document.title = 'Bảng điều khiển'; }, []);
     const formatter = (value: number | string) => {
         return (
             <CountUp end={Number(value)} separator="," />

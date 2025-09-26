@@ -11,10 +11,11 @@ import { ActionType, ProColumns } from '@ant-design/pro-components';
 import { Button, Popconfirm, Space, message, notification } from "antd";
 import dayjs from 'dayjs';
 import queryString from 'query-string';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 
 const CompanyPage = () => {
+    useEffect(() => { document.title = 'Công ty'; }, []);
     const [openModal, setOpenModal] = useState<boolean>(false);
     const [isView, setIsView] = useState<boolean>(false);
     const [dataInit, setDataInit] = useState<ICompany | null>(null);

@@ -1,19 +1,20 @@
+import ModalRole from "@/components/admin/role/modal.role";
 import DataTable from "@/components/client/data-table";
+import Access from "@/components/share/access";
+import { callDeleteRole } from "@/config/api";
+import { ALL_PERMISSIONS } from "@/config/permissions";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { fetchRole, fetchRoleById } from "@/redux/slice/roleSlide";
 import { IRole } from "@/types/backend";
 import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import { ActionType, ProColumns } from '@ant-design/pro-components';
 import { Button, Popconfirm, Space, Tag, message, notification } from "antd";
-import { useState, useRef } from 'react';
 import dayjs from 'dayjs';
-import { callDeleteRole } from "@/config/api";
 import queryString from 'query-string';
-import { fetchRole, fetchRoleById } from "@/redux/slice/roleSlide";
-import ModalRole from "@/components/admin/role/modal.role";
-import { ALL_PERMISSIONS } from "@/config/permissions";
-import Access from "@/components/share/access";
+import { useEffect, useRef, useState } from 'react';
 
 const RolePage = () => {
+    useEffect(() => { document.title = 'Vai trò'; }, []);
     const [openModal, setOpenModal] = useState<boolean>(false);
 
     const tableRef = useRef<ActionType>();

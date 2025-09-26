@@ -31,6 +31,8 @@ const ClientCompanyDetailPage = (props: any) => {
         init();
     }, [id]);
 
+    useEffect(() => { document.title = companyDetail?.name || 'Chi tiết công ty'; }, [companyDetail]);
+
     return (
         <div className={`${styles["container"]} ${styles["detail-job-section"]}`}>
             {isLoading ?

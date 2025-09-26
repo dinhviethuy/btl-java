@@ -2,7 +2,7 @@ import CompanyCard from '@/components/client/card/company.card';
 import JobCard from '@/components/client/card/job.card';
 import SearchClient from '@/components/client/search.client';
 import { Divider } from 'antd';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from 'styles/client.module.scss';
 
@@ -11,6 +11,8 @@ const HomePage = () => {
     const navigate = useNavigate();
     const defaultPageSize = 6; // Home list page size
     const defaultCurrent = 1;
+
+    useEffect(() => { document.title = 'Trang chủ'; }, []);
 
     const handleSearch = (q: string) => {
         // Điều hướng sang trang /job với query, kèm current/pageSize

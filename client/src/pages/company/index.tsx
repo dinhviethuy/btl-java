@@ -6,6 +6,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import styles from 'styles/client.module.scss';
 
 const ClientCompanyPage = (props: any) => {
+    useEffect(() => { document.title = 'Công ty IT'; }, []);
     const location = useLocation();
     const navigate = useNavigate();
     const [current, setCurrent] = useState<number>(1);

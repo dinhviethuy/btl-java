@@ -8,6 +8,7 @@ import styles from 'styles/client.module.scss';
 const ClientJobPage = (props: any) => {
     const location = useLocation();
     const navigate = useNavigate();
+    useEffect(() => { document.title = 'Việc làm IT'; }, []);
     const [current, setCurrent] = useState<number>(1);
     const [pageSize, setPageSize] = useState<number>(8);
 

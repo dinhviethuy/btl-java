@@ -13,9 +13,10 @@ import { ActionType, ProColumns } from '@ant-design/pro-components';
 import { Button, message, notification, Popconfirm, Select, Space } from "antd";
 import dayjs from 'dayjs';
 import queryString from 'query-string';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const PermissionPage = () => {
+    useEffect(() => { document.title = 'Quyền hạn'; }, []);
     const [openModal, setOpenModal] = useState<boolean>(false);
     const [dataInit, setDataInit] = useState<IPermission | null>(null);
     const [openViewDetail, setOpenViewDetail] = useState<boolean>(false);

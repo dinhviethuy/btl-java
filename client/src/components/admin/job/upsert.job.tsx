@@ -72,6 +72,14 @@ const ViewUpsertJob = (props: any) => {
         } else return [];
     }
 
+    useEffect(() => {
+        if (!dataUpdate) {
+            document.title = 'Tạo mới việc làm';
+            return;
+        }
+        document.title = `Cập nhật việc làm ${dataUpdate.name}`;
+    }, [dataUpdate]);
+
     const onFinish = async (values: any) => {
         if (dataUpdate?._id) {
             //update
