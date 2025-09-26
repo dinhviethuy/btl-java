@@ -39,8 +39,23 @@ const ModalUser = (props: IProps) => {
                         ? { label: dataInit.company.name, value: dataInit.company._id }
                         : null,
                 });
+                // Prefill local states for DebounceSelect controls
+                if (dataInit.role) {
+                    const rLabel = (dataInit.role as any)?.name ?? dataInit.role;
+                    const rValue = (dataInit.role as any)?._id ?? dataInit.role;
+                    setRole({ label: rLabel, value: rValue });
+                } else {
+                    setRole(null);
+                }
+                if (dataInit.company) {
+                    setCompany({ label: dataInit.company.name, value: dataInit.company._id });
+                } else {
+                    setCompany(null);
+                }
             } else {
                 form.resetFields();
+                setRole(null);
+                setCompany(null);
             }
         }
     }, [openModal, dataInit, form]);

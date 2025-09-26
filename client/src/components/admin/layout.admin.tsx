@@ -72,7 +72,7 @@ const LayoutAdmin = () => {
             const full = [
                 {
                     label: <Link to='/admin/dashboard'>Dashboard</Link>,
-                    key: '/admin',
+                    key: '/admin/dashboard',
                     icon: <AppstoreOutlined />
                 },
                 ...(viewCompany ? [{
