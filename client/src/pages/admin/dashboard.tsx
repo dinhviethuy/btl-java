@@ -22,7 +22,7 @@ const DashboardPage = () => {
     const [rangeDays, setRangeDays] = useState<number>(30);
     const [chartType, setChartType] = useState<'line' | 'area' | 'column'>('line');
     const [loading, setLoading] = useState<boolean>(false);
-    const [statusChartType, setStatusChartType] = useState<'pie' | 'column' | 'bar'>('pie');
+    const [statusChartType, setStatusChartType] = useState<'pie' | 'bar' | 'column'>('pie');
     const [plotTheme, setPlotTheme] = useState<any>('classic');
     const STATUS_KEYS = ['PENDING', 'REVIEWING', 'APPROVED', 'REJECTED'];
     const labelStatus: any = { PENDING: 'Chờ duyệt', REVIEWING: 'Đang xem', APPROVED: 'Đã duyệt', REJECTED: 'Từ chối' };
@@ -96,8 +96,8 @@ const DashboardPage = () => {
                             <span>Trạng thái:</span>
                             <Radio.Group value={statusChartType} onChange={(e) => setStatusChartType(e.target.value)}>
                                 <Radio.Button value='pie'>Pie</Radio.Button>
-                                <Radio.Button value='column'>Column</Radio.Button>
                                 <Radio.Button value='bar'>Bar</Radio.Button>
+                                <Radio.Button value='column'>Column</Radio.Button>
                             </Radio.Group>
                             <span>Hiển thị:</span>
                             <Checkbox.Group
@@ -114,28 +114,28 @@ const DashboardPage = () => {
                     </Card>
                 </Col>
                 <Col span={24} md={6}>
-                    <Card bordered hoverable>
+                    <Card hoverable>
                         <Statistic title="Job đang tuyển" value={overview?.openJobs || 0} formatter={formatter} />
                     </Card>
                 </Col>
                 <Col span={24} md={6}>
-                    <Card bordered hoverable>
+                    <Card hoverable>
                         <Statistic title="Tổng Jobs" value={overview?.jobsTotal || 0} formatter={formatter} />
                     </Card>
                 </Col>
                 <Col span={24} md={6}>
-                    <Card bordered hoverable>
+                    <Card hoverable>
                         <Statistic title="Tổng Resumes" value={overview?.resumesTotal || 0} formatter={formatter} />
                     </Card>
                 </Col>
                 <Col span={24} md={6}>
-                    <Card bordered hoverable>
+                    <Card hoverable>
                         <Statistic title="Tổng Users" value={overview?.usersTotal || 0} formatter={formatter} />
                     </Card>
                 </Col>
 
                 <Col span={24} md={12}>
-                    <Card title="Resumes theo trạng thái" bordered hoverable bodyStyle={{ background: 'var(--surface)' }}>
+                    <Card title="Resumes theo trạng thái" hoverable >
                         {(() => {
                             const raw: any[] = (overview?.resumesByStatus || []).filter((d: any) => d && (d.x !== undefined || d.name !== undefined));
                             const order = ['PENDING', 'REVIEWING', 'APPROVED', 'REJECTED'];
@@ -147,38 +147,40 @@ const DashboardPage = () => {
                                 .map((d: any) => ({ name: labelMap[d.x ?? d.name] || (d.x ?? d.name), value: d.y ?? d.value ?? 0, key: d.x ?? d.name }))
                                 .sort((a, b) => order.indexOf(a.key) - order.indexOf(b.key));
                             data = data.filter(d => statusFilter.includes(d.key));
-                            const colors = data.map(d => colorMap[d.key] || '#999');
-                            const commonLegend: any = { position: 'right', itemName: { style: { fill: 'var(--text)' } } };
                             if (statusChartType === 'pie') {
+                                const domain = data.map(d => d.name);
+                                const range = data.map(d => colorMap[d.key] || '#999');
                                 return (
                                     <Pie
                                         data={data}
                                         angleField="value"
                                         colorField="name"
-                                        color={colors as any}
                                         radius={0.9}
                                         innerRadius={0.6}
-                                        legend={commonLegend}
-                                        label={false}
-                                        theme={plotTheme}
                                         height={220}
+                                        theme={plotTheme}
+                                        legend={{ position: 'right', itemName: { style: { fill: 'var(--text)' } } }}
+                                        scale={{ color: { domain, range } } as any}
+                                        label={false}
                                     />
                                 );
                             }
                             if (statusChartType === 'bar') {
+                                const domain = data.map(d => d.name);
+                                const range = data.map(d => colorMap[d.key] || '#999');
                                 return (
                                     <Bar
                                         data={data}
                                         yField="name"
                                         xField="value"
-                                        seriesField="name"
-                                        color={colors as any}
-                                        legend={false}
+                                        colorField="name"
+                                        transpose
+                                        scale={{ color: { domain, range } } as any}
+                                        legend={{ position: 'right', itemName: { style: { fill: 'var(--text)' } } }}
                                         height={220}
                                         theme={plotTheme}
                                         xAxis={{ label: { style: { fill: 'var(--text)' } } }}
                                         yAxis={{ label: { style: { fill: 'var(--text)' } } }}
-                                        label={false}
                                     />
                                 );
                             }
@@ -187,14 +189,13 @@ const DashboardPage = () => {
                                     data={data}
                                     xField="name"
                                     yField="value"
-                                    seriesField="name"
-                                    color={colors as any}
+                                    colorField="name"
+                                    scale={{ color: { domain: data.map(d => d.name), range: data.map(d => colorMap[d.key] || '#999') } } as any}
                                     legend={false}
                                     height={220}
                                     theme={plotTheme}
                                     xAxis={{ label: { style: { fill: 'var(--text)' } } }}
                                     yAxis={{ label: { style: { fill: 'var(--text)' } } }}
-                                    label={false}
                                 />
                             );
                         })()}
@@ -202,7 +203,7 @@ const DashboardPage = () => {
                 </Col>
                 {(roleName && (roleName.toUpperCase() === 'ADMIN' || roleName.toUpperCase() === 'SUPER_ADMIN')) && (
                     <Col span={24} md={12}>
-                        <Card title="Top công ty đang tuyển" bordered hoverable>
+                        <Card title="Top công ty đang tuyển" hoverable>
                             <List
                                 itemLayout="horizontal"
                                 dataSource={topCompanies}
@@ -221,28 +222,41 @@ const DashboardPage = () => {
                 )}
 
                 <Col span={24} md={12}>
-                    <Card title="Jobs tạo theo ngày" bordered hoverable bodyStyle={{ background: 'var(--surface)' }}>
+                    <Card title="Jobs tạo theo ngày" hoverable >
                         {chartType === 'line' && <Line data={ts?.jobsPerDay || []} xField="x" yField="y" smooth point height={240} theme={plotTheme} />}
                         {chartType === 'area' && <Area data={ts?.jobsPerDay || []} xField="x" yField="y" line={{ smooth: true }} height={240} theme={plotTheme} />}
                         {chartType === 'column' && <Column data={ts?.jobsPerDay || []} xField="x" yField="y" height={240} theme={plotTheme} />}
                     </Card>
                 </Col>
                 <Col span={24} md={12}>
-                    <Card title="Resumes tạo theo ngày" bordered hoverable bodyStyle={{ background: 'var(--surface)' }}>
+                    <Card title="Resumes tạo theo ngày" hoverable >
                         {chartType === 'line' && <Line data={ts?.resumesPerDay || []} xField="x" yField="y" smooth point height={240} theme={plotTheme} />}
                         {chartType === 'area' && <Area data={ts?.resumesPerDay || []} xField="x" yField="y" line={{ smooth: true }} height={240} theme={plotTheme} />}
                         {chartType === 'column' && <Column data={ts?.resumesPerDay || []} xField="x" yField="y" height={240} theme={plotTheme} />}
+                        {/* stacked by status when available */}
+                        {Array.isArray(ts?.resumesPerDayByStatus) && ts.resumesPerDayByStatus.length > 0 && (
+                            <Area
+                                data={ts.resumesPerDayByStatus}
+                                xField="x"
+                                yField="y"
+                                seriesField="name"
+                                colorField="name"
+                                stack
+                                height={240}
+                                theme={plotTheme}
+                            />
+                        )}
                     </Card>
                 </Col>
                 <Col span={24} md={12}>
-                    <Card title="Companies tạo theo tháng" bordered hoverable bodyStyle={{ background: 'var(--surface)' }}>
+                    <Card title="Companies tạo theo tháng" hoverable >
                         {chartType === 'line' && <Line data={ts?.companiesPerMonth || []} xField="x" yField="y" point height={240} theme={plotTheme} />}
                         {chartType === 'area' && <Area data={ts?.companiesPerMonth || []} xField="x" yField="y" height={240} theme={plotTheme} />}
                         {chartType === 'column' && <Column data={ts?.companiesPerMonth || []} xField="x" yField="y" height={240} theme={plotTheme} />}
                     </Card>
                 </Col>
                 <Col span={24} md={12}>
-                    <Card title="Users tạo theo ngày" bordered hoverable bodyStyle={{ background: 'var(--surface)' }}>
+                    <Card title="Users tạo theo ngày" hoverable >
                         {chartType === 'line' && <Line data={ts?.usersPerDay || overview?.usersPerDay || []} xField="x" yField="y" point height={240} theme={plotTheme} />}
                         {chartType === 'area' && <Area data={ts?.usersPerDay || overview?.usersPerDay || []} xField="x" yField="y" height={240} theme={plotTheme} />}
                         {chartType === 'column' && <Column data={ts?.usersPerDay || overview?.usersPerDay || []} xField="x" yField="y" height={240} theme={plotTheme} />}

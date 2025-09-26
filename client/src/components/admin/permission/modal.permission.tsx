@@ -1,5 +1,6 @@
 import { callCreatePermission, callUpdatePermission } from "@/config/api";
 import { ALL_MODULES } from "@/config/permissions";
+import { colorMethod } from "@/config/utils";
 import { IPermission } from "@/types/backend";
 import { ModalForm, ProFormSelect, ProFormText } from "@ant-design/pro-components";
 import { Col, Form, Row, message, notification } from "antd";
@@ -119,15 +120,15 @@ const ModalPermission = (props: IProps) => {
                         <ProFormSelect
                             name="method"
                             label="Method"
-                            valueEnum={{
-                                GET: 'GET',
-                                POST: 'POST',
-                                PUT: 'PUT',
-                                PATCH: 'PATCH',
-                                DELETE: 'DELETE',
-                            }}
                             placeholder="Please select a method"
                             rules={[{ required: true, message: 'Vui lòng chọn method!' }]}
+                            options={[
+                                { label: <span style={{ color: colorMethod('GET'), fontWeight: 600 }}>GET</span>, value: 'GET' },
+                                { label: <span style={{ color: colorMethod('POST'), fontWeight: 600 }}>POST</span>, value: 'POST' },
+                                { label: <span style={{ color: colorMethod('PUT'), fontWeight: 600 }}>PUT</span>, value: 'PUT' },
+                                { label: <span style={{ color: colorMethod('PATCH'), fontWeight: 600 }}>PATCH</span>, value: 'PATCH' },
+                                { label: <span style={{ color: colorMethod('DELETE'), fontWeight: 600 }}>DELETE</span>, value: 'DELETE' },
+                            ]}
                         />
                     </Col>
                     <Col lg={12} md={12} sm={24} xs={24}>

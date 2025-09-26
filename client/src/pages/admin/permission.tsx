@@ -10,7 +10,7 @@ import { fetchPermission } from "@/redux/slice/permissionSlide";
 import { IPermission } from "@/types/backend";
 import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import { ActionType, ProColumns } from '@ant-design/pro-components';
-import { Button, Popconfirm, Space, message, notification } from "antd";
+import { Button, message, notification, Popconfirm, Select, Space } from "antd";
 import dayjs from 'dayjs';
 import queryString from 'query-string';
 import { useRef, useState } from 'react';
@@ -77,6 +77,27 @@ const PermissionPage = () => {
             title: 'Method',
             dataIndex: 'method',
             sorter: true,
+            valueType: 'select',
+            valueEnum: {
+                GET: { text: 'GET' },
+                POST: { text: 'POST' },
+                PUT: { text: 'PUT' },
+                PATCH: { text: 'PATCH' },
+                DELETE: { text: 'DELETE' },
+            },
+            renderFormItem: (_schema, _config, _form) => {
+                const options = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].map(m => ({
+                    label: <span style={{ color: colorMethod(m), fontWeight: 600 }}>{m}</span>,
+                    value: m,
+                }));
+                return (
+                    <Select
+                        allowClear
+                        placeholder="Chọn method"
+                        options={options}
+                    />
+                );
+            },
             render(dom, entity, index, action, schema) {
                 return (
                     <p style={{ paddingLeft: 10, fontWeight: 'bold', marginBottom: 0, color: colorMethod(entity?.method as string) }}>{entity?.method || ''}</p>
