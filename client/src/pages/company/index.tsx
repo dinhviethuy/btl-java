@@ -127,6 +127,7 @@ const ClientCompanyPage = (props: any) => {
                         defaultPageSize={pageSize}
                         onPageChange={handlePageChange}
                         filter={new URLSearchParams(location.search).get('name') || ''}
+                        ready={true}
                     />
                 </Col>
             </Row>

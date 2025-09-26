@@ -202,6 +202,12 @@
 
 .company-section {
   .company-content {
+    .empty {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      padding: 50px;
+    }
     .card-customize {
       height: 180px;
       width: 100%;

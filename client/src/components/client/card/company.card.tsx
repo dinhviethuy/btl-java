@@ -14,10 +14,11 @@ interface IProps {
     defaultPageSize?: number;
     onPageChange?: (current: number, pageSize: number) => void;
     filter?: string;
+    ready?: boolean;
 }
 
 const CompanyCard = (props: IProps) => {
-    const { showPagination = false, defaultCurrent, defaultPageSize, onPageChange, filter: externalFilter } = props;
+    const { showPagination = false, defaultCurrent, defaultPageSize, onPageChange, filter: externalFilter, ready = true } = props;
 
     const [displayCompany, setDisplayCompany] = useState<ICompany[] | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -25,13 +26,22 @@ const CompanyCard = (props: IProps) => {
     const [current, setCurrent] = useState(defaultCurrent || 1);
     const [pageSize, setPageSize] = useState(defaultPageSize || (showPagination ? 8 : 4));
     const [total, setTotal] = useState(0);
-    const [filter, setFilter] = useState("");
+    const [filter, setFilter] = useState<string | null>(null);
     const [sortQuery, setSortQuery] = useState("sort=-createdAt");
     const navigate = useNavigate();
 
+    const lastFetchedRef = (function () { return { current: '' as string }; })();
     useEffect(() => {
-        fetchCompany();
-    }, [current, pageSize, filter, sortQuery]);
+        if (!ready) return;
+        if (filter === null) return;
+        let query = `current=${current}&pageSize=${pageSize}&scope=public`;
+        if (filter) query += `&${filter}`;
+        if (sortQuery) query += `&${sortQuery}`;
+        if (lastFetchedRef.current === query) return;
+        lastFetchedRef.current = query;
+        fetchCompany(query);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [ready, current, pageSize, filter, sortQuery]);
 
     // Đồng bộ state phân trang với giá trị từ URL (props)
     useEffect(() => {
@@ -52,22 +62,16 @@ const CompanyCard = (props: IProps) => {
         if (externalFilter !== undefined) {
             const f = externalFilter ? `name=${externalFilter}` : "";
             setFilter(f);
-            // khi filter thay đổi từ URL -> reset về trang 1
             setCurrent(1);
+        } else {
+            // Home: cho phép fetch ngay không filter
+            setFilter("");
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [externalFilter]);
 
-    const fetchCompany = async () => {
+    const fetchCompany = async (query: string) => {
         setIsLoading(true)
-        let query = `current=${current}&pageSize=${pageSize}&scope=public`;
-        if (filter) {
-            query += `&${filter}`;
-        }
-        if (sortQuery) {
-            query += `&${sortQuery}`;
-        }
-
         const res = await callFetchCompany(query);
         if (res && res.data) {
             setDisplayCompany(res.data.result);
