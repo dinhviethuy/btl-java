@@ -250,10 +250,10 @@ const DashboardPage = () => {
                     </Card>
                 </Col>
                 <Col span={24} md={12}>
-                    <Card title="Companies tạo theo tháng" hoverable >
-                        {chartType === 'line' && <Line data={ts?.companiesPerMonth || []} xField="x" yField="y" point height={240} theme={plotTheme} />}
-                        {chartType === 'area' && <Area data={ts?.companiesPerMonth || []} xField="x" yField="y" height={240} theme={plotTheme} />}
-                        {chartType === 'column' && <Column data={ts?.companiesPerMonth || []} xField="x" yField="y" height={240} theme={plotTheme} />}
+                    <Card title="Companies tạo theo ngày" hoverable >
+                        {chartType === 'line' && <Line data={ts?.companiesPerDay || []} xField="x" yField="y" point height={240} theme={plotTheme} />}
+                        {chartType === 'area' && <Area data={ts?.companiesPerDay || []} xField="x" yField="y" height={240} theme={plotTheme} />}
+                        {chartType === 'column' && <Column data={ts?.companiesPerDay || []} xField="x" yField="y" height={240} theme={plotTheme} />}
                     </Card>
                 </Col>
                 <Col span={24} md={12}>

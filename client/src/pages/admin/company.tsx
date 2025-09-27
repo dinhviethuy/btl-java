@@ -80,7 +80,7 @@ const CompanyPage = () => {
             dataIndex: 'createdAt',
             width: 200,
             sorter: true,
-            render: (_, record) => <>{dayjs(record.createdAt).format('DD-MM-YYYY HH:mm:ss')}</>,
+            render: (_, record) => <>{dayjs(record.createdAt).format('DD/MM/YYYY HH:mm:ss')}</>,
             hideInSearch: true,
         },
         {
@@ -88,7 +88,7 @@ const CompanyPage = () => {
             dataIndex: 'updatedAt',
             width: 200,
             sorter: true,
-            render: (_, record) => <>{dayjs(record.updatedAt).format('DD-MM-YYYY HH:mm:ss')}</>,
+            render: (_, record) => <>{dayjs(record.updatedAt).format('DD/MM/YYYY HH:mm:ss')}</>,
             hideInSearch: true,
         },
         {

@@ -126,7 +126,7 @@ public class StatsService {
             res.put("jobsPerDay", java.util.List.of());
             res.put("resumesPerDay", java.util.List.of());
             res.put("jobsByLevels", java.util.List.of());
-            res.put("companiesPerMonth", java.util.List.of());
+            res.put("companiesPerDay", java.util.List.of());
             res.put("usersPerDay", java.util.List.of());
             return res;
         }
@@ -142,7 +142,7 @@ public class StatsService {
             res.put("jobsByLevels", toPairs(jobRepository.countByLevels()));
             res.put("usersPerDay", toPairs(userRepository.countCreatedPerDaySince(from)));
         }
-        res.put("companiesPerMonth", toPairs(companyRepository.countCreatedPerMonthSince(from)));
+        res.put("companiesPerDay", toPairs(companyRepository.countCreatedPerDaySince(from)));
         return res;
     }
 
